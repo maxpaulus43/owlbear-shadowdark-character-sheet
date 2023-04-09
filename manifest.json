@@ -1,0 +1,12 @@
+{
+  "name": "Shadow Dark Character Sheet",
+  "version": "1.0.0",
+  "manifest_version": 1,
+  "action": {
+    "title": "SD Character Sheet",
+    "icon": "/sd.svg",
+    "popover": "/",
+    "height": 700,
+    "width": 1000
+  }
+}

@@ -1,0 +1,236 @@
+{
+  "name": "Ranal",
+  "stats": {
+    "STR": 13,
+    "DEX": 11,
+    "CON": 14,
+    "INT": 15,
+    "WIS": 11,
+    "CHA": 11
+  },
+  "xp": 0,
+  "ancestry": "Elf",
+  "class": "Wizard",
+  "level": 1,
+  "title": "Shaman",
+  "alignment": "Neutral",
+  "background": "Banished",
+  "deity": "Gede",
+  "maxHitPoints": 5,
+  "armorClass": 10,
+  "gearSlotsTotal": 13,
+  "gearSlotsUsed": 13,
+  "bonuses": [
+    {
+      "sourceType": "Ancestry",
+      "sourceName": "Elf",
+      "sourceCategory": "Ability",
+      "gainedAtLevel": 1,
+      "name": "FarSight",
+      "bonusName": "Plus1ToCastingSpells",
+      "bonusTo": "Spellcasting",
+      "bonusAmount": 1
+    },
+    {
+      "sourceType": "Class",
+      "sourceName": "Wizard",
+      "sourceCategory": "Ability",
+      "gainedAtLevel": 1,
+      "name": "ExtraLanguage: Wizard 1",
+      "bonusTo": "Languages",
+      "bonusName": "Goblin"
+    },
+    {
+      "sourceType": "Class",
+      "sourceName": "Wizard",
+      "sourceCategory": "Ability",
+      "gainedAtLevel": 1,
+      "name": "ExtraLanguage: Wizard 2",
+      "bonusTo": "Languages",
+      "bonusName": "Elvish"
+    },
+    {
+      "sourceType": "Class",
+      "sourceName": "Wizard",
+      "sourceCategory": "Ability",
+      "gainedAtLevel": 1,
+      "name": "ExtraLanguage: Wizard 3",
+      "bonusTo": "Languages",
+      "bonusName": "Diabolic"
+    },
+    {
+      "sourceType": "Class",
+      "sourceName": "Wizard",
+      "sourceCategory": "Ability",
+      "gainedAtLevel": 1,
+      "name": "ExtraLanguage: Wizard 4",
+      "bonusTo": "Languages",
+      "bonusName": "Draconic"
+    },
+    {
+      "sourceType": "Class",
+      "sourceName": "Wizard",
+      "sourceCategory": "Ability",
+      "gainedAtLevel": 1,
+      "name": "Spell: Wizard, Tier 1, Spell 1",
+      "bonusTo": "Tier:1, Spell:1",
+      "bonusName": "Magic Missile"
+    },
+    {
+      "sourceType": "Class",
+      "sourceName": "Wizard",
+      "sourceCategory": "Ability",
+      "gainedAtLevel": 1,
+      "name": "Spell: Wizard, Tier 1, Spell 2",
+      "bonusTo": "Tier:1, Spell:2",
+      "bonusName": "Burning Hands"
+    },
+    {
+      "sourceType": "Class",
+      "sourceName": "Wizard",
+      "sourceCategory": "Ability",
+      "gainedAtLevel": 1,
+      "name": "Spell: Wizard, Tier 1, Spell 3",
+      "bonusTo": "Tier:1, Spell:3",
+      "bonusName": "Light"
+    },
+    {
+      "sourceType": "Class",
+      "sourceName": "Wizard",
+      "sourceCategory": "Talent",
+      "gainedAtLevel": 1,
+      "name": "PlusTwoIntOrPlusOneWizCasting",
+      "bonusName": "StatBonus",
+      "bonusTo": "INT:+2"
+    }
+  ],
+  "goldRolled": 40,
+  "gold": 25,
+  "silver": 0,
+  "copper": 0,
+  "gear": [
+    {
+      "instanceId": "lg71j7ye",
+      "gearId": "s2",
+      "name": "Backpack",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 0,
+      "cost": 2,
+      "currency": "gp"
+    },
+    {
+      "instanceId": "lg71j7yf",
+      "gearId": "s8",
+      "name": "Flint and steel",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 5,
+      "currency": "sp"
+    },
+    {
+      "instanceId": "lg71j7yg",
+      "gearId": "s17",
+      "name": "Torch",
+      "type": "sundry",
+      "quantity": 3,
+      "totalUnits": 3,
+      "slots": 3,
+      "cost": 15,
+      "currency": "sp"
+    },
+    {
+      "instanceId": "lg71j7yi",
+      "gearId": "s15",
+      "name": "Rations",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 5,
+      "currency": "sp"
+    },
+    {
+      "instanceId": "lg71j7yj",
+      "gearId": "s10",
+      "name": "Iron spikes",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 1,
+      "currency": "gp"
+    },
+    {
+      "instanceId": "lg71j7yk",
+      "gearId": "s9",
+      "name": "Grappling hook",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 1,
+      "currency": "gp"
+    },
+    {
+      "instanceId": "lg71j7yl",
+      "gearId": "s16",
+      "name": "Rope, 60'",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 1,
+      "currency": "gp"
+    },
+    {
+      "instanceId": "lg71jyiz",
+      "gearId": "w14",
+      "name": "Staff",
+      "type": "weapon",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 5,
+      "currency": "sp"
+    },
+    {
+      "instanceId": "lg71jyqv",
+      "gearId": "w4",
+      "name": "Dagger",
+      "type": "weapon",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 1,
+      "currency": "gp"
+    },
+    {
+      "instanceId": "lg71kxbi",
+      "gearId": "s11",
+      "name": "Lantern",
+      "type": "sundry",
+      "quantity": 1,
+      "totalUnits": 1,
+      "slots": 1,
+      "cost": 5,
+      "currency": "gp"
+    },
+    {
+      "instanceId": "lg71kzqx",
+      "gearId": "s13",
+      "name": "Oil, flask",
+      "type": "sundry",
+      "quantity": 2,
+      "totalUnits": 2,
+      "slots": 2,
+      "cost": 10,
+      "currency": "sp"
+    }
+  ],
+  "spellsKnown": "Burning Hands, Light, Magic Missile",
+  "languages": "Common, Diabolic, Draconic, Elvish, Elvish, Goblin, Sylvan"
+}
