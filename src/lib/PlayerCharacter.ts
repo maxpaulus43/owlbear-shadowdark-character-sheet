@@ -1,14 +1,29 @@
 import type { PlayerCharacter, Stat } from "../model";
 import { clamp } from "./utils";
 
+export const key = Symbol();
+
 export function calculateModifierForPlayerStat(
   pc: PlayerCharacter,
   stat: Stat
 ): number {
   // TODO use talents and items to calculate stats
 
+  let finalModifier = 0;
+
   const baseModifier = clamp(Math.floor((pc.stats[stat] - 10) / 2), -4, 4);
-  return baseModifier;
+
+  finalModifier += baseModifier;
+
+  pc.bonuses
+    .filter((b) => b.bonusName === "StatBonus")
+    .forEach((b) => {
+      if (b.bonusTo.includes(stat)) {
+        const bonusModifier = parseInt(b.bonusTo.split(":")[1]);
+        finalModifier += bonusModifier;
+      }
+    });
+  return finalModifier;
 }
 
 export function calculateArmorClassForPlayer(pc: PlayerCharacter) {

@@ -7,3 +7,7 @@ export function clamp(n: number, min: number, max: number): number {
 export function rollDice(diceType: DiceType): number {
   return Math.floor(Math.random() * diceType) + 1;
 }
+
+export function addSign(n: number): string {
+  return `${n >= 0 ? "+" : ""}${n}`;
+}

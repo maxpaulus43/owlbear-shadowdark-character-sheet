@@ -14,12 +14,19 @@
   import {
     calculateArmorClassForPlayer,
     calculateModifierForPlayerStat,
+    key,
     levelUpPlayer,
   } from "./lib/PlayerCharacter";
   import RollButton from "./lib/RollButton.svelte";
+  import ModifierView from "./lib/ModifierView.svelte";
+  import { setContext } from "svelte";
+  import StatView from "./lib/StatView.svelte";
 
   // TODO migration from JSON
   let playerCharacter = ranal as PlayerCharacter;
+
+  setContext(key, { getPC: () => playerCharacter });
+
   playerCharacter.hitPoints = playerCharacter.maxHitPoints;
 
   $: level = playerCharacter.level;
@@ -82,35 +89,9 @@
       </div>
     </div>
 
-    <div class="" id="sheet-str">
-      <div>STR</div>
-      <div class="sheet-stat">
-        <input
-          type="number"
-          bind:value={playerCharacter.stats.STR}
-          min="1"
-          max="20"
-        />
-        /
-        <div>{strMod >= 0 ? "+" : ""}{strMod}</div>
-        <RollButton modifier={strMod} />
-      </div>
-    </div>
+    <StatView forStat="STR" />
 
-    <div class="" id="sheet-int">
-      <div>INT</div>
-      <div class="sheet-stat">
-        <input
-          type="number"
-          bind:value={playerCharacter.stats.INT}
-          min="1"
-          max="20"
-        />
-        /
-        <div>{intMod >= 0 ? "+" : ""}{intMod}</div>
-        <RollButton modifier={intMod} />
-      </div>
-    </div>
+    <StatView forStat="INT" />
 
     <div class=" col-span-2 p-1" id="sheet-ancestry">
       <div>ANCESTRY</div>
@@ -123,35 +104,9 @@
       </select>
     </div>
 
-    <div class="" id="sheet-dex">
-      <div>DEX</div>
-      <div class="sheet-stat">
-        <input
-          type="number"
-          bind:value={playerCharacter.stats.DEX}
-          min="1"
-          max="20"
-        />
-        /
-        <div>{dexMod >= 0 ? "+" : ""}{dexMod}</div>
-        <RollButton modifier={dexMod} />
-      </div>
-    </div>
+    <StatView forStat="DEX" />
 
-    <div class="" id="sheet-wis">
-      <div>WIS</div>
-      <div class="sheet-stat">
-        <input
-          type="number"
-          bind:value={playerCharacter.stats.WIS}
-          min="1"
-          max="20"
-        />
-        /
-        <div>{wisMod >= 0 ? "+" : ""}{wisMod}</div>
-        <RollButton modifier={wisMod} />
-      </div>
-    </div>
+    <StatView forStat="WIS" />
 
     <div class=" col-span-2" id="sheet-class">
       <div>CLASS</div>
@@ -164,36 +119,9 @@
       </select>
     </div>
 
-    <div class="" id="sheet-con">
-      <div>CON</div>
-      <div class="sheet-stat">
-        <input
-          type="number"
-          bind:value={playerCharacter.stats.CON}
-          min="1"
-          max="20"
-        />
-        /
-        <div>{conMod >= 0 ? "+" : ""}{conMod}</div>
-        <RollButton modifier={conMod} />
-      </div>
-    </div>
+    <StatView forStat="CON" />
 
-    <div class="" id="sheet-cha">
-      <div>CHA</div>
-      <div class="sheet-stat">
-        <input
-          type="number"
-          bind:value={playerCharacter.stats.CHA}
-          min="1"
-          max="20"
-        />
-        /
-        <div>{chaMod >= 0 ? "+" : ""}{chaMod}</div>
-        <RollButton modifier={chaMod} />
-      </div>
-    </div>
-
+    <StatView forStat="CHA" />
     <div class="" id="sheet-level">
       <div>LEVEL</div>
       <input
@@ -298,12 +226,5 @@
     display: flex;
     flex-direction: column;
     position: relative;
-  }
-  .sheet-stat {
-    display: flex;
-    gap: 0.25rem;
-  }
-  .sheet-stat input {
-    width: 50%;
   }
 </style>

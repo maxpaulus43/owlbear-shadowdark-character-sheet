@@ -41,7 +41,6 @@
     OBR.notification.show(msg).catch(() => {
       alert(msg);
     });
-    // alert("roll with disadvantage");
   }
 
   function onRightClick() {
@@ -63,11 +62,12 @@
   {#if showMenu}
     <Menu on:click={closeMenu} on:clickoutside={closeMenu}>
       <MenuOption on:click={roll} text="Roll" />
-      <MenuOption on:click={rollWithAdvantage} text="Roll With Advantage" />
-      <MenuOption
-        on:click={rollWithDisadvantage}
-        text="Roll with Disadvantage"
-      />
+      <MenuOption on:click={rollWithAdvantage}>
+        <div class="text-green-700">Roll With Advantage</div>
+      </MenuOption>
+      <MenuOption on:click={rollWithDisadvantage}>
+        <div class="text-red-700">Roll With Disadvantage</div>
+      </MenuOption>
     </Menu>
   {/if}
 </div>

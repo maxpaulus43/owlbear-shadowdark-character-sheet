@@ -19,17 +19,13 @@
 
 <svelte:body on:click={onPageClick} />
 
-<div transition:fade={{ duration: 100 }} bind:this={menuEl} class="left-5">
+<div
+  transition:fade={{ duration: 100 }}
+  bind:this={menuEl}
+  class="left-5 shadow-md bg-white z-10 border-black border absolute w-80"
+>
   <slot />
 </div>
 
 <style>
-  div {
-    position: absolute;
-    display: grid;
-    border: 1px solid #0003;
-    box-shadow: 2px 2px 5px 0px #0002;
-    background: white;
-    z-index: 10;
-  }
 </style>
