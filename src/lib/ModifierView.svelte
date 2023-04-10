@@ -1,27 +1,23 @@
 <script lang="ts">
-  import { getContext } from "svelte";
-  import { calculateModifierForPlayerStat, key } from "./PlayerCharacter";
-  import type { PlayerCharacter, Stat } from "../model";
-  import Menu from "./Menu.svelte";
-  import MenuOption from "./MenuOption.svelte";
+  import {
+    PlayerCharacterStore,
+    calculateModifierForPlayerStat,
+  } from "./PlayerCharacter";
   import Modal from "./Modal.svelte";
   import { addSign, clamp } from "./utils";
+  import type { Stat } from "../model";
 
   export let forStat: Stat;
-  const pc = getContext<{ getPC: () => PlayerCharacter }>(key).getPC();
-  $: talents = pc.bonuses
-    .filter((b) => b.sourceCategory === "Talent")
-    .map((b) => b.bonusTo);
-  $: bonuses = pc.bonuses
+  const pc = PlayerCharacterStore;
+  $: bonuses = $pc.bonuses
     .filter((b) => b.bonusTo.includes(forStat))
     .map((b) => `${b.bonusName} to ${b.bonusTo}`);
-  const baseMod = clamp(Math.floor((pc.stats[forStat] - 10) / 2), -4, 4);
-  const modifier = calculateModifierForPlayerStat(pc, forStat);
+  $: baseMod = clamp(Math.floor(($pc.stats[forStat] - 10) / 2), -4, 4);
+  $: modifier = calculateModifierForPlayerStat($pc, forStat);
 
   let showMenu = false;
 
-  let timeout;
-  let didShowHover = false;
+  let timeout: ReturnType<typeof setTimeout>;
 
   function mouseEnter() {
     timeout = setTimeout(() => {
@@ -39,11 +35,9 @@
   function onRightClick() {
     showMenu = true;
   }
-  function closeMenu() {
-    showMenu = false;
-  }
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <div
   on:mouseenter={mouseEnter}
   on:mouseleave={mouseExit}
@@ -54,7 +48,7 @@
 </div>
 
 <Modal bind:showModal={showMenu}>
-  <h2 slot="header">
+  <h2 slot="header" class="text-lg font-bold">
     {forStat}: {addSign(modifier)}
   </h2>
   <ol>

@@ -1,7 +1,8 @@
+import { writable } from "svelte/store";
 import type { PlayerCharacter, Stat } from "../model";
 import { clamp } from "./utils";
 
-export const key = Symbol();
+export const PlayerCharacterStore = writable<PlayerCharacter>();
 
 export function calculateModifierForPlayerStat(
   pc: PlayerCharacter,

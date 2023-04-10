@@ -8,54 +8,38 @@
     TITLE_MAP,
     type PlayerCharacter,
   } from "./model";
-  import OBR from "@owlbear-rodeo/sdk";
+  // import OBR from "@owlbear-rodeo/sdk";
 
   import ranal from "./data/Ranal.json";
   import {
+    PlayerCharacterStore,
     calculateArmorClassForPlayer,
-    calculateModifierForPlayerStat,
-    key,
     levelUpPlayer,
   } from "./lib/PlayerCharacter";
-  import RollButton from "./lib/RollButton.svelte";
-  import ModifierView from "./lib/ModifierView.svelte";
-  import { setContext } from "svelte";
   import StatView from "./lib/StatView.svelte";
 
   // TODO migration from JSON
-  let playerCharacter = ranal as PlayerCharacter;
-
-  setContext(key, { getPC: () => playerCharacter });
-
+  let playerCharacter = ranal as unknown as PlayerCharacter;
   playerCharacter.hitPoints = playerCharacter.maxHitPoints;
 
-  $: level = playerCharacter.level;
-  $: strMod = calculateModifierForPlayerStat(playerCharacter, "STR");
-  $: dexMod = calculateModifierForPlayerStat(playerCharacter, "DEX");
-  $: conMod = calculateModifierForPlayerStat(playerCharacter, "CON");
-  $: intMod = calculateModifierForPlayerStat(playerCharacter, "INT");
-  $: wisMod = calculateModifierForPlayerStat(playerCharacter, "WIS");
-  $: chaMod = calculateModifierForPlayerStat(playerCharacter, "CHA");
-  $: ac = calculateArmorClassForPlayer(playerCharacter);
-  $: spells = playerCharacter.spellsKnown.split(",");
-  $: talents = playerCharacter.bonuses
-    .filter((b) => b.sourceCategory === "Talent")
-    .map((b) => b.bonusTo);
-  $: bonuses = playerCharacter.bonuses.map(
-    (b) => `${b.bonusName} to ${b.bonusTo}`
-  );
+  const pc = PlayerCharacterStore;
+  pc.set(playerCharacter);
+
+  $: ac = calculateArmorClassForPlayer($pc);
+  $: spells = $pc.spellsKnown.split(",");
+  $: bonuses = $pc.bonuses.map((b) => `${b.bonusName} to ${b.bonusTo}`);
 
   $: title =
-    TITLE_MAP[playerCharacter.class][playerCharacter.alignment][
-      Math.max(0, Math.floor((level - 1) / 2))
+    TITLE_MAP[$pc.class][$pc.alignment][
+      Math.max(0, Math.floor(($pc.level - 1) / 2))
     ];
 
-  $: xpCap = level === 0 ? 10 : level * 10;
-  $: canLevel = playerCharacter.xp >= xpCap;
+  $: xpCap = $pc.level === 0 ? 10 : $pc.level * 10;
+  $: canLevel = $pc.xp >= xpCap;
 
   function levelUp() {
-    levelUpPlayer(playerCharacter);
-    playerCharacter = playerCharacter;
+    levelUpPlayer($pc);
+    $pc = $pc;
   }
 </script>
 
@@ -74,7 +58,7 @@
 
     <div class="col-span-2" id="sheet-name">
       <div>NAME</div>
-      <input type="text" bind:value={playerCharacter.name} />
+      <input type="text" bind:value={$pc.name} />
     </div>
 
     <div class="col-span-2 row-span-4" id="sheet-talents">
@@ -110,7 +94,7 @@
 
     <div class=" col-span-2" id="sheet-class">
       <div>CLASS</div>
-      <select bind:value={playerCharacter.class}>
+      <select bind:value={$pc.class}>
         {#each CLASSES as clazz}
           <option value={clazz}>
             {clazz}
@@ -122,20 +106,16 @@
     <StatView forStat="CON" />
 
     <StatView forStat="CHA" />
+
     <div class="" id="sheet-level">
       <div>LEVEL</div>
-      <input
-        type="number"
-        bind:value={playerCharacter.level}
-        max="10"
-        min="0"
-      />
+      <input type="number" bind:value={$pc.level} max="10" min="0" />
     </div>
 
     <div class="" id="sheet-xp">
       <div>XP</div>
-      <div class="sheet-stat">
-        <input type="number" min="0" bind:value={playerCharacter.xp} /> /
+      <div class="sheet-stat flex gap-1">
+        <input type="number" min="0" bind:value={$pc.xp} /> /
         <div>{xpCap}</div>
         {#if canLevel}
           <button class="text-2xl" on:click={levelUp}>🆙</button>
@@ -145,7 +125,7 @@
 
     <div class="row-span-2" id="sheet-hp">
       <div>HP</div>
-      <input type="number" min="0" bind:value={playerCharacter.hitPoints} />
+      <input type="number" min="0" bind:value={$pc.hitPoints} />
     </div>
 
     <div class="row-span-2" id="sheet-ac">
@@ -161,7 +141,7 @@
     <div class="col-span-2 row-span-4" id="sheet-gear">
       <div>GEAR</div>
       <div>
-        {#each playerCharacter.gear as { name }}
+        {#each $pc.gear as { name }}
           <div>{name}</div>
         {/each}
       </div>
@@ -169,7 +149,7 @@
 
     <div class="col-span-2" id="sheet-alignment">
       <div>ALIGNMENT</div>
-      <select bind:value={playerCharacter.alignment}>
+      <select bind:value={$pc.alignment}>
         {#each ALIGNMENTS as alignment}
           <option value={alignment}>
             {alignment}
@@ -187,7 +167,7 @@
       <div>BACKGROUND</div>
       <select>
         {#each BACKGROUNDS as background}
-          <option value={playerCharacter.background}>
+          <option value={$pc.background}>
             {background}
           </option>
         {/each}
