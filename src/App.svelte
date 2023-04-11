@@ -10,7 +10,7 @@
 
   import ranal from "./data/Ranal.json";
   import {
-    PlayerCharacterStore,
+    PlayerCharacterStore as pc,
     calculateArmorClassForPlayer,
     calculateTitleForPlayer,
     levelUpPlayer,
@@ -18,18 +18,21 @@
   import StatView from "./lib/StatView.svelte";
   import AddGearButton from "./lib/AddGearButton.svelte";
   import TalentsSpellsView from "./lib/TalentsSpellsView.svelte";
+  import GearView from "./lib/GearView.svelte";
 
   // TODO migration from JSON
   let playerCharacter = ranal as unknown as PlayerCharacter;
   playerCharacter.hitPoints = playerCharacter.maxHitPoints;
 
-  const pc = PlayerCharacterStore;
-  pc.set(playerCharacter);
+  $pc = playerCharacter;
 
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);
   $: xpCap = $pc.level === 0 ? 10 : $pc.level * 10;
   $: canLevel = $pc.level < 10 && $pc.xp >= xpCap;
+  $: totalSlots = Math.max(10, $pc.stats.STR);
+  $: freeSlots =
+    totalSlots - $pc.gear.reduce((prev, curr) => prev + curr.slots, 0);
 </script>
 
 <main>
@@ -148,13 +151,11 @@
     </div>
 
     <div class="col-span-2 row-span-4" id="sheet-gear">
-      <h2>GEAR</h2>
-      <ul>
-        {#each $pc.gear as { name }}
-          <li>{name}</li>
-        {/each}
-      </ul>
-      <AddGearButton />
+      <div class="flex gap-1">
+        <h2>GEAR</h2>
+        <span>({totalSlots} slots, {freeSlots} free)</span>
+      </div>
+      <GearView />
     </div>
 
     <div class="col-span-2" id="sheet-alignment">

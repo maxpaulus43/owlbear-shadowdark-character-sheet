@@ -24,7 +24,7 @@
     {#each spells as spell}
       {@const mod = calculateSpellCastingModifierForPlayer(spell, $pc)}
       <li>
-        <div class="flex justify-between border-b border-gray-400">
+        <div class="flex justify-between border-b border-gray-400 items-center">
           <div class="flex">
             <RollButton modifier={mod} />
             <span>({addSign(mod)})</span>

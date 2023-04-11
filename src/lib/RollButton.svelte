@@ -56,7 +56,7 @@
   <button
     on:click={roll}
     on:contextmenu|preventDefault={onRightClick}
-    class="bg-black text-white px-2 rounded-md">🎲</button
+    class="bg-black text-white p-1 px-2 rounded-md">🎲</button
   >
 
   {#if showMenu}
