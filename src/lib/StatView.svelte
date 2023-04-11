@@ -23,9 +23,8 @@
       max="20"
       class="w-1/2 border border-gray-500 p-1"
     />
-    /
-    <ModifierView {forStat} />
     <RollButton {modifier} />
+    <ModifierView {forStat} />
   </div>
 </div>
 

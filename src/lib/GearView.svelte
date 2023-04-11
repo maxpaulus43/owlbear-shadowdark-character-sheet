@@ -45,7 +45,10 @@
   }
 </script>
 
-<div class="overflow-scroll">
+<div
+  class="overflow-scroll flex flex-col gap-1 p-2"
+  style="box-shadow: inset 0 0 5px #000;"
+>
   <ul>
     {#each costlyGear as g, i}
       <li>
@@ -65,14 +68,14 @@
       </li>
     {/each}
   </ul>
-  <div>Free Gear</div>
+  <h2>Free Gear</h2>
   <ul>
     {#each freeGear as g, i}
       <li>
         <div
           class="flex gap-1 items-center justify-between border-b border-gray-400"
         >
-          <span>{i + 1 + ". "}{g.name} ({g.slots} slots)</span>
+          <span>{i + 1 + ". "}{g.name}</span>
           <button
             on:click={() => deleteGearByID(g.gearId)}
             class="px-1 pt-1 rounded-md bg-black text-white"
@@ -82,5 +85,4 @@
       </li>
     {/each}
   </ul>
-  <AddGearButton />
 </div>

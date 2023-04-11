@@ -60,6 +60,11 @@ export function calculateSpellCastingModifierForPlayer(
   return result;
 }
 
+export function calculateGearSlotsForPlayer(pc: PlayerCharacter) {
+  const result = Math.max(10, pc.stats.STR);
+  return result;
+}
+
 export function levelUpPlayer(pc: PlayerCharacter) {
   const xpCap = pc.level === 0 ? 10 : pc.level * 10;
 
@@ -71,11 +76,20 @@ export function levelUpPlayer(pc: PlayerCharacter) {
 }
 
 export function learnSpellForPlayer(spell: Spell, pc: PlayerCharacter) {
-  pc.spellsKnown += `, ${spell.name}`;
+  const spells = pc.spellsKnown
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s !== "None");
+  spells.push(spell.name);
+  pc.spellsKnown = spells.join(",");
 }
 
 export function unlearnSpellForPlayer(spell: Spell, pc: PlayerCharacter) {
   let spells = pc.spellsKnown.split(",").map((s) => s.trim());
   spells = spells.filter((s) => s !== spell.name);
-  pc.spellsKnown = spells.join(",");
+  if (spells.length === 0) {
+    pc.spellsKnown = "None";
+  } else {
+    pc.spellsKnown = spells.join(",");
+  }
 }

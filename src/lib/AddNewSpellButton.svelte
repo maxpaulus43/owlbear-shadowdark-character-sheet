@@ -8,10 +8,14 @@
   } from "./PlayerCharacter";
   let showModal = false;
   let spellInput: string = "";
+  $: spellInputLowerCase = spellInput.toLowerCase();
   $: spells = SPELLS.filter(
     (s) =>
-      s.name.toLowerCase().includes(spellInput) ||
-      s.desc.toLowerCase().includes(spellInput)
+      s.name.toLowerCase().includes(spellInputLowerCase) ||
+      s.desc.toLowerCase().includes(spellInputLowerCase) ||
+      `${s.tier}`.includes(spellInputLowerCase) ||
+      s.range.toLowerCase().includes(spellInputLowerCase) ||
+      s.duration.type.toLowerCase().includes(spellInputLowerCase)
   );
   function learnSpell(s: Spell) {
     learnSpellForPlayer(s, $pc);

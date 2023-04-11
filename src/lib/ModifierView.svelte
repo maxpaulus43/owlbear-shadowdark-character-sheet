@@ -44,7 +44,7 @@
   on:click={onRightClick}
   class="bg-gray-100 hover:bg-gray-300 cursor-pointer p-1"
 >
-  {addSign(modifier)}
+  ({addSign(modifier)})
 </div>
 
 <Modal bind:showModal={showMenu}>

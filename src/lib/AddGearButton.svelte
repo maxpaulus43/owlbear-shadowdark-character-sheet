@@ -1,67 +1,91 @@
 <script lang="ts">
-  import type { Currency } from "../types";
+  import { GEAR, type Currency, type Gear, type GearImpl } from "../types";
+  import CustomGearForm from "./CustomGearForm.svelte";
   import Modal from "./Modal.svelte";
   import { PlayerCharacterStore as pc } from "./PlayerCharacter";
   let showModal = false;
 
   let customGearName: string;
-  let customGearSlots: number;
-  let customGearCost: number;
-  let customeGearCurrency: Currency;
+  let customGearSlots: number = 1;
+  let customGearCost: number = 0;
+  let customGearCurrency: Currency = "sp";
+  let customGearQuantity: number = 1;
+
+  $: canAdd = customGearName?.length > 0;
 
   function createGearItem() {
     $pc.gear.push({
       gearId: customGearName,
-      quantity: 1,
-      slots: customGearSlots,
-      totalUnits: 1,
+      quantity: customGearQuantity,
+      slots: customGearSlots * customGearQuantity,
+      totalUnits: customGearQuantity,
       cost: customGearCost,
-      currency: customeGearCurrency,
+      currency: customGearCurrency,
       name: customGearName,
-      type: "sundry",
+      type: "custom",
+    });
+    $pc = $pc;
+  }
+
+  let gearInput: string = "";
+  $: gearResults = GEAR.filter((g) =>
+    g.name.toLowerCase().includes(gearInput.toLowerCase())
+  );
+
+  function addGear(g: GearImpl) {
+    $pc.gear.push({
+      ...g,
+      quantity: 1,
+      totalUnits: g.slots,
     });
     $pc = $pc;
   }
 </script>
 
 <button
-  class="bg-black text-white p-2 w-full"
+  class="bg-black text-white px-3 rounded-md"
   on:click={() => (showModal = true)}>Add Gear</button
 >
 
 <Modal bind:showModal>
-  <h2 slot="header" class="text-lg font-bold">New Gear</h2>
-  <div class="flex gap-1 items-center">
-    <div>
-      <div>Custom Gear</div>
-      <input type="text" bind:value={customGearName} class="border p-1" />
+  <h2 slot="header" class="text-lg font-bold">Gear</h2>
+  <div class="border-b flex flex-col gap-1">
+    <input
+      class="p-1 w-full border"
+      type="text"
+      bind:value={gearInput}
+      placeholder="search e.g. Torch"
+    />
+    <div class="h-48 overflow-y-auto">
+      <table class="w-full">
+        <thead class="text-left">
+          <tr>
+            <th>Name</th>
+            <th>Cost</th>
+            <th>Slots</th>
+          </tr>
+        </thead>
+        <tbody>
+          {#each gearResults as g, i}
+            <tr class="border-b" class:bg-gray-100={i % 2 == 0}>
+              <td class="pl-3">{g.name}</td>
+              <td>{g.cost}{g.currency}</td>
+              <td>{g.slots}</td>
+              <td class="flex justify-end">
+                <button
+                  on:click={() => addGear(g)}
+                  class="px-3 hover:bg-gray-400"
+                >
+                  <i class="material-icons translate-y-1">add_circle</i>
+                </button>
+              </td>
+            </tr>
+          {/each}
+        </tbody>
+      </table>
     </div>
-    <div>
-      <div>Slots</div>
-      <input
-        type="number"
-        bind:value={customGearSlots}
-        class="border p-1 w-12"
-      />
+    <div class="border shadow-md p-2">
+      <CustomGearForm />
     </div>
-    <div>
-      <div>Cost</div>
-      <input
-        type="number"
-        bind:value={customGearCost}
-        class="border p-1 w-20"
-      />
-    </div>
-    <div>
-      <div>Currency</div>
-      <select>
-        {#each ["gp", "sp", "cp"] as currency}
-          <option>{currency}</option>
-        {/each}
-      </select>
-      <button on:click={createGearItem}>
-        <i class="material-icons">add_circle</i>
-      </button>
-    </div>
-  </div></Modal
->
+  </div>
+</Modal>

@@ -156,6 +156,11 @@ export type Gear = {
   currency: Currency;
 };
 
+export type GearImpl = Pick<
+  Gear,
+  "gearId" | "name" | "type" | "slots" | "cost" | "currency"
+>;
+
 export type Bonus = {
   sourceType: BonusSourceType;
   sourceName: string;
@@ -231,4 +236,13 @@ export const SPELLS: Spell[] = [
   },
 ];
 
-export const GEAR: Gear[] = [];
+export const GEAR: GearImpl[] = [
+  {
+    gearId: "s17",
+    name: "Torch",
+    slots: 1,
+    cost: 15,
+    currency: "sp",
+    type: "sundry",
+  },
+];

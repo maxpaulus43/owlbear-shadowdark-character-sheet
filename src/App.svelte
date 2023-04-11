@@ -19,6 +19,7 @@
   import StatView from "./lib/StatView.svelte";
   import TalentsSpellsView from "./lib/TalentsSpellsView.svelte";
   import GearView from "./lib/GearView.svelte";
+  import AddGearButton from "./lib/AddGearButton.svelte";
 
   // TODO migration from JSON
   let playerCharacter = drance as unknown as PlayerCharacter;
@@ -38,7 +39,7 @@
 <main>
   <div
     id="sheet"
-    class="bg-black grid w-[1000px] h-[700px] p-2 grid-cols-6 grid-rows-8 gap-2"
+    class="bg-black grid w-[1000px] h-[700px] p-2 grid-cols-7 grid-rows-8 gap-2"
   >
     <div class="col-span-2" id="sheet-shadowdark">
       <div class="flex gap-1 justify-around">
@@ -58,7 +59,7 @@
       <input type="text" bind:value={$pc.name} />
     </div>
 
-    <div class="col-span-2 row-span-4" id="sheet-talents">
+    <div class="col-span-3 row-span-4" id="sheet-talents">
       <h2>TALENTS/SPELLS</h2>
       <TalentsSpellsView />
     </div>
@@ -150,10 +151,11 @@
       <div>{title}</div>
     </div>
 
-    <div class="col-span-2 row-span-4" id="sheet-gear">
-      <div class="flex gap-1">
+    <div class="col-span-3 row-span-4" id="sheet-gear">
+      <div class="flex gap-1 p-1">
         <h2>GEAR</h2>
         <span>({totalSlots} slots, {freeSlots} free)</span>
+        <AddGearButton />
       </div>
       <GearView />
     </div>

@@ -8,7 +8,8 @@
   import RollTalentButton from "./RollTalentButton.svelte";
   import { addSign } from "./utils";
 
-  $: spells = $pc.spellsKnown.split(",");
+  $: spells = $pc.spellsKnown?.split(",") ?? [];
+  $: hasSpells = !spells.includes("None");
 
   $: talents = $pc.bonuses
     .filter((b) => b.sourceCategory === "Talent")
@@ -19,21 +20,25 @@
     .map((b) => b.bonusName);
 </script>
 
-<div class="overflow-scroll">
-  <ul class="flex flex-col gap-1">
-    {#each spells as spell}
-      {@const mod = calculateSpellCastingModifierForPlayer(spell, $pc)}
-      <li>
-        <div class="flex justify-between border-b border-gray-400 items-center">
-          <div class="flex">
-            <RollButton modifier={mod} />
-            <span>({addSign(mod)})</span>
+<div class="overflow-y-auto">
+  {#if hasSpells}
+    <ul class="flex flex-col gap-1">
+      {#each spells as spell}
+        {@const mod = calculateSpellCastingModifierForPlayer(spell, $pc)}
+        <li>
+          <div
+            class="flex justify-between border-b border-gray-400 items-center"
+          >
+            <div class="flex">
+              <RollButton modifier={mod} />
+              <span>({addSign(mod)})</span>
+            </div>
+            <div>{spell}</div>
           </div>
-          <div>{spell}</div>
-        </div>
-      </li>
-    {/each}
-  </ul>
+        </li>
+      {/each}
+    </ul>
+  {/if}
   <AddNewSpellButton />
 
   <div>Talents</div>
