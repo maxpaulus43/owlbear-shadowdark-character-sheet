@@ -5,7 +5,7 @@
   } from "./PlayerCharacter";
   import Modal from "./Modal.svelte";
   import { addSign, clamp } from "./utils";
-  import type { Stat } from "../model";
+  import type { Stat } from "../types";
 
   export let forStat: Stat;
   const pc = PlayerCharacterStore;
@@ -42,15 +42,15 @@
   on:mouseenter={mouseEnter}
   on:mouseleave={mouseExit}
   on:click={onRightClick}
-  class="bg-gray-100 hover:bg-gray-300 cursor-pointer"
+  class="bg-gray-100 hover:bg-gray-300 cursor-pointer p-1"
 >
   {addSign(modifier)}
 </div>
 
 <Modal bind:showModal={showMenu}>
-  <h2 slot="header" class="text-lg font-bold">
+  <h1 slot="header">
     {forStat}: {addSign(modifier)}
-  </h2>
+  </h1>
   <ol>
     <li>
       Base Modifier: {addSign(baseMod)}

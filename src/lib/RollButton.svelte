@@ -1,13 +1,13 @@
 <script lang="ts">
   import OBR from "@owlbear-rodeo/sdk";
-
-  import type { DiceType } from "../model";
-  import Menu from "./Menu.svelte";
-  import MenuOption from "./MenuOption.svelte";
   import { rollDice } from "./utils";
+  import { ValueForDiceType, type DiceType } from "../types";
+  import Menu from "./components/Menu/Menu.svelte";
+  import MenuOption from "./components/Menu/MenuOption.svelte";
 
-  export let modifier: number = 0;
-  export let dice: DiceType = 20; // default to d20
+  export const modifier: number = 0;
+  export const diceType: DiceType = "d20"; // default to d20
+  $: dice = ValueForDiceType[diceType];
 
   let showMenu = false;
 

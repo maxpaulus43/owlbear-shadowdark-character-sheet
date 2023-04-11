@@ -5,18 +5,19 @@
     BACKGROUNDS,
     CLASSES,
     DEITIES,
-    TITLE_MAP,
     type PlayerCharacter,
-  } from "./model";
-  // import OBR from "@owlbear-rodeo/sdk";
+  } from "./types";
 
   import ranal from "./data/Ranal.json";
   import {
     PlayerCharacterStore,
     calculateArmorClassForPlayer,
+    calculateTitleForPlayer,
     levelUpPlayer,
   } from "./lib/PlayerCharacter";
   import StatView from "./lib/StatView.svelte";
+  import AddGearButton from "./lib/AddGearButton.svelte";
+  import TalentsSpellsView from "./lib/TalentsSpellsView.svelte";
 
   // TODO migration from JSON
   let playerCharacter = ranal as unknown as PlayerCharacter;
@@ -26,21 +27,9 @@
   pc.set(playerCharacter);
 
   $: ac = calculateArmorClassForPlayer($pc);
-  $: spells = $pc.spellsKnown.split(",");
-  $: bonuses = $pc.bonuses.map((b) => `${b.bonusName} to ${b.bonusTo}`);
-
-  $: title =
-    TITLE_MAP[$pc.class][$pc.alignment][
-      Math.max(0, Math.floor(($pc.level - 1) / 2))
-    ];
-
+  $: title = calculateTitleForPlayer($pc);
   $: xpCap = $pc.level === 0 ? 10 : $pc.level * 10;
-  $: canLevel = $pc.xp >= xpCap;
-
-  function levelUp() {
-    levelUpPlayer($pc);
-    $pc = $pc;
-  }
+  $: canLevel = $pc.level < 10 && $pc.xp >= xpCap;
 </script>
 
 <main>
@@ -49,36 +38,38 @@
     class="bg-black grid w-[1000px] h-[700px] p-2 grid-cols-6 grid-rows-8 gap-2"
   >
     <div class="col-span-2" id="sheet-shadowdark">
-      <div>Shadowdark</div>
-      <div class="flex justify-around gap-1">
-        <button class="bg-black text-white p-3">Import from JSON</button>
-        <button class="bg-black text-white p-3">Export to JSON</button>
+      <div class="flex gap-1 justify-around">
+        <h1 class="">Shadowdark</h1>
+        <div class="flex flex-col gap-1">
+          <button class="bg-black text-white p-2 text-xs"
+            >Import from JSON</button
+          >
+          <button class="bg-black text-white p-2 text-xs">Export to JSON</button
+          >
+        </div>
       </div>
     </div>
 
     <div class="col-span-2" id="sheet-name">
-      <div>NAME</div>
+      <h2>NAME</h2>
       <input type="text" bind:value={$pc.name} />
     </div>
 
     <div class="col-span-2 row-span-4" id="sheet-talents">
-      <div>TALENTS/SPELLS</div>
-      <div>
-        {#each spells as spell}
-          <div>{spell}</div>
-        {/each}
-        {#each bonuses as talent}
-          <div>{talent}</div>
-        {/each}
-      </div>
+      <h2>TALENTS/SPELLS</h2>
+      <TalentsSpellsView />
     </div>
 
-    <StatView forStat="STR" />
+    <div>
+      <StatView forStat="STR" />
+    </div>
 
-    <StatView forStat="INT" />
+    <div>
+      <StatView forStat="INT" />
+    </div>
 
     <div class=" col-span-2 p-1" id="sheet-ancestry">
-      <div>ANCESTRY</div>
+      <h2>ANCESTRY</h2>
       <select>
         {#each ANCESTRIES as ancestry}
           <option value={ancestry}>
@@ -88,12 +79,16 @@
       </select>
     </div>
 
-    <StatView forStat="DEX" />
+    <div>
+      <StatView forStat="DEX" />
+    </div>
 
-    <StatView forStat="WIS" />
+    <div>
+      <StatView forStat="WIS" />
+    </div>
 
     <div class=" col-span-2" id="sheet-class">
-      <div>CLASS</div>
+      <h2>CLASS</h2>
       <select bind:value={$pc.class}>
         {#each CLASSES as clazz}
           <option value={clazz}>
@@ -103,52 +98,67 @@
       </select>
     </div>
 
-    <StatView forStat="CON" />
+    <div>
+      <StatView forStat="CON" />
+    </div>
 
-    <StatView forStat="CHA" />
+    <div>
+      <StatView forStat="CHA" />
+    </div>
 
     <div class="" id="sheet-level">
-      <div>LEVEL</div>
+      <h2>LEVEL</h2>
       <input type="number" bind:value={$pc.level} max="10" min="0" />
     </div>
 
     <div class="" id="sheet-xp">
-      <div>XP</div>
+      <h2>XP</h2>
       <div class="sheet-stat flex gap-1">
-        <input type="number" min="0" bind:value={$pc.xp} /> /
-        <div>{xpCap}</div>
-        {#if canLevel}
-          <button class="text-2xl" on:click={levelUp}>🆙</button>
+        {#if $pc.level < 10}
+          <input type="number" min="0" bind:value={$pc.xp} /> /
+          <div>{xpCap}</div>
+        {:else}
+          MAX LEVEL
         {/if}
+        <button
+          class="text-2xl"
+          class:opacity-20={!canLevel}
+          disabled={!canLevel}
+          on:click={() => {
+            levelUpPlayer($pc);
+            $pc = $pc;
+          }}>🆙</button
+        >
       </div>
     </div>
 
     <div class="row-span-2" id="sheet-hp">
-      <div>HP</div>
+      <h2>HP</h2>
       <input type="number" min="0" bind:value={$pc.hitPoints} />
     </div>
 
     <div class="row-span-2" id="sheet-ac">
-      <div>AC</div>
+      <h2>AC</h2>
       <div>{ac}</div>
     </div>
 
     <div class="col-span-2" id="sheet-title">
-      <div>TITLE</div>
+      <h2>TITLE</h2>
       <div>{title}</div>
     </div>
 
     <div class="col-span-2 row-span-4" id="sheet-gear">
-      <div>GEAR</div>
-      <div>
+      <h2>GEAR</h2>
+      <ul>
         {#each $pc.gear as { name }}
-          <div>{name}</div>
+          <li>{name}</li>
         {/each}
-      </div>
+      </ul>
+      <AddGearButton />
     </div>
 
     <div class="col-span-2" id="sheet-alignment">
-      <div>ALIGNMENT</div>
+      <h2>ALIGNMENT</h2>
       <select bind:value={$pc.alignment}>
         {#each ALIGNMENTS as alignment}
           <option value={alignment}>
@@ -159,12 +169,12 @@
     </div>
 
     <div class="row-span-2 col-span-2" id="sheet-attacks">
-      <div>ATTACKS</div>
+      <h2>ATTACKS</h2>
       <textarea />
     </div>
 
     <div class="col-span-2" id="sheet-background">
-      <div>BACKGROUND</div>
+      <h2>BACKGROUND</h2>
       <select>
         {#each BACKGROUNDS as background}
           <option value={$pc.background}>
@@ -175,7 +185,7 @@
     </div>
 
     <div class="col-span-2" id="sheet-deity">
-      <div>DEITY</div>
+      <h2>DEITY</h2>
       <select>
         {#each DEITIES as deity}
           <option value={deity}>
@@ -206,5 +216,7 @@
     display: flex;
     flex-direction: column;
     position: relative;
+    border-radius: 0.5rem;
+    box-shadow: inset 0 0 5px #000;
   }
 </style>

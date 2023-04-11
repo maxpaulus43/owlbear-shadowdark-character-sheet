@@ -22,7 +22,7 @@
 <div
   transition:fade={{ duration: 100 }}
   bind:this={menuEl}
-  class="left-5 shadow-md bg-white z-10 border-black border absolute w-80"
+  class="left-5 shadow-lg bg-white z-10 border-black border absolute"
 >
   <slot />
 </div>

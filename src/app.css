@@ -2,3 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+
+h1, h2 {
+  font-family: Pirata One, Cochin, Georgia, Times, 'Times New Roman', serif;
+  font-size: 1.25rem;
+}
+
+h1 {
+  font-size: 2rem;
+}
+

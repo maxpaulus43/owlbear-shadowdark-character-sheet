@@ -1,5 +1,11 @@
 import { writable } from "svelte/store";
-import type { PlayerCharacter, Stat } from "../model";
+import {
+  TITLE_MAP,
+  type PlayerCharacter,
+  type Spell,
+  type Stat,
+  type Title,
+} from "../types";
 import { clamp } from "./utils";
 
 export const PlayerCharacterStore = writable<PlayerCharacter>();
@@ -32,6 +38,20 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
   return pc.armorClass;
 }
 
+export function calculateTitleForPlayer(pc: PlayerCharacter): Title {
+  return TITLE_MAP[pc.class][pc.alignment][
+    Math.max(0, Math.floor((pc.level - 1) / 2))
+  ];
+}
+
+export function calculateSpellCastingModifierForPlayer(
+  spell: string,
+  pc: PlayerCharacter
+): number {
+  // TODO spellcasting modifier for player
+  return 0;
+}
+
 export function levelUpPlayer(pc: PlayerCharacter) {
   const xpCap = pc.level === 0 ? 10 : pc.level * 10;
 
@@ -40,4 +60,14 @@ export function levelUpPlayer(pc: PlayerCharacter) {
 
   pc.level += 1;
   pc.xp -= xpCap;
+}
+
+export function learnSpellForPlayer(spell: Spell, pc: PlayerCharacter) {
+  pc.spellsKnown += `, ${spell.name}`;
+}
+
+export function unlearnSpellForPlayer(spell: Spell, pc: PlayerCharacter) {
+  let spells = pc.spellsKnown.split(",").map((s) => s.trim());
+  spells = spells.filter((s) => s !== spell.name);
+  pc.spellsKnown = spells.join(",");
 }

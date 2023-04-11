@@ -67,9 +67,9 @@ export const TITLES = [
   ...TITLE_MAP["Wizard"]["Chaotic"],
   ...TITLE_MAP["Wizard"]["Neutral"],
   ...TITLE_MAP["Thief"]["Lawful"],
-  ...TITLE_MAP["Thief"]["Lawful"],
   ...TITLE_MAP["Thief"]["Chaotic"],
-  ...TITLE_MAP["Priest"]["Neutral"],
+  ...TITLE_MAP["Thief"]["Neutral"],
+  ...TITLE_MAP["Priest"]["Lawful"],
   ...TITLE_MAP["Priest"]["Chaotic"],
   ...TITLE_MAP["Priest"]["Neutral"],
 ] as const;
@@ -102,7 +102,27 @@ export type Ancestry = (typeof ANCESTRIES)[number];
 export type Currency = "gp" | "sp" | "cp";
 export type BonusSourceType = "Ancestry" | "Class" | "Gear";
 export type BonusSourceCategory = "Ability" | "Talent";
-export type DiceType = 4 | 6 | 8 | 10 | 12 | 20;
+export type DiceType = "d4" | "d6" | "d8" | "d10" | "d12" | "d20";
+export const ValueForDiceType = {
+  d4: 4,
+  d6: 6,
+  d8: 8,
+  d10: 10,
+  d12: 12,
+  d20: 20,
+} as const;
+export type RangeType = "Self" | "Close" | "Near" | "Far";
+export type TimeUnit =
+  | "Second"
+  | "Minute"
+  | "Round"
+  | "Hour"
+  | "Day"
+  | "Week"
+  | "Month"
+  | "Year";
+export type DurationType = "Focus" | "Instant" | TimeUnit;
+export type Tier = 1 | 2 | 3 | 4 | 5;
 
 export type Attack = {
   dice: DiceType;
@@ -114,6 +134,14 @@ export type Talent = {
 
 export type Spell = {
   name: string;
+  class: Extract<Class, "Wizard" | "Priest">;
+  tier: Tier;
+  range: RangeType;
+  duration: {
+    type: DurationType;
+    diceType?: DiceType;
+    amt?: number;
+  };
   desc: string;
 };
 
@@ -168,3 +196,37 @@ export type PlayerCharacter = {
   attacks?: Attack[];
   hitPoints?: number;
 };
+
+export const SPELLS: Spell[] = [
+  {
+    name: "Acid Arrow",
+    tier: 2,
+    class: "Wizard",
+    duration: {
+      type: "Focus",
+    },
+    range: "Far",
+    desc: "You conjure a corrosive bolt that hits one foe, dealing 1d6 damage a round. The bolt remains in the target for as long as you focus.",
+  },
+  {
+    name: "Alarm",
+    tier: 1,
+    class: "Wizard",
+    duration: {
+      type: "Day",
+      amt: 1,
+    },
+    range: "Close",
+    desc: "You touch one object, such as a door threshold, setting a magical alarm on it. If any creature you do not designate while casting the spell touches or crosses past the object, a magical bell sounds in your head.",
+  },
+  {
+    name: "Burning Hands",
+    tier: 1,
+    class: "Wizard",
+    duration: {
+      type: "Instant",
+    },
+    range: "Close",
+    desc: "You spread your fingers with thumbs touching, unleashing a circle of flame that fills a close area around where you stand. Creatures within the area of effect take 1d6 damage. Unattended flammable objects ignite.",
+  },
+];
