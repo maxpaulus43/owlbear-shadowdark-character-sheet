@@ -9,6 +9,7 @@
   } from "./types";
 
   import ranal from "./data/Ranal.json";
+  import drance from "./data/Drance.json";
   import {
     PlayerCharacterStore as pc,
     calculateArmorClassForPlayer,
@@ -16,12 +17,11 @@
     levelUpPlayer,
   } from "./lib/PlayerCharacter";
   import StatView from "./lib/StatView.svelte";
-  import AddGearButton from "./lib/AddGearButton.svelte";
   import TalentsSpellsView from "./lib/TalentsSpellsView.svelte";
   import GearView from "./lib/GearView.svelte";
 
   // TODO migration from JSON
-  let playerCharacter = ranal as unknown as PlayerCharacter;
+  let playerCharacter = drance as unknown as PlayerCharacter;
   playerCharacter.hitPoints = playerCharacter.maxHitPoints;
 
   $pc = playerCharacter;
@@ -73,7 +73,7 @@
 
     <div class=" col-span-2 p-1" id="sheet-ancestry">
       <h2>ANCESTRY</h2>
-      <select>
+      <select bind:value={$pc.ancestry}>
         {#each ANCESTRIES as ancestry}
           <option value={ancestry}>
             {ancestry}

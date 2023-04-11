@@ -230,3 +230,5 @@ export const SPELLS: Spell[] = [
     desc: "You spread your fingers with thumbs touching, unleashing a circle of flame that fills a close area around where you stand. Creatures within the area of effect take 1d6 damage. Unattended flammable objects ignite.",
   },
 ];
+
+export const GEAR: Gear[] = [];

@@ -2,6 +2,7 @@
   import type { Gear } from "../types";
   import AddGearButton from "./AddGearButton.svelte";
   import { PlayerCharacterStore as pc } from "./PlayerCharacter";
+  import { alphabetically } from "./utils";
 
   let gear: Gear[];
   $: {
@@ -16,20 +17,30 @@
       }
     }
   }
-  $: costlyGear = gear.filter((g) => g.slots > 0);
+  $: costlyGear = gear
+    .filter((g) => g.slots > 0)
+    .sort((a, b) => alphabetically(a.name, b.name));
   $: freeGear = gear.filter((g) => g.slots === 0);
 
   function deleteGearByID(id: string) {
     const idx = $pc.gear.findIndex((g) => g.gearId === id);
     const g = $pc.gear[idx];
     if (g.quantity > 1) {
-      const slotPerItem = g.slots / g.quantity;
+      const slotPerItem = Math.floor(g.slots / g.quantity);
       g.quantity -= 1;
       g.totalUnits -= 1;
       g.slots -= slotPerItem;
     } else {
       $pc.gear.splice(idx, 1);
     }
+    $pc = $pc;
+  }
+
+  function setGearNameForId(name: string, gearId: string) {
+    alert(name);
+    const idx = $pc.gear.findIndex((g) => g.gearId === gearId);
+    const g = $pc.gear[idx];
+    g.name = name;
     $pc = $pc;
   }
 </script>
@@ -41,7 +52,10 @@
         <div
           class="flex gap-1 items-center justify-between border-b border-gray-400"
         >
-          <span>{i + 1 + ". "}{g.name} ({g.slots} slots)</span>
+          <div class="flex justify-between">
+            <span>{i + 1}. {g.name}</span>
+            <span>({g.slots} slots)</span>
+          </div>
           <button
             on:click={() => deleteGearByID(g.gearId)}
             class="px-1 pt-1 rounded-md bg-black text-white"

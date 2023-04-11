@@ -11,3 +11,15 @@ export function rollDice(diceType: DiceType): number {
 export function addSign(n: number): string {
   return `${n >= 0 ? "+" : ""}${n}`;
 }
+
+export function alphabetically(a: string, b: string): number {
+  a = a.toLowerCase();
+  b = b.toLowerCase();
+  if (a < b) {
+    return -1;
+  }
+  if (a > b) {
+    return 1;
+  }
+  return 0;
+}
