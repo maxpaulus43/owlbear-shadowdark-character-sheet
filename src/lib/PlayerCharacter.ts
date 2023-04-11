@@ -14,14 +14,9 @@ export function calculateModifierForPlayerStat(
   pc: PlayerCharacter,
   stat: Stat
 ): number {
-  // TODO use talents and items to calculate stats
-
   let finalModifier = 0;
-
   const baseModifier = clamp(Math.floor((pc.stats[stat] - 10) / 2), -4, 4);
-
   finalModifier += baseModifier;
-
   pc.bonuses
     .filter((b) => b.bonusName === "StatBonus")
     .forEach((b) => {
@@ -49,7 +44,20 @@ export function calculateSpellCastingModifierForPlayer(
   pc: PlayerCharacter
 ): number {
   // TODO spellcasting modifier for player
-  return 0;
+  let result = 0;
+
+  const baseModifier = calculateModifierForPlayerStat(
+    pc,
+    pc.class === "Priest" ? "WIS" : "INT"
+  );
+
+  result += baseModifier;
+
+  pc.bonuses
+    .filter((b) => b.bonusTo === "SpellCasting")
+    .forEach((b) => (result += b.bonusAmount));
+
+  return result;
 }
 
 export function levelUpPlayer(pc: PlayerCharacter) {

@@ -3,8 +3,9 @@
   let showModal = false;
 </script>
 
-<button class="bg-black text-white p-2" on:click={() => (showModal = true)}
-  >Roll New Talent</button
+<button
+  class="bg-black text-white p-2 w-full"
+  on:click={() => (showModal = true)}>Roll New Talent</button
 >
 
 <Modal bind:showModal>

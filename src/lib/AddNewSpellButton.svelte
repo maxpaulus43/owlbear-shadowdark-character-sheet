@@ -23,8 +23,9 @@
   }
 </script>
 
-<button class="bg-black text-white p-2" on:click={() => (showModal = true)}
-  >Spells</button
+<button
+  class="bg-black text-white p-2 w-full"
+  on:click={() => (showModal = true)}>Spells</button
 >
 
 <Modal bind:showModal>

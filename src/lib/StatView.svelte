@@ -6,6 +6,7 @@
   import RollButton from "./RollButton.svelte";
   import ModifierView from "./ModifierView.svelte";
   import type { Stat } from "../types";
+  import Modal from "./Modal.svelte";
 
   export let forStat: Stat;
   const pc = PlayerCharacterStore;

@@ -5,8 +5,8 @@
   import Menu from "./components/Menu/Menu.svelte";
   import MenuOption from "./components/Menu/MenuOption.svelte";
 
-  export const modifier: number = 0;
-  export const diceType: DiceType = "d20"; // default to d20
+  export let modifier: number = 0;
+  export let diceType: DiceType = "d20"; // default to d20
   $: dice = ValueForDiceType[diceType];
 
   let showMenu = false;
