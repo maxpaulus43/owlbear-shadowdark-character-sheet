@@ -10,6 +10,20 @@
   $: dice = ValueForDiceType[diceType];
 
   let showMenu = false;
+  let touchTimer: ReturnType<typeof setTimeout>;
+
+  function touchStart() {
+    touchTimer = setTimeout(() => {
+      onRightClick();
+      touchTimer = null;
+    }, 500);
+  }
+  function touchEnd() {
+    if (touchTimer) {
+      clearTimeout(touchTimer);
+      touchTimer = null;
+    }
+  }
 
   function roll() {
     const outcome = rollDice(dice);
@@ -56,8 +70,11 @@
   <button
     on:click={roll}
     on:contextmenu|preventDefault={onRightClick}
-    class="bg-black text-white p-1 px-2 rounded-md">🎲</button
-  >
+    on:touchstart={touchStart}
+    on:touchend={touchEnd}
+    class="bg-black text-white p-1 px-2 rounded-md"
+    >🎲
+  </button>
 
   {#if showMenu}
     <Menu on:click={closeMenu} on:clickoutside={closeMenu}>
