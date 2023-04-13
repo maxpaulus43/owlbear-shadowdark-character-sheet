@@ -76,14 +76,24 @@
 >
 
 <Modal bind:showModal>
-  <h2 slot="header" class="text-lg font-bold">Gear</h2>
+  <h1 slot="header">Gear</h1>
   <div class="border-b flex flex-col gap-1">
-    <input
-      class="p-1 w-full border"
-      type="text"
-      bind:value={gearInput}
-      placeholder="search e.g. Torch"
-    />
+    <div class="w-full flex gap-1">
+      <input
+        class="p-1 w-full border"
+        type="text"
+        bind:value={gearInput}
+        placeholder="search e.g. Torch"
+      />
+      {#if gearInput.length > 0}
+        <button
+          on:click={() => (gearInput = "")}
+          class="bg-black text-white rounded-md px-1"
+        >
+          <i class="material-icons translate-y-1">close</i>
+        </button>
+      {/if}
+    </div>
     <div class="h-48 overflow-y-auto">
       <table class="w-full">
         <thead class="text-left sticky top-0 bg-white">

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { BASIC_GEAR, findGear, type Gear } from "../types";
+  import { findGear, type Gear } from "../types";
   import AddGearButton from "./AddGearButton.svelte";
   import {
     calculateGearSlotsForPlayer,

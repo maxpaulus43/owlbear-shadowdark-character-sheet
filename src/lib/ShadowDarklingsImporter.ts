@@ -1,11 +1,7 @@
 import {
-  ARMOR_GEAR,
-  BASIC_GEAR,
   findGear,
-  WEAPON_GEAR,
   type Attack,
   type Gear,
-  type GearInfo,
   type PlayerCharacter,
   type Spell,
   type Talent,
@@ -52,12 +48,12 @@ export function importFromJson(json: any): PlayerCharacter {
   return pc;
 }
 
-function getGearFromJSON(json: any) {
+function getGearFromJSON(json: any): Gear[] {
   const gear: Gear[] = [];
 
   if (json.gear.length === 0) return gear;
 
-  json.gear.forEach((g) => {
+  json.gear.forEach((g: any) => {
     const foundGear = findGear(g.name);
     if (foundGear) gear.push(foundGear);
   });
