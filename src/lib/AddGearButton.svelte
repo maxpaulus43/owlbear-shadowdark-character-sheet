@@ -3,7 +3,6 @@
     ARMOR_GEAR,
     BASIC_GEAR,
     WEAPON_GEAR,
-    type Currency,
     type Gear,
     type GearInfo,
     findGear,
@@ -16,14 +15,6 @@
   } from "./PlayerCharacter";
   import { alphabetically } from "./utils";
   let showModal = false;
-
-  let customGearName: string;
-  let customGearSlots: number = 1;
-  let customGearCost: number = 0;
-  let customGearCurrency: Currency = "sp";
-  let customGearQuantity: number = 1;
-
-  $: canAdd = customGearName?.length > 0;
 
   $: costlyGear = $pc.gear
     .filter((g) => findGear(g.name)?.slots.freeCarry === 0)
@@ -40,20 +31,6 @@
   function slotsForGear(g: Gear): number {
     const info = findGear(g.name);
     return Math.ceil(g.quantity / info.slots.perSlot) * info.slots.slotsUsed;
-  }
-
-  function createGearItem() {
-    // $pc.gear.push({
-    //   gearId: customGearName,
-    //   quantity: customGearQuantity,
-    //   slots: customGearSlots * customGearQuantity,
-    //   totalUnits: customGearQuantity,
-    //   cost: customGearCost,
-    //   currency: customGearCurrency,
-    //   name: customGearName,
-    //   type: "custom",
-    // });
-    // $pc = $pc;
   }
 
   let gearInput: string = "";
