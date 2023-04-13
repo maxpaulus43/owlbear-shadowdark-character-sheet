@@ -11,16 +11,16 @@
   $: canAdd = customGearName?.length > 0 && customGearQuantity > 0;
 
   function createGearItem() {
-    $pc.gear.push({
-      gearId: customGearName,
-      quantity: customGearQuantity,
-      slots: customGearSlots * customGearQuantity,
-      totalUnits: customGearQuantity,
-      cost: customGearCost,
-      currency: customGearCurrency,
-      name: customGearName,
-      type: "custom",
-    });
+    // $pc.gear.push({
+    //   gearId: customGearName,
+    //   quantity: customGearQuantity,
+    //   slots: customGearSlots * customGearQuantity,
+    //   totalUnits: customGearQuantity,
+    //   cost: customGearCost,
+    //   currency: customGearCurrency,
+    //   name: customGearName,
+    //   type: "custom",
+    // });
     $pc = $pc;
   }
 </script>

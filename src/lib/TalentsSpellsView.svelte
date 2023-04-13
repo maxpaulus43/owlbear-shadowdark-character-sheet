@@ -8,7 +8,7 @@
   import RollTalentButton from "./RollTalentButton.svelte";
   import { addSign } from "./utils";
 
-  $: spells = $pc.spellsKnown?.split(",") ?? [];
+  $: spells = [];
   $: hasSpells = !spells.includes("None");
 
   $: talents = $pc.bonuses

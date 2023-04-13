@@ -8,8 +8,8 @@
     type PlayerCharacter,
   } from "./types";
 
-  import ranal from "./data/Ranal.json";
-  import drance from "./data/Drance.json";
+  import ranal from "./compendium/Ranal.json";
+  import drance from "./compendium/Drance.json";
   import {
     PlayerCharacterStore as pc,
     calculateArmorClassForPlayer,
@@ -19,21 +19,17 @@
   import StatView from "./lib/StatView.svelte";
   import TalentsSpellsView from "./lib/TalentsSpellsView.svelte";
   import GearView from "./lib/GearView.svelte";
-  import AddGearButton from "./lib/AddGearButton.svelte";
+  import { importFromJson } from "./lib/ShadowDarklingsImporter";
 
   // TODO migration from JSON
-  let playerCharacter = drance as unknown as PlayerCharacter;
-  playerCharacter.hitPoints = playerCharacter.maxHitPoints;
+  let playerCharacter = ranal as unknown as PlayerCharacter;
 
-  $pc = playerCharacter;
+  $pc = importFromJson(ranal);
 
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);
   $: xpCap = $pc.level === 0 ? 10 : $pc.level * 10;
   $: canLevel = $pc.level < 10 && $pc.xp >= xpCap;
-  $: totalSlots = Math.max(10, $pc.stats.STR);
-  $: freeSlots =
-    totalSlots - $pc.gear.reduce((prev, curr) => prev + curr.slots, 0);
 </script>
 
 <main>
@@ -152,11 +148,6 @@
     </div>
 
     <div class="col-span-3 row-span-4" id="sheet-gear">
-      <div class="flex gap-1 p-1">
-        <h2>GEAR</h2>
-        <span>({totalSlots} slots, {freeSlots} free)</span>
-        <AddGearButton />
-      </div>
       <GearView />
     </div>
 

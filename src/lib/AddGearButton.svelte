@@ -1,5 +1,12 @@
 <script lang="ts">
-  import { GEAR, type Currency, type Gear, type GearImpl } from "../types";
+  import {
+    ARMOR_GEAR,
+    BASIC_GEAR,
+    WEAPON_GEAR,
+    type Currency,
+    type Gear,
+    type GearInfo,
+  } from "../types";
   import CustomGearForm from "./CustomGearForm.svelte";
   import Modal from "./Modal.svelte";
   import { PlayerCharacterStore as pc } from "./PlayerCharacter";
@@ -14,31 +21,53 @@
   $: canAdd = customGearName?.length > 0;
 
   function createGearItem() {
-    $pc.gear.push({
-      gearId: customGearName,
-      quantity: customGearQuantity,
-      slots: customGearSlots * customGearQuantity,
-      totalUnits: customGearQuantity,
-      cost: customGearCost,
-      currency: customGearCurrency,
-      name: customGearName,
-      type: "custom",
-    });
-    $pc = $pc;
+    // $pc.gear.push({
+    //   gearId: customGearName,
+    //   quantity: customGearQuantity,
+    //   slots: customGearSlots * customGearQuantity,
+    //   totalUnits: customGearQuantity,
+    //   cost: customGearCost,
+    //   currency: customGearCurrency,
+    //   name: customGearName,
+    //   type: "custom",
+    // });
+    // $pc = $pc;
   }
 
   let gearInput: string = "";
-  $: gearResults = GEAR.filter((g) =>
-    g.name.toLowerCase().includes(gearInput.toLowerCase())
-  );
+  $: gearResults = Object.values(BASIC_GEAR)
+    .filter((g) => g.name.toLowerCase().includes(gearInput.toLowerCase()))
+    .concat(
+      Object.values(ARMOR_GEAR).filter((a) =>
+        a.name.toLowerCase().includes(gearInput.toLowerCase())
+      )
+    )
+    .concat(
+      Object.values(WEAPON_GEAR).filter((w) =>
+        w.name.toLowerCase().includes(gearInput.toLowerCase())
+      )
+    );
 
-  function addGear(g: GearImpl) {
-    $pc.gear.push({
-      ...g,
-      quantity: 1,
-      totalUnits: g.slots,
-    });
+  function addGear(g: GearInfo) {
+    const existingGear = $pc.gear.find(
+      (existingG) => existingG.name === g.name
+    );
+    if (existingGear) {
+      existingGear.quantity++;
+    } else {
+      const gear: Gear = { name: g.name, quantity: 1 };
+      $pc.gear.push(gear);
+    }
     $pc = $pc;
+  }
+
+  function getCostForGear(g: GearInfo): string {
+    const { gp, sp, cp } = g.cost;
+    let gpStr: string, spStr: string, cpStr: string;
+    if (gp) gpStr = `${gp}gp`;
+    if (sp) spStr = `${sp}sp`;
+    if (cp) cpStr = `${cp}cp`;
+    return [gpStr, spStr, cpStr].join(" ");
   }
 </script>
 
@@ -58,7 +87,7 @@
     />
     <div class="h-48 overflow-y-auto">
       <table class="w-full">
-        <thead class="text-left">
+        <thead class="text-left sticky top-0 bg-white">
           <tr>
             <th>Name</th>
             <th>Cost</th>
@@ -69,8 +98,8 @@
           {#each gearResults as g, i}
             <tr class="border-b" class:bg-gray-100={i % 2 == 0}>
               <td class="pl-3">{g.name}</td>
-              <td>{g.cost}{g.currency}</td>
-              <td>{g.slots}</td>
+              <td>{getCostForGear(g)}</td>
+              <td>{g.slots.freeCarry ? "Free" : g.slots.slotsUsed}</td>
               <td class="flex justify-end">
                 <button
                   on:click={() => addGear(g)}

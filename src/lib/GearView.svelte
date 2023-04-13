@@ -1,49 +1,50 @@
 <script lang="ts">
-  import type { Gear } from "../types";
+  import { BASIC_GEAR, findGear, type Gear } from "../types";
   import AddGearButton from "./AddGearButton.svelte";
-  import { PlayerCharacterStore as pc } from "./PlayerCharacter";
+  import {
+    calculateGearSlotsForPlayer,
+    PlayerCharacterStore as pc,
+  } from "./PlayerCharacter";
   import { alphabetically } from "./utils";
 
-  let gear: Gear[];
-  $: {
-    gear = [];
-    for (const g of $pc.gear) {
-      for (let i = 0; i < g.quantity; i++) {
-        gear.push({
-          ...g,
-          quantity: 1,
-          slots: Math.floor(g.slots / g.quantity),
-        });
-      }
-    }
-  }
-  $: costlyGear = gear
-    .filter((g) => g.slots > 0)
+  $: costlyGear = $pc.gear
+    .filter((g) => findGear(g.name)?.slots.freeCarry === 0)
     .sort((a, b) => alphabetically(a.name, b.name));
-  $: freeGear = gear.filter((g) => g.slots === 0);
 
-  function deleteGearByID(id: string) {
-    const idx = $pc.gear.findIndex((g) => g.gearId === id);
+  $: freeGear = $pc.gear
+    .filter((g) => findGear(g.name)?.slots.freeCarry)
+    .sort((a, b) => alphabetically(a.name, b.name));
+
+  $: totalSlots = calculateGearSlotsForPlayer($pc);
+
+  $: freeSlots =
+    totalSlots -
+    costlyGear.reduce((acc, curr) => {
+      return acc + slotsForGear(curr);
+    }, 0);
+
+  function slotsForGear(g: Gear): number {
+    const info = findGear(g.name);
+    return Math.ceil(g.quantity / info.slots.perSlot) * info.slots.slotsUsed;
+  }
+
+  function deleteGear(name: string) {
+    const idx = $pc.gear.findIndex((g) => g.name === name);
     const g = $pc.gear[idx];
     if (g.quantity > 1) {
-      const slotPerItem = Math.floor(g.slots / g.quantity);
       g.quantity -= 1;
-      g.totalUnits -= 1;
-      g.slots -= slotPerItem;
     } else {
       $pc.gear.splice(idx, 1);
     }
     $pc = $pc;
   }
-
-  function setGearNameForId(name: string, gearId: string) {
-    alert(name);
-    const idx = $pc.gear.findIndex((g) => g.gearId === gearId);
-    const g = $pc.gear[idx];
-    g.name = name;
-    $pc = $pc;
-  }
 </script>
+
+<div class="flex gap-1 p-1">
+  <h2>GEAR</h2>
+  <span>({totalSlots} slots, {freeSlots} free)</span>
+  <AddGearButton />
+</div>
 
 <div
   class="overflow-scroll flex flex-col gap-1 p-2"
@@ -56,11 +57,12 @@
           class="flex gap-1 items-center justify-between border-b border-gray-400"
         >
           <div class="flex justify-between">
-            <span>{i + 1}. {g.name}</span>
-            <span>({g.slots} slots)</span>
+            <span>
+              {i + 1}. {g.name} x {g.quantity} ({slotsForGear(g)} slots)
+            </span>
           </div>
           <button
-            on:click={() => deleteGearByID(g.gearId)}
+            on:click={() => deleteGear(g.name)}
             class="px-1 pt-1 rounded-md bg-black text-white"
             ><i class="material-icons">delete</i></button
           >
@@ -75,9 +77,9 @@
         <div
           class="flex gap-1 items-center justify-between border-b border-gray-400"
         >
-          <span>{i + 1 + ". "}{g.name}</span>
+          <span>{i + 1 + ". "}{g.name} x {g.quantity}</span>
           <button
-            on:click={() => deleteGearByID(g.gearId)}
+            on:click={() => deleteGear(g.name)}
             class="px-1 pt-1 rounded-md bg-black text-white"
             ><i class="material-icons">delete</i></button
           >

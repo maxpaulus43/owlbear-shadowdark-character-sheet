@@ -1,3 +1,7 @@
+import armor from "./compendium/armor";
+import basicGear from "./compendium/basic-gear";
+import weapons from "./compendium/weapons";
+
 export const ALIGNMENTS = ["Neutral", "Lawful", "Chaotic"] as const;
 
 export const DEITIES = [
@@ -91,6 +95,20 @@ export const ANCESTRIES = [
   "Goblin",
   "Halfling",
   "Half-orc",
+  "Dwarf",
+] as const;
+
+export const LANGUAGES = [
+  "Common",
+  "Dwarvish",
+  "Elvish",
+  "Giant",
+  "Goblin",
+  "Merran",
+  "Orcish",
+  "Reptillian",
+  "Sylvan",
+  "Thanian",
 ] as const;
 
 export type Alignment = (typeof ALIGNMENTS)[number];
@@ -99,7 +117,9 @@ export type Background = (typeof BACKGROUNDS)[number];
 export type Class = (typeof CLASSES)[number];
 export type Title = (typeof TITLES)[number];
 export type Ancestry = (typeof ANCESTRIES)[number];
-export type Currency = "gp" | "sp" | "cp";
+export type Language = (typeof LANGUAGES)[number];
+export type Cost = { gp: number; sp: number; cp: number };
+export type Currency = keyof Cost;
 export type BonusSourceType = "Ancestry" | "Class" | "Gear";
 export type BonusSourceCategory = "Ability" | "Talent";
 export type DiceType = "d4" | "d6" | "d8" | "d10" | "d12" | "d20";
@@ -145,21 +165,65 @@ export type Spell = {
   desc: string;
 };
 
-export type Gear = {
-  gearId: string;
-  name: string;
-  type: string;
-  quantity: number;
-  totalUnits: number;
-  slots: number;
-  cost: number;
-  currency: Currency;
+export type HandednessProperty = "oneHanded" | "twoHanded";
+export type ArmorProperty = "disadvStealth" | "noSwim" | "disadvSwim";
+export type ShieldProperty = "shield" | HandednessProperty;
+export type WeaponProperty = HandednessProperty;
+
+export type GearProperty =
+  | ArmorProperty
+  | ShieldProperty
+  | WeaponProperty
+  | "magic";
+
+export type ArmorAC = {
+  base: number;
+  modifier: number;
+  attribute?: Stat;
 };
 
-export type GearImpl = Pick<
-  Gear,
-  "gearId" | "name" | "type" | "slots" | "cost" | "currency"
->;
+export type GearType = "Basic" | "Armor" | "Sundry" | "Weapon";
+
+export type GearInfo = {
+  gearId: string;
+  properties: GearProperty[];
+  name: string;
+  type: GearType;
+  canBeEquipped: boolean;
+  equipped: boolean;
+  quantity: number;
+  slots: { perSlot: number; slotsUsed: number; freeCarry: number };
+  cost: Cost;
+  desc?: string;
+  ac?: ArmorAC;
+};
+
+export type WeaponInfo = GearInfo & {
+  attackBonus: number;
+  properties: WeaponProperty[];
+  damage: {
+    bonus: number;
+    oneHanded: DiceType;
+    twoHanded: DiceType;
+    numDice: number;
+  };
+  range: RangeType;
+  weaponType: "melee" | "ranged";
+  weaponMastery: boolean;
+  baseWeapon: string;
+};
+
+export type ArmorInfo = GearInfo & {
+  properties: ArmorProperty[];
+  ac: { base: number; modifier: number; attribute?: Stat };
+  baseArmor: string;
+};
+
+export type Gear = {
+  name: string;
+  quantity: number;
+  equipped?: boolean;
+};
 
 export type Bonus = {
   sourceType: BonusSourceType;
@@ -191,58 +255,95 @@ export type PlayerCharacter = {
   gold: number;
   silver: number;
   copper: number;
-  spellsKnown: string;
-  languages: string;
-
-  xp?: number;
-  xpCap?: number;
-  talents?: Talent[];
-  spells?: Spell[];
-  attacks?: Attack[];
-  hitPoints?: number;
+  languages: string[];
+  xp: number;
+  talents: Talent[];
+  spells: Spell[];
+  attacks: Attack[];
+  hitPoints: number;
 };
 
-export const SPELLS: Spell[] = [
-  {
-    name: "Acid Arrow",
-    tier: 2,
-    class: "Wizard",
-    duration: {
-      type: "Focus",
-    },
-    range: "Far",
-    desc: "You conjure a corrosive bolt that hits one foe, dealing 1d6 damage a round. The bolt remains in the target for as long as you focus.",
-  },
-  {
-    name: "Alarm",
-    tier: 1,
-    class: "Wizard",
-    duration: {
-      type: "Day",
-      amt: 1,
-    },
-    range: "Close",
-    desc: "You touch one object, such as a door threshold, setting a magical alarm on it. If any creature you do not designate while casting the spell touches or crosses past the object, a magical bell sounds in your head.",
-  },
-  {
-    name: "Burning Hands",
-    tier: 1,
-    class: "Wizard",
-    duration: {
-      type: "Instant",
-    },
-    range: "Close",
-    desc: "You spread your fingers with thumbs touching, unleashing a circle of flame that fills a close area around where you stand. Creatures within the area of effect take 1d6 damage. Unattended flammable objects ignite.",
-  },
-];
+export const SPELLS: Spell[] = [];
 
-export const GEAR: GearImpl[] = [
-  {
-    gearId: "s17",
-    name: "Torch",
-    slots: 1,
-    cost: 15,
-    currency: "sp",
-    type: "sundry",
-  },
-];
+export const BASIC_GEAR: { [key: string]: GearInfo } = {};
+
+basicGear.forEach((g) => {
+  BASIC_GEAR[g.name] = {
+    name: g.name,
+    cost: g.system.cost,
+    canBeEquipped: g.system.canBeEquipped,
+    equipped: g.system.equipped,
+    properties: g.system.properties,
+    quantity: g.system.quantity,
+    type: g.type as GearType,
+    slots: {
+      perSlot: g.system.slots.per_slot,
+      slotsUsed: g.system.slots.slots_used,
+      freeCarry: g.system.slots.free_carry,
+    },
+    gearId: g._id,
+  };
+});
+
+export const ARMOR_GEAR: { [key: string]: ArmorInfo } = {};
+
+armor.forEach((a) => {
+  ARMOR_GEAR[a.name] = {
+    gearId: a._id,
+    name: a.name,
+    cost: a.system.cost,
+    canBeEquipped: a.system.canBeEquipped,
+    equipped: a.system.equipped,
+    properties: a.system.properties as ArmorProperty[],
+    quantity: a.system.quantity,
+    type: a.type as GearType,
+    slots: {
+      perSlot: a.system.slots.per_slot,
+      slotsUsed: a.system.slots.slots_used,
+      freeCarry: a.system.slots.free_carry,
+    },
+    ac: {
+      base: a.system.ac.base,
+      modifier: a.system.ac.modifier,
+      attribute: a.system.ac.attribute as Stat,
+    },
+    baseArmor: a.system.baseArmor,
+  };
+});
+
+export const WEAPON_GEAR: { [key: string]: WeaponInfo } = {};
+
+weapons.forEach((w) => {
+  WEAPON_GEAR[w.name] = {
+    gearId: w._id,
+    name: w.name,
+    cost: w.system.cost,
+    canBeEquipped: w.system.canBeEquipped,
+    equipped: w.system.equipped,
+    properties: w.system.properties as WeaponProperty[],
+    quantity: w.system.quantity,
+    type: w.type as GearType,
+    slots: {
+      perSlot: w.system.slots.per_slot,
+      slotsUsed: w.system.slots.slots_used,
+      freeCarry: w.system.slots.free_carry,
+    },
+    attackBonus: w.system.attackBonus,
+    damage: {
+      bonus: w.system.damage.bonus,
+      numDice: w.system.damage.numDice,
+      oneHanded: w.system.damage.oneHanded as DiceType,
+      twoHanded: w.system.damage.twoHanded as DiceType,
+    },
+    range: w.system.range as RangeType,
+    weaponMastery: w.system.weaponMastery,
+    weaponType: w.system.type as "melee" | "ranged",
+    baseWeapon: w.system.baseWeapon,
+  };
+});
+
+export function findGear(
+  name: string
+): WeaponInfo | ArmorInfo | GearInfo | undefined {
+  return WEAPON_GEAR[name] ?? ARMOR_GEAR[name] ?? BASIC_GEAR[name];
+}
