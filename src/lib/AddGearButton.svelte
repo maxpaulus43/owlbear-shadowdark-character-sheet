@@ -6,10 +6,15 @@
     type Currency,
     type Gear,
     type GearInfo,
+    findGear,
   } from "../types";
   import CustomGearForm from "./CustomGearForm.svelte";
   import Modal from "./Modal.svelte";
-  import { PlayerCharacterStore as pc } from "./PlayerCharacter";
+  import {
+    calculateGearSlotsForPlayer,
+    PlayerCharacterStore as pc,
+  } from "./PlayerCharacter";
+  import { alphabetically } from "./utils";
   let showModal = false;
 
   let customGearName: string;
@@ -19,6 +24,23 @@
   let customGearQuantity: number = 1;
 
   $: canAdd = customGearName?.length > 0;
+
+  $: costlyGear = $pc.gear
+    .filter((g) => findGear(g.name)?.slots.freeCarry === 0)
+    .sort((a, b) => alphabetically(a.name, b.name));
+
+  $: totalSlots = calculateGearSlotsForPlayer($pc);
+
+  $: freeSlots =
+    totalSlots -
+    costlyGear.reduce((acc, curr) => {
+      return acc + slotsForGear(curr);
+    }, 0);
+
+  function slotsForGear(g: Gear): number {
+    const info = findGear(g.name);
+    return Math.ceil(g.quantity / info.slots.perSlot) * info.slots.slotsUsed;
+  }
 
   function createGearItem() {
     // $pc.gear.push({
@@ -102,7 +124,9 @@
               <td>{g.slots.freeCarry ? "Free" : g.slots.slotsUsed}</td>
               <td class="flex justify-end">
                 <button
+                  disabled={freeSlots < slotsForGear(g)}
                   on:click={() => addGear(g)}
+                  class:opacity-20={freeSlots < slotsForGear(g)}
                   class="px-3 hover:bg-gray-400"
                 >
                   <i class="material-icons translate-y-1">add_circle</i>
