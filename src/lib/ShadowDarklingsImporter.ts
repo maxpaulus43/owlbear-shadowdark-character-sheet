@@ -1,9 +1,10 @@
 import {
   findGear,
+  findSpell,
   type Attack,
   type Gear,
   type PlayerCharacter,
-  type Spell,
+  type SpellInfo,
   type Talent,
 } from "../types";
 
@@ -11,9 +12,10 @@ export function importFromJson(json: any): PlayerCharacter {
   const maxHitPoints =
     json.ancestry === "Dwarf" ? json.maxHitPoints + 2 : json.maxHitPoints;
 
-  const talents: Talent[] = [];
-  const spells: Spell[] = [];
+  const talents: Talent[] = getTalentsFromJSON(json);
+  const spells: SpellInfo[] = getSpellsFromJSON(json);
   const attacks: Attack[] = [];
+  const gear = getGearFromJSON(json);
 
   const pc: PlayerCharacter = {
     name: json.name,
@@ -24,7 +26,7 @@ export function importFromJson(json: any): PlayerCharacter {
     alignment: json.alignment,
     background: json.background,
     deity: json.deity,
-    gear: getGearFromJSON(json),
+    gear,
     stats: json.stats,
     bonuses: json.bonuses,
     maxHitPoints,
@@ -49,16 +51,28 @@ export function importFromJson(json: any): PlayerCharacter {
 }
 
 function getGearFromJSON(json: any): Gear[] {
-  const gear: Gear[] = [];
+  if (json.gear.length === 0) return [];
+  return json.gear.map((g) => findGear(g.name)).filter((g) => g !== undefined);
+}
 
-  if (json.gear.length === 0) return gear;
+function getTalentsFromJSON(json: any): Talent[] {
+  const talents: Talent[] = [];
+  for (const b of json.bonuses) {
+    if (b.sourceCategory === "Talent") {
+      talents.push(b.name);
+    }
+  }
+  return talents;
+}
 
-  json.gear.forEach((g: any) => {
-    const foundGear = findGear(g.name);
-    if (foundGear) gear.push(foundGear);
+function getSpellsFromJSON(json: any): SpellInfo[] {
+  const spells: SpellInfo[] = [];
+  json.bonuses.forEach(async (b: any) => {
+    if (b.name.includes("Spell:") || b.name === "LearnExtraSpell") {
+      spells.push(findSpell(b.bonusName));
+    }
   });
-
-  return gear;
+  return spells;
 }
 
 export function exportToJson(pc: PlayerCharacter): any {

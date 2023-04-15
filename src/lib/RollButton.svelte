@@ -1,13 +1,12 @@
 <script lang="ts">
   import OBR from "@owlbear-rodeo/sdk";
   import { rollDice } from "./utils";
-  import { ValueForDiceType, type DiceType } from "../types";
+  import type { DiceType } from "../types";
   import Menu from "./components/Menu/Menu.svelte";
   import MenuOption from "./components/Menu/MenuOption.svelte";
 
   export let modifier: number = 0;
   export let diceType: DiceType = "d20"; // default to d20
-  $: dice = ValueForDiceType[diceType];
 
   let showMenu = false;
   let touchTimer: ReturnType<typeof setTimeout>;
@@ -26,7 +25,7 @@
   }
 
   function roll() {
-    const outcome = rollDice(dice);
+    const outcome = rollDice(diceType);
     const msg = `${outcome} + ${modifier} = ${outcome + modifier}`;
     OBR.notification.show(msg).catch(() => {
       alert(msg);
@@ -34,8 +33,8 @@
   }
 
   function rollWithAdvantage() {
-    const outcome1 = rollDice(dice);
-    const outcome2 = rollDice(dice);
+    const outcome1 = rollDice(diceType);
+    const outcome2 = rollDice(diceType);
     const higher = Math.max(outcome1, outcome2);
     const msg = `${outcome1} vs. ${outcome2};\n ${higher} + ${modifier} = ${
       higher + modifier
@@ -46,8 +45,8 @@
   }
 
   function rollWithDisadvantage() {
-    const outcome1 = rollDice(dice);
-    const outcome2 = rollDice(dice);
+    const outcome1 = rollDice(diceType);
+    const outcome2 = rollDice(diceType);
     const lower = Math.min(outcome1, outcome2);
     const msg = `${outcome1} vs. ${outcome2};\n ${lower} + ${modifier} = ${
       lower + modifier

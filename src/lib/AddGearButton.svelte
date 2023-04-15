@@ -90,7 +90,7 @@
           on:click={() => (gearInput = "")}
           class="bg-black text-white rounded-md px-1"
         >
-          <i class="material-icons translate-y-1">close</i>
+          <i class="material-icons translate-y-1">cancel</i>
         </button>
       {/if}
     </div>

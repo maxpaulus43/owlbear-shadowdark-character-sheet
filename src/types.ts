@@ -1,5 +1,7 @@
 import armor from "./compendium/armor";
 import basicGear from "./compendium/basic-gear";
+import spells from "./compendium/spells";
+import talents from "./compendium/talents";
 import weapons from "./compendium/weapons";
 
 export const ALIGNMENTS = ["Neutral", "Lawful", "Chaotic"] as const;
@@ -152,7 +154,7 @@ export type Talent = {
   name: string;
 };
 
-export type Spell = {
+export type SpellInfo = {
   name: string;
   class: Extract<Class, "Wizard" | "Priest">;
   tier: Tier;
@@ -258,17 +260,15 @@ export type PlayerCharacter = {
   languages: string[];
   xp: number;
   talents: Talent[];
-  spells: Spell[];
+  spells: SpellInfo[];
   attacks: Attack[];
   hitPoints: number;
 };
 
-export const SPELLS: Spell[] = [];
-
 export const BASIC_GEAR: { [key: string]: GearInfo } = {};
 
 basicGear.forEach((g) => {
-  BASIC_GEAR[g.name] = {
+  BASIC_GEAR[g.name.toLowerCase()] = {
     name: g.name,
     cost: g.system.cost,
     canBeEquipped: g.system.canBeEquipped,
@@ -288,7 +288,7 @@ basicGear.forEach((g) => {
 export const ARMOR_GEAR: { [key: string]: ArmorInfo } = {};
 
 armor.forEach((a) => {
-  ARMOR_GEAR[a.name] = {
+  ARMOR_GEAR[a.name.toLowerCase()] = {
     gearId: a._id,
     name: a.name,
     cost: a.system.cost,
@@ -314,7 +314,7 @@ armor.forEach((a) => {
 export const WEAPON_GEAR: { [key: string]: WeaponInfo } = {};
 
 weapons.forEach((w) => {
-  WEAPON_GEAR[w.name] = {
+  WEAPON_GEAR[w.name.toLowerCase()] = {
     gearId: w._id,
     name: w.name,
     cost: w.system.cost,
@@ -345,5 +345,46 @@ weapons.forEach((w) => {
 export function findGear(
   name: string
 ): WeaponInfo | ArmorInfo | GearInfo | undefined {
+  name = name.toLowerCase();
   return WEAPON_GEAR[name] ?? ARMOR_GEAR[name] ?? BASIC_GEAR[name];
 }
+
+export const SPELL_GEAR: { [key: string]: SpellInfo } = {};
+
+spells.forEach((s) => {
+  const durationVal = s.system.duration.value;
+
+  const convert: { [key: string]: DurationType } = {
+    days: "Day",
+    instant: "Instant",
+    rounds: "Round",
+  };
+
+  SPELL_GEAR[s.name.toLowerCase()] = {
+    name: s.name,
+    range: s.system.range as RangeType,
+    class: s.system.class[0] as "Wizard" | "Priest",
+    tier: s.system.tier as Tier,
+    desc: s.system.description.replaceAll("<p>", "").replaceAll("</p>", ""),
+    duration: {
+      type:
+        convert[s.system.duration.type] ??
+        (s.system.duration.type as DurationType),
+      diceType:
+        typeof durationVal === "string" ? (durationVal as DiceType) : undefined,
+      amt: typeof durationVal === "number" ? durationVal : undefined,
+    },
+  };
+});
+
+export function findSpell(name: string): SpellInfo {
+  return SPELL_GEAR[name.toLowerCase()];
+}
+
+export const TALENTS: { [key: string]: Talent } = {};
+
+talents.forEach((t) => {
+  TALENTS[t.name] = {
+    name: t.name,
+  };
+});

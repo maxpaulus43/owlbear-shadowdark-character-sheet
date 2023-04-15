@@ -1,27 +1,33 @@
 <script lang="ts">
-  import { SPELLS, type Spell } from "../types";
+  import { SPELL_GEAR, type SpellInfo } from "../types";
   import Modal from "./Modal.svelte";
   import {
     learnSpellForPlayer,
     PlayerCharacterStore as pc,
+    playerCanLearnSpell,
+    playerHasSpell,
     unlearnSpellForPlayer,
   } from "./PlayerCharacter";
   let showModal = false;
   let spellInput: string = "";
-  $: spellInputLowerCase = spellInput.toLowerCase();
-  $: spells = SPELLS.filter(
-    (s) =>
-      s.name.toLowerCase().includes(spellInputLowerCase) ||
-      s.desc.toLowerCase().includes(spellInputLowerCase) ||
-      `${s.tier}`.includes(spellInputLowerCase) ||
-      s.range.toLowerCase().includes(spellInputLowerCase) ||
-      s.duration.type.toLowerCase().includes(spellInputLowerCase)
-  );
-  function learnSpell(s: Spell) {
+
+  $: spells = Object.values(SPELL_GEAR).filter((s) => {
+    const term = spellInput.toLowerCase();
+    return (
+      s.name.toLowerCase().includes(term) ||
+      s.class.toLowerCase().includes(term) ||
+      s.desc.toLowerCase().includes(term) ||
+      term.toLowerCase().includes(`${s.tier}`) ||
+      s.range.toLowerCase().includes(term) ||
+      s.duration.type.toLowerCase().includes(term)
+    );
+  });
+
+  function learnSpell(s: SpellInfo) {
     learnSpellForPlayer(s, $pc);
     $pc = $pc;
   }
-  function unLearnSpell(s: Spell) {
+  function unLearnSpell(s: SpellInfo) {
     unlearnSpellForPlayer(s, $pc);
     $pc = $pc;
   }
@@ -60,15 +66,21 @@
               <span class="font-bold mr-1">Range:</span><span>{s.range}</span>
             </div>
             <div>{s.desc}</div>
-            {#if $pc.spellsKnown.includes(s.name)}
+            {#if playerHasSpell($pc, s)}
               <button
                 class="bg-gray-600 text-white w-full p-3"
                 on:click={() => unLearnSpell(s)}>Unlearn</button
               >
-            {:else}
+            {:else if playerCanLearnSpell($pc, s)}
               <button
                 class="bg-black text-white w-full p-3"
                 on:click={() => learnSpell(s)}>Learn</button
+              >
+            {:else}
+              <button
+                class="bg-gray-600 text-white w-full p-3"
+                on:click={() => learnSpell(s)}
+                disabled>Cannot Learn</button
               >
             {/if}
           </div>

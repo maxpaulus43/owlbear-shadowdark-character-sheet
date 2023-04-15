@@ -1,8 +1,9 @@
 import { writable } from "svelte/store";
 import {
   TITLE_MAP,
+  type Attack,
   type PlayerCharacter,
-  type Spell,
+  type SpellInfo,
   type Stat,
   type Title,
 } from "../types";
@@ -28,8 +29,20 @@ export function calculateModifierForPlayerStat(
   return finalModifier;
 }
 
+export function calculateModifierForPlayerAttack(
+  pc: PlayerCharacter,
+  attack: Attack
+): number {
+  // elves might get +1 to ranged weapons
+  // orc get +1 bonus to attack with melee weapons
+  // fighters get x weapon mastery for chosen weapon types
+  // fighters might get +1 * x to melee and ranged attacks
+  return 0;
+}
+
 export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
   // TODO use armor and talents to calulate ac
+  // fighters +1 AC for armor type
   return pc.armorClass;
 }
 
@@ -40,7 +53,7 @@ export function calculateTitleForPlayer(pc: PlayerCharacter): Title {
 }
 
 export function calculateSpellCastingModifierForPlayer(
-  spell: string,
+  spellName: SpellInfo,
   pc: PlayerCharacter
 ): number {
   // TODO spellcasting modifier for player
@@ -53,6 +66,8 @@ export function calculateSpellCastingModifierForPlayer(
 
   result += baseModifier;
 
+  // elves might get +1 to spellcasting
+
   pc.bonuses
     .filter((b) => b.bonusTo === "SpellCasting")
     .forEach((b) => (result += b.bonusAmount));
@@ -61,7 +76,10 @@ export function calculateSpellCastingModifierForPlayer(
 }
 
 export function calculateGearSlotsForPlayer(pc: PlayerCharacter) {
-  const result = Math.max(10, pc.stats.STR);
+  let result = Math.max(10, pc.stats.STR);
+  if (pc.talents.find((t) => t.name === "Hauler")) {
+    result += Math.max(0, calculateModifierForPlayerStat(pc, "CON"));
+  }
   return result;
 }
 
@@ -75,21 +93,19 @@ export function levelUpPlayer(pc: PlayerCharacter) {
   pc.xp -= xpCap;
 }
 
-export function learnSpellForPlayer(spell: Spell, pc: PlayerCharacter) {
-  const spells = pc.spellsKnown
-    .split(",")
-    .map((s) => s.trim())
-    .filter((s) => s !== "None");
-  spells.push(spell.name);
-  pc.spellsKnown = spells.join(",");
+export function playerHasSpell(pc: PlayerCharacter, spell: SpellInfo) {
+  return pc.spells.findIndex((s) => s.name === spell.name) > -1;
 }
 
-export function unlearnSpellForPlayer(spell: Spell, pc: PlayerCharacter) {
-  let spells = pc.spellsKnown.split(",").map((s) => s.trim());
-  spells = spells.filter((s) => s !== spell.name);
-  if (spells.length === 0) {
-    pc.spellsKnown = "None";
-  } else {
-    pc.spellsKnown = spells.join(",");
-  }
+export function playerCanLearnSpell(pc: PlayerCharacter, spell: SpellInfo) {
+  return pc.class.toLowerCase() === spell.class.toLowerCase();
+}
+
+export function learnSpellForPlayer(spell: SpellInfo, pc: PlayerCharacter) {
+  if (playerHasSpell(pc, spell)) return;
+  pc.spells.push(spell);
+}
+
+export function unlearnSpellForPlayer(spell: SpellInfo, pc: PlayerCharacter) {
+  pc.spells = pc.spells.filter((s) => s.name !== spell.name);
 }
