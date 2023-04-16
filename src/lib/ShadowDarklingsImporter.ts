@@ -2,6 +2,7 @@ import {
   findGear,
   findSpell,
   type Attack,
+  type Bonus,
   type Gear,
   type PlayerCharacter,
   type SpellInfo,
@@ -9,13 +10,29 @@ import {
 } from "../types";
 
 export function importFromJson(json: any): PlayerCharacter {
-  const maxHitPoints =
-    json.ancestry === "Dwarf" ? json.maxHitPoints + 2 : json.maxHitPoints;
-
   const talents: Talent[] = getTalentsFromJSON(json);
   const spells: SpellInfo[] = getSpellsFromJSON(json);
-  const attacks: Attack[] = [];
-  const gear = getGearFromJSON(json);
+
+  const gear = [];
+
+  for (const g of json.gear) {
+    const theGear = findGear(g.name);
+    if (!theGear) continue;
+    theGear.quantity = g.quantity;
+    gear.push(theGear);
+  }
+
+  const languages = json.languages
+    .split(",")
+    .map((s: string) => s.trim())
+    .filter((l: string) => l !== "None");
+
+  const bonuses = json.bonuses.filter(
+    (b: Bonus) =>
+      !b.name.includes("Spell") &&
+      !b.bonusName.includes("StatBonus") &&
+      !b.bonusTo.includes("Languages")
+  );
 
   const pc: PlayerCharacter = {
     name: json.name,
@@ -28,31 +45,22 @@ export function importFromJson(json: any): PlayerCharacter {
     deity: json.deity,
     gear,
     stats: json.stats,
-    bonuses: json.bonuses,
-    maxHitPoints,
-    hitPoints: maxHitPoints,
+    bonuses,
+    maxHitPoints: json.maxHitPoints,
+    hitPoints: json.maxHitPoints,
     armorClass: json.armorClass,
     gearSlotsTotal: json.gearSlotsTotal,
-    gearSlotsUsed: 0,
     gold: json.gold,
     silver: json.silver,
     copper: json.copper,
-    languages: json.languages
-      .split(",")
-      .map((s: string) => s.trim())
-      .filter((l: string) => l !== "None"),
+    languages,
     xp: 0,
     talents,
     spells,
-    attacks,
+    attacks: [],
   };
 
   return pc;
-}
-
-function getGearFromJSON(json: any): Gear[] {
-  if (json.gear.length === 0) return [];
-  return json.gear.map((g) => findGear(g.name)).filter((g) => g !== undefined);
 }
 
 function getTalentsFromJSON(json: any): Talent[] {

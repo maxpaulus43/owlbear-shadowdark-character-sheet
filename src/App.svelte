@@ -56,7 +56,6 @@
     </div>
 
     <div class="col-span-3 row-span-4" id="sheet-talents">
-      <h2>TALENTS/SPELLS</h2>
       <TalentsSpellsView />
     </div>
 

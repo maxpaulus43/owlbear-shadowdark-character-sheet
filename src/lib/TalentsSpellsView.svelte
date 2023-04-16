@@ -11,16 +11,26 @@
   $: spells = $pc.spells;
   $: hasSpells = spells.length > 0;
 
+  function num(n: number) {
+    return n > 0 ? addSign(n) : "";
+  }
+
+  $: abilityBonuses = $pc.bonuses
+    .filter((b) => b.sourceCategory === "Ability")
+    .map((b) => {
+      const bonusTo = b.name === "Grit" ? b.bonusName : b.bonusTo;
+      return `${b.name}: ${bonusTo} ${num(b.bonusAmount)}`;
+    });
+
   $: talents = $pc.bonuses
     .filter((b) => b.sourceCategory === "Talent")
-    .map((b) => `${b.bonusName} to ${b.bonusTo}`);
-
-  $: languages = $pc.bonuses
-    .filter((b) => b.bonusTo === "Languages")
-    .map((b) => b.bonusName);
+    .map((b) => `${b.bonusName} to ${b.bonusTo} ${num(b.bonusAmount)}`);
 </script>
 
+<h2>SPELLS / BONUSES / LANGUAGES</h2>
+
 <div class="overflow-y-auto">
+  <h2>Spells</h2>
   {#if hasSpells}
     <ul class="flex flex-col gap-1">
       {#each spells as spell}
@@ -41,6 +51,13 @@
   {/if}
   <AddNewSpellButton />
 
+  <h2>Bonuses</h2>
+  <ul>
+    {#each abilityBonuses as b}
+      <li>{b}</li>
+    {/each}
+  </ul>
+
   <h2>Talents</h2>
   <ul>
     {#each talents as t}
@@ -51,7 +68,7 @@
 
   <h2>Languages</h2>
   <ul>
-    {#each languages as l}
+    {#each $pc.languages as l}
       <li>{l}</li>
     {/each}
   </ul>

@@ -200,6 +200,8 @@ export type GearInfo = {
   ac?: ArmorAC;
 };
 
+export type WeaponType = "melee" | "ranged";
+
 export type WeaponInfo = GearInfo & {
   attackBonus: number;
   properties: WeaponProperty[];
@@ -210,7 +212,7 @@ export type WeaponInfo = GearInfo & {
     numDice: number;
   };
   range: RangeType;
-  weaponType: "melee" | "ranged";
+  weaponType: WeaponType;
   weaponMastery: boolean;
   baseWeapon: string;
 };
@@ -231,7 +233,7 @@ export type Bonus = {
   sourceType: BonusSourceType;
   sourceName: string;
   sourceCategory: BonusSourceCategory;
-  ganedAtLevel: number;
+  gainedAtLevel: number;
   name: string;
   bonusName: string;
   bonusTo: string;
@@ -253,7 +255,6 @@ export type PlayerCharacter = {
   maxHitPoints: number;
   armorClass: number;
   gearSlotsTotal: number;
-  gearSlotsUsed: number;
   gold: number;
   silver: number;
   copper: number;
