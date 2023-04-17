@@ -287,33 +287,32 @@ export type GenericBonus = {
   metadata?: Record<string, string>;
 };
 
-export type ModifyBonus = {
-  name: string;
-  desc: string;
-  bonusSource?: BonusSourceType;
-  bonusType: "modifyAmt";
-  bonusTo: BonusTo;
-  bonusAmount: number;
-  metadata?: Record<string, string>;
-};
+export type Merge<T, R> = Omit<T, keyof R> & R;
 
-export type AdvantageBonus = {
-  name: string;
-  desc: string;
-  bonusSource?: BonusSourceType;
-  bonusType: "advantage";
-  bonusTo: BonusTo;
-  metadata?: Record<string, string>;
-};
+export type ModifyBonus = Merge<
+  GenericBonus,
+  {
+    bonusType: "modifyAmt";
+    bonusTo: BonusTo;
+    bonusAmount: number;
+  }
+>;
 
-export type DisadvantageBonus = {
-  name: string;
-  desc: string;
-  bonusSource?: BonusSourceType;
-  bonusTo: BonusTo;
-  bonusType: "disadvantage";
-  metadata?: Record<string, string>;
-};
+export type AdvantageBonus = Merge<
+  GenericBonus,
+  {
+    bonusType: "advantage";
+    bonusTo: BonusTo;
+  }
+>;
+
+export type DisadvantageBonus = Merge<
+  GenericBonus,
+  {
+    bonusTo: BonusTo;
+    bonusType: "disadvantage";
+  }
+>;
 
 export type Bonus =
   | GenericBonus
@@ -393,7 +392,7 @@ weapons.forEach((w) => {
     },
     range: w.system.range as RangeType,
     weaponMastery: w.system.weaponMastery,
-    weaponType: w.system.type as "melee" | "ranged",
+    weaponType: w.system.type as WeaponType,
     baseWeapon: w.system.baseWeapon,
   };
 });

@@ -39,7 +39,7 @@
   <h2>Bonuses</h2>
   <ul class="list-disc">
     {#each $pc.bonuses.sort((a, b) => alphabetically(a.desc, b.desc)) as b}
-      <li class="border">{b.desc}</li>
+      <li class="border-b">{b.desc}</li>
     {/each}
   </ul>
 
@@ -48,7 +48,7 @@
   <h2>Languages</h2>
   <ul>
     {#each $pc.languages as l}
-      <li>{l}</li>
+      <li class="border-b">{l}</li>
     {/each}
   </ul>
 </div>
