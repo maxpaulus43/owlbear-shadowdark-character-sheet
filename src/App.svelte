@@ -5,7 +5,6 @@
     BACKGROUNDS,
     CLASSES,
     DEITIES,
-    type PlayerCharacter,
   } from "./types";
 
   import ranal from "./compendium/Ranal.json";
@@ -21,10 +20,8 @@
   import GearView from "./lib/GearView.svelte";
   import { importFromJson } from "./lib/ShadowDarklingsImporter";
 
-  // TODO migration from JSON
-  let playerCharacter = ranal as unknown as PlayerCharacter;
-
-  $pc = importFromJson(ranal);
+  $pc = importFromJson(drance);
+  console.log($pc);
 
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);

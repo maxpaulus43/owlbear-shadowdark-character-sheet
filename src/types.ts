@@ -229,7 +229,7 @@ export type Gear = {
   equipped?: boolean;
 };
 
-export type Bonus = {
+export type SDBonus = {
   sourceType: BonusSourceType;
   sourceName: string;
   sourceCategory: BonusSourceCategory;
@@ -265,6 +265,61 @@ export type PlayerCharacter = {
   attacks: Attack[];
   hitPoints: number;
 };
+
+export type BonusTo =
+  | "hpRoll"
+  | "attackRoll"
+  | "spellcastRoll"
+  | "damageRoll"
+  | "gearSlots"
+  | "statRoll"
+  | "stat"
+  | "armorClass"
+  | "initiativeRoll"
+  | "talentRoll"
+  | "backstabDice";
+
+export type GenericBonus = {
+  name: string;
+  desc: string;
+  bonusSource?: BonusSourceType;
+  bonusType: "generic";
+  metadata?: Record<string, string>;
+};
+
+export type ModifyBonus = {
+  name: string;
+  desc: string;
+  bonusSource?: BonusSourceType;
+  bonusType: "modifyAmt";
+  bonusTo: BonusTo;
+  bonusAmount: number;
+  metadata?: Record<string, string>;
+};
+
+export type AdvantageBonus = {
+  name: string;
+  desc: string;
+  bonusSource?: BonusSourceType;
+  bonusType: "advantage";
+  bonusTo: BonusTo;
+  metadata?: Record<string, string>;
+};
+
+export type DisadvantageBonus = {
+  name: string;
+  desc: string;
+  bonusSource?: BonusSourceType;
+  bonusTo: BonusTo;
+  bonusType: "disadvantage";
+  metadata?: Record<string, string>;
+};
+
+export type Bonus =
+  | GenericBonus
+  | ModifyBonus
+  | AdvantageBonus
+  | DisadvantageBonus;
 
 export const BASIC_GEAR: { [key: string]: GearInfo } = {};
 

@@ -6,25 +6,10 @@
   } from "./PlayerCharacter";
   import RollButton from "./RollButton.svelte";
   import RollTalentButton from "./RollTalentButton.svelte";
-  import { addSign } from "./utils";
+  import { addSign, alphabetically } from "./utils";
 
   $: spells = $pc.spells;
   $: hasSpells = spells.length > 0;
-
-  function num(n: number) {
-    return n > 0 ? addSign(n) : "";
-  }
-
-  $: abilityBonuses = $pc.bonuses
-    .filter((b) => b.sourceCategory === "Ability")
-    .map((b) => {
-      const bonusTo = b.name === "Grit" ? b.bonusName : b.bonusTo;
-      return `${b.name}: ${bonusTo} ${num(b.bonusAmount)}`;
-    });
-
-  $: talents = $pc.bonuses
-    .filter((b) => b.sourceCategory === "Talent")
-    .map((b) => `${b.bonusName} to ${b.bonusTo} ${num(b.bonusAmount)}`);
 </script>
 
 <h2>SPELLS / BONUSES / LANGUAGES</h2>
@@ -52,18 +37,12 @@
   <AddNewSpellButton />
 
   <h2>Bonuses</h2>
-  <ul>
-    {#each abilityBonuses as b}
-      <li>{b}</li>
+  <ul class="list-disc">
+    {#each $pc.bonuses.sort((a, b) => alphabetically(a.desc, b.desc)) as b}
+      <li class="border">{b.desc}</li>
     {/each}
   </ul>
 
-  <h2>Talents</h2>
-  <ul>
-    {#each talents as t}
-      <li>{t}</li>
-    {/each}
-  </ul>
   <RollTalentButton />
 
   <h2>Languages</h2>

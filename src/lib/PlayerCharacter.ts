@@ -2,6 +2,7 @@ import { writable } from "svelte/store";
 import {
   TITLE_MAP,
   type Attack,
+  type ModifyBonus,
   type PlayerCharacter,
   type SpellInfo,
   type Stat,
@@ -56,21 +57,15 @@ export function calculateSpellCastingModifierForPlayer(
   spellName: SpellInfo,
   pc: PlayerCharacter
 ): number {
-  // TODO spellcasting modifier for player
   let result = 0;
-
   const baseModifier = calculateModifierForPlayerStat(
     pc,
     pc.class === "Priest" ? "WIS" : "INT"
   );
-
   result += baseModifier;
-
-  // elves might get +1 to spellcasting
-
   pc.bonuses
-    .filter((b) => b.bonusTo === "SpellCasting")
-    .forEach((b) => (result += b.bonusAmount));
+    .filter((b) => b.bonusType === "modifyAmt" && b.bonusTo === "spellcastRoll")
+    .forEach((b: ModifyBonus) => (result += b.bonusAmount));
 
   return result;
 }
