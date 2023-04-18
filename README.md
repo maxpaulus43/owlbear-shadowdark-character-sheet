@@ -1,3 +1,25 @@
+## Screenshots
+
+### Main
+
+![main.jpg](./screenshots/main.jpg)
+
+### Gear
+
+![gear.jpg](./screenshots/gear.jpg)
+
+### Spells
+
+![spells.jpg](./screenshots/spells.jpg)
+
+### Talents
+
+![talents.jpg](./screenshots/talents.jpg)
+
+
+
+
+
 # Svelte + TS + Vite
 
 This template should help get you started developing with Svelte and TypeScript in Vite.
