@@ -1,17 +1,18 @@
 <script lang="ts">
-  import { SPELL_GEAR, type SpellInfo } from "../types";
   import Modal from "./Modal.svelte";
+  import SPELL_COMPENDIUM from "../compendium/spellCompendium";
   import {
     learnSpellForPlayer,
     PlayerCharacterStore as pc,
     playerCanLearnSpell,
     playerHasSpell,
     unlearnSpellForPlayer,
-  } from "./PlayerCharacter";
+  } from "../model/PlayerCharacter";
+  import type { SpellInfo } from "../model/Spell";
   let showModal = false;
   let spellInput: string = "";
 
-  $: spells = Object.values(SPELL_GEAR).filter((s) => {
+  $: spells = Object.values(SPELL_COMPENDIUM).filter((s) => {
     const term = spellInput.toLowerCase();
     return (
       s.name.toLowerCase().includes(term) ||

@@ -1,9 +1,8 @@
 <script lang="ts">
-  import type { Class, Stat } from "../types";
   import Modal from "./Modal.svelte";
-  import { PlayerCharacterStore as pc } from "./PlayerCharacter";
-  import Menu from "./components/Menu/Menu.svelte";
-  import { rollDice } from "./utils";
+  import { rollDice } from "../utils";
+  import type { Stat, Class } from "../model/PlayerCharacter";
+  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   let showModal = false;
 
   $: if (!showModal) {

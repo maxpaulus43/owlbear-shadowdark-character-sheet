@@ -1,4 +1,5 @@
-import { ValueForDiceType, type DiceType } from "../types";
+import { ValueForDiceType } from "./constants";
+import type { DiceType } from "./types";
 
 export function clamp(n: number, min: number, max: number): number {
   return Math.max(Math.min(max, n), min);

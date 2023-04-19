@@ -1,9 +1,9 @@
 <script lang="ts">
   import OBR from "@owlbear-rodeo/sdk";
-  import { rollDice } from "./utils";
   import type { DiceType } from "../types";
-  import Menu from "./components/Menu/Menu.svelte";
-  import MenuOption from "./components/Menu/MenuOption.svelte";
+  import { rollDice } from "../utils";
+  import Menu from "./Menu/Menu.svelte";
+  import MenuOption from "./Menu/MenuOption.svelte";
 
   export let modifier: number = 0;
   export let diceType: DiceType = "d20"; // default to d20

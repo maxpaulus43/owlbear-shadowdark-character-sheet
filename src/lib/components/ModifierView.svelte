@@ -1,17 +1,16 @@
 <script lang="ts">
   import {
-    PlayerCharacterStore,
     calculateModifierForPlayerStat,
-  } from "./PlayerCharacter";
+    PlayerCharacterStore as pc,
+  } from "../model/PlayerCharacter";
+  import { clamp, addSign } from "../utils";
   import Modal from "./Modal.svelte";
-  import { addSign, clamp } from "./utils";
-  import type { Stat } from "../types";
 
-  export let forStat: Stat;
-  const pc = PlayerCharacterStore;
-  $: bonuses = $pc.bonuses
-    .filter((b) => b.bonusTo.includes(forStat))
-    .map((b) => `${b.bonusName} to ${b.bonusTo}`);
+  export let forStat;
+  $: bonuses = [];
+  // $pc.bonuses
+  //   .filter((b) => b.bonusTo.includes(forStat))
+  //   .map((b) => `${b.bonusName} to ${b.bonusTo}`);
   $: baseMod = clamp(Math.floor(($pc.stats[forStat] - 10) / 2), -4, 4);
   $: modifier = calculateModifierForPlayerStat($pc, forStat);
 

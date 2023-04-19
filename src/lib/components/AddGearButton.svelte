@@ -1,23 +1,21 @@
 <script lang="ts">
-  import {
-    ARMOR_GEAR,
-    BASIC_GEAR,
-    WEAPON_GEAR,
-    type Gear,
-    type GearInfo,
-    findGear,
-  } from "../types";
-  import CustomGearForm from "./CustomGearForm.svelte";
-  import Modal from "./Modal.svelte";
+  import GEAR_COMPENDIUM from "../compendium/basicGearCompendium";
+  import { findAny, findGear } from "../compendium";
+  import ARMOR_COMPENDIUM from "../compendium/armorCompendium";
+  import WEAPON_COMPENDIUM from "../compendium/weaponCompendium";
+  import type { Gear, GearInfo } from "../model/Gear";
   import {
     calculateGearSlotsForPlayer,
     PlayerCharacterStore as pc,
-  } from "./PlayerCharacter";
-  import { alphabetically } from "./utils";
+  } from "../model/PlayerCharacter";
+  import { alphabetically } from "../utils";
+  import CustomGearForm from "./CustomGearForm.svelte";
+  import Modal from "./Modal.svelte";
+
   let showModal = false;
 
   $: costlyGear = $pc.gear
-    .filter((g) => findGear(g.name)?.slots.freeCarry === 0)
+    .filter((g) => findAny(g.name)?.slots?.freeCarry === 0)
     .sort((a, b) => alphabetically(a.name, b.name));
 
   $: totalSlots = calculateGearSlotsForPlayer($pc);
@@ -29,23 +27,28 @@
     }, 0);
 
   function slotsForGear(g: Gear): number {
-    const info = findGear(g.name);
-    return Math.ceil(g.quantity / info.slots.perSlot) * info.slots.slotsUsed;
+    const foundGear = findAny(g.name);
+    if (!foundGear) {
+      console.log("Cannot find gear: " + g.name);
+      return 0;
+    }
+    return (
+      Math.ceil(g.quantity / foundGear.slots.perSlot) *
+      foundGear.slots.slotsUsed
+    );
   }
 
   let gearInput: string = "";
-  $: gearResults = Object.values(BASIC_GEAR)
-    .filter((g) => g.name.toLowerCase().includes(gearInput.toLowerCase()))
-    .concat(
-      Object.values(ARMOR_GEAR).filter((a) =>
-        a.name.toLowerCase().includes(gearInput.toLowerCase())
-      )
-    )
-    .concat(
-      Object.values(WEAPON_GEAR).filter((w) =>
-        w.name.toLowerCase().includes(gearInput.toLowerCase())
-      )
-    );
+  $: gearResults = Object.values(GEAR_COMPENDIUM).filter((g) =>
+    g.name.toLowerCase().includes(gearInput.toLowerCase())
+  );
+  $: armorResults = Object.values(ARMOR_COMPENDIUM).filter((a) =>
+    a.name.toLowerCase().includes(gearInput.toLowerCase())
+  );
+  $: weaponResults = Object.values(WEAPON_COMPENDIUM).filter((w) =>
+    w.name.toLowerCase().includes(gearInput.toLowerCase())
+  );
+  $: allResults = gearResults.concat(armorResults).concat(weaponResults);
 
   function addGear(g: GearInfo) {
     const existingGear = $pc.gear.find(
@@ -58,6 +61,10 @@
       $pc.gear.push(gear);
     }
     $pc = $pc;
+  }
+
+  function getSlots(g: GearInfo) {
+    return g.slots.freeCarry ? 0 : g.slots.slotsUsed;
   }
 
   function getCostForGear(g: GearInfo): string {
@@ -104,16 +111,16 @@
           </tr>
         </thead>
         <tbody>
-          {#each gearResults as g, i}
+          {#each allResults as g, i}
             <tr class="border-b" class:bg-gray-100={i % 2 == 0}>
               <td class="pl-3">{g.name}</td>
               <td>{getCostForGear(g)}</td>
               <td>{g.slots.freeCarry ? "Free" : g.slots.slotsUsed}</td>
               <td class="flex justify-end">
                 <button
-                  disabled={freeSlots < slotsForGear(g)}
+                  disabled={freeSlots < getSlots(g)}
                   on:click={() => addGear(g)}
-                  class:opacity-20={freeSlots < slotsForGear(g)}
+                  class:opacity-20={freeSlots < getSlots(g)}
                   class="px-3 hover:bg-gray-400"
                 >
                   <i class="material-icons translate-y-1">add_circle</i>

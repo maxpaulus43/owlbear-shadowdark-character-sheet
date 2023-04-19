@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Currency } from "../types";
-  import { PlayerCharacterStore as pc } from "./PlayerCharacter";
+  import type { Currency } from "../model/Gear";
+  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
 
   let customGearName: string;
   let customGearSlots: number = 1;

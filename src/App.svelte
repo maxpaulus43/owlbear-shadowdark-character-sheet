@@ -1,24 +1,22 @@
 <script lang="ts">
+  import { importFromJson } from "./lib/ShadowDarklingsImporter";
+  import {
+    calculateArmorClassForPlayer,
+    calculateTitleForPlayer,
+    levelUpPlayer,
+    PlayerCharacterStore as pc,
+  } from "./lib/model/PlayerCharacter";
   import {
     ALIGNMENTS,
     ANCESTRIES,
     BACKGROUNDS,
     CLASSES,
     DEITIES,
-  } from "./types";
-
-  import ranal from "./compendium/Ranal.json";
-  import drance from "./compendium/Drance.json";
-  import {
-    PlayerCharacterStore as pc,
-    calculateArmorClassForPlayer,
-    calculateTitleForPlayer,
-    levelUpPlayer,
-  } from "./lib/PlayerCharacter";
-  import StatView from "./lib/StatView.svelte";
-  import TalentsSpellsView from "./lib/TalentsSpellsView.svelte";
-  import GearView from "./lib/GearView.svelte";
-  import { importFromJson } from "./lib/ShadowDarklingsImporter";
+  } from "./lib/constants";
+  import drance from "./lib/compendium/Drance.json";
+  import TalentsSpellsView from "./lib/components/TalentsSpellsView.svelte";
+  import StatView from "./lib/components/StatView.svelte";
+  import GearView from "./lib/components/GearView.svelte";
 
   $pc = importFromJson(drance);
   console.log($pc);

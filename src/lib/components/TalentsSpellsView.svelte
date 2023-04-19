@@ -1,12 +1,12 @@
 <script lang="ts">
   import AddNewSpellButton from "./AddNewSpellButton.svelte";
+  import RollButton from "./RollButton.svelte";
+  import RollTalentButton from "./RollTalentButton.svelte";
   import {
     calculateSpellCastingModifierForPlayer,
     PlayerCharacterStore as pc,
-  } from "./PlayerCharacter";
-  import RollButton from "./RollButton.svelte";
-  import RollTalentButton from "./RollTalentButton.svelte";
-  import { addSign, alphabetically } from "./utils";
+  } from "../model/PlayerCharacter";
+  import { addSign, alphabetically } from "../utils";
 
   $: spells = $pc.spells;
   $: hasSpells = spells.length > 0;
@@ -19,7 +19,7 @@
   {#if hasSpells}
     <ul class="flex flex-col gap-1">
       {#each spells as spell}
-        {@const mod = calculateSpellCastingModifierForPlayer(spell, $pc)}
+        {@const mod = calculateSpellCastingModifierForPlayer($pc)}
         <li>
           <div
             class="flex justify-between border-b border-gray-400 items-center"

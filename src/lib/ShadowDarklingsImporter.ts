@@ -1,17 +1,9 @@
 import type { comment } from "svelte/internal";
-import {
-  findGear,
-  findSpell,
-  type Bonus,
-  type BonusTo,
-  type PlayerCharacter,
-  type SDBonus,
-  type SpellInfo,
-  type Talent,
-} from "../types";
+import { findGear } from "./compendium";
+import type { Bonus, SDBonus } from "./model/Bonus";
+import type { PlayerCharacter } from "./model/PlayerCharacter";
 
 export function importFromJson(json: any): PlayerCharacter {
-  const talents: Talent[] = getTalentsFromJSON(json);
   const spells: SpellInfo[] = getSpellsFromJSON(json);
 
   const gear = [];
@@ -59,9 +51,7 @@ export function importFromJson(json: any): PlayerCharacter {
     copper: json.copper,
     languages,
     xp: 0,
-    talents,
     spells,
-    attacks: [],
   };
 
   return pc;
@@ -86,7 +76,7 @@ function mapSDBonusToBonus(sdb: SDBonus): Bonus | Bonus[] {
       {
         bonusTo: "attackRoll",
         bonusType: "modifyAmt",
-        desc: `${sdb.bonusTo}: +1 to attack rolls (+half level rounded down)`,
+        desc: `${sdb.bonusTo}: +1 to attack rolls`,
         bonusAmount: 1,
         metadata: { weapon: sdb.bonusTo },
         ...commonBonusData,
@@ -94,7 +84,7 @@ function mapSDBonusToBonus(sdb: SDBonus): Bonus | Bonus[] {
       {
         bonusTo: "damageRoll",
         bonusType: "modifyAmt",
-        desc: `${sdb.bonusTo}: +1 to damage rolls (+half level rounded down)`,
+        desc: `${sdb.bonusTo}: +1 to damage rolls`,
         bonusAmount: 1,
         metadata: { weapon: sdb.bonusTo },
         ...commonBonusData,

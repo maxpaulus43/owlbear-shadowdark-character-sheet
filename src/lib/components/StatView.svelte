@@ -1,14 +1,12 @@
 <script lang="ts">
+  import RollButton from "./RollButton.svelte";
+  import ModifierView from "./ModifierView.svelte";
   import {
     PlayerCharacterStore,
     calculateModifierForPlayerStat,
-  } from "./PlayerCharacter";
-  import RollButton from "./RollButton.svelte";
-  import ModifierView from "./ModifierView.svelte";
-  import type { Stat } from "../types";
-  import Modal from "./Modal.svelte";
+  } from "../model/PlayerCharacter";
 
-  export let forStat: Stat;
+  export let forStat;
   const pc = PlayerCharacterStore;
   $: modifier = calculateModifierForPlayerStat($pc, forStat);
 </script>

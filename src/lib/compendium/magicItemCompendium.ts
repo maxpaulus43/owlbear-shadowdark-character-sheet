@@ -1,4 +1,62 @@
-export default [
+import type { GearInfo } from "../types";
+
+const MAGIC_ITEMS: GearInfo[] = [
+  {
+    name: "Bag of Holding",
+    cost: { gp: 0, sp: 0, cp: 0 },
+    properties: ["Magic"],
+    slots: { freeCarry: 0, perSlot: 1, slotsUsed: 1 },
+    playerBonuses: [
+      {
+        bonusType: "modifyAmt",
+        bonusTo: "gearSlots",
+        bonusAmount: 10,
+        name: "+10 Gear Slots",
+        desc: "This bag has an interdimensional space inside that can hold up to 10 gear slots. Placing this item inside another Bag of Holding or a Portable Hole destroys both items and all held inside them.",
+      },
+    ],
+    canBeEquipped: false,
+    type: "Basic",
+  },
+  {
+    name: "Boots of the Cat",
+    cost: { gp: 0, sp: 0, cp: 0 },
+    properties: ["Magic"],
+    slots: { freeCarry: 0, perSlot: 1, slotsUsed: 1 },
+    playerBonuses: [
+      {
+        bonusType: "generic",
+        name: "Jump near, Easy silent checks",
+        desc: "This bag has an interdimensional space inside that can hold up to 10 gear slots. Placing this item inside another Bag of Holding or a Portable Hole destroys both items and all held inside them.",
+      },
+    ],
+    canBeEquipped: false,
+    type: "Basic",
+  },
+  {
+    name: "Brak's Cube of Perfection",
+    cost: { gp: 0, sp: 0, cp: 0 },
+    properties: ["Magic"],
+    slots: { freeCarry: 0, perSlot: 1, slotsUsed: 1 },
+    playerBonuses: [
+      {
+        bonusType: "generic",
+        name: "Roll to increase stat",
+        desc: "Roll the cube by rolling a d6. Your corresponding stat permanently increases to 18. 1.Strength 2.Dexterity 3.Constitution 4.Intelligence 5.Wisdom 6.Charisma",
+      },
+    ],
+    canBeEquipped: false,
+    type: "Basic",
+  },
+];
+
+const MAGIC_ITEM_COMPENDIUM: { [name: string]: GearInfo } = {};
+for (const w of MAGIC_ITEMS) {
+  MAGIC_ITEM_COMPENDIUM[w.name.toLowerCase()] = w;
+}
+export default MAGIC_ITEM_COMPENDIUM;
+
+const blah = [
   {
     name: "Brak's Cube of Perfection (Cha)",
     type: "Basic",

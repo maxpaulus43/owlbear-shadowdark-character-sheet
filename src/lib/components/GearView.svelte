@@ -1,18 +1,19 @@
 <script lang="ts">
-  import { findGear, type Gear } from "../types";
   import AddGearButton from "./AddGearButton.svelte";
+  import { findAny } from "../compendium";
+  import type { Gear } from "../model/Gear";
   import {
     calculateGearSlotsForPlayer,
     PlayerCharacterStore as pc,
-  } from "./PlayerCharacter";
-  import { alphabetically } from "./utils";
+  } from "../model/PlayerCharacter";
+  import { alphabetically } from "../utils";
 
   $: costlyGear = $pc.gear
-    .filter((g) => findGear(g.name)?.slots.freeCarry === 0)
+    .filter((g) => findAny(g.name)?.slots.freeCarry === 0)
     .sort((a, b) => alphabetically(a.name, b.name));
 
   $: freeGear = $pc.gear
-    .filter((g) => findGear(g.name)?.slots.freeCarry)
+    .filter((g) => findAny(g.name)?.slots.freeCarry)
     .sort((a, b) => alphabetically(a.name, b.name));
 
   $: totalSlots = calculateGearSlotsForPlayer($pc);
@@ -24,8 +25,11 @@
     }, 0);
 
   function slotsForGear(g: Gear): number {
-    const info = findGear(g.name);
-    return Math.ceil(g.quantity / info.slots.perSlot) * info.slots.slotsUsed;
+    const foundGear = findAny(g.name);
+    return (
+      Math.ceil(g.quantity / foundGear.slots.perSlot) *
+      foundGear.slots.slotsUsed
+    );
   }
 
   function deleteGear(name: string) {
