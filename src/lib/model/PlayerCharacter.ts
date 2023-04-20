@@ -1,4 +1,5 @@
 import { writable } from "svelte/store";
+import { findAny } from "../compendium";
 import {
   ALIGNMENTS,
   ANCESTRIES,
@@ -9,10 +10,12 @@ import {
   TITLES,
   TITLE_MAP,
 } from "../constants";
-import { clamp } from "../utils";
+import { clamp, toInfo } from "../utils";
+import type { ArmorInfo } from "./Armor";
 import type { Bonus } from "./Bonus";
 import type { Gear } from "./Gear";
 import type { SpellInfo } from "./Spell";
+import type { WeaponInfo } from "./Weapon";
 
 export const PlayerCharacterStore = writable<PlayerCharacter>();
 
@@ -70,9 +73,47 @@ export function calculateModifierForPlayerStat(
 }
 
 export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
-  // TODO use armor and talents to calulate ac
-  // fighters +1 AC for armor type
-  return pc.armorClass;
+  let acModifier = 0;
+  for (const b of pc.bonuses) {
+    if (b.bonusType === "modifyAmt" && b.bonusTo === "armorClass") {
+      acModifier += b.bonusAmount;
+    }
+  }
+
+  const gearBonuses = pc.gear
+    .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
+    .filter(({ isEquipped, g }) => {
+      return !g.canBeEquipped || (g.canBeEquipped && isEquipped);
+    })
+    .map(({ g }) => g.playerBonuses)
+    .filter(Boolean)
+    .flat();
+
+  for (const b of gearBonuses) {
+    if (b.bonusType === "modifyAmt" && b.bonusTo === "armorClass") {
+      acModifier += b.bonusAmount;
+    }
+  }
+
+  const armor = pc.gear
+    .filter((g) => g.equipped)
+    .map(toInfo<ArmorInfo>)
+    .filter((g) => g.type === "Armor");
+
+  for (const a of armor) {
+    let statModifier = 0;
+    if (a.ac.stat) {
+      statModifier = calculateModifierForPlayerStat(pc, a.ac.stat);
+    }
+
+    acModifier += a.ac.modifier + statModifier;
+
+    if (a.ac.base > 0) {
+      return a.ac.base + acModifier;
+    }
+  }
+
+  return pc.armorClass + acModifier;
 }
 
 export function calculateTitleForPlayer(pc: PlayerCharacter): Title {
@@ -94,6 +135,13 @@ export function calculateSpellCastingModifierForPlayer(
   // TODO bonuses
 
   return result;
+}
+
+export function calculateAttackBonusForPlayerWeapon(
+  pc: PlayerCharacter,
+  w: WeaponInfo
+): number {
+  return 0;
 }
 
 export function calculateGearSlotsForPlayer(pc: PlayerCharacter) {
@@ -130,11 +178,11 @@ export function playerCanLearnSpell(pc: PlayerCharacter, spell: SpellInfo) {
   return pc.class.toLowerCase() === spell.class.toLowerCase();
 }
 
-export function learnSpellForPlayer(spell: SpellInfo, pc: PlayerCharacter) {
+export function learnSpellForPlayer(pc: PlayerCharacter, spell: SpellInfo) {
   if (playerHasSpell(pc, spell)) return;
   pc.spells.push(spell);
 }
 
-export function unlearnSpellForPlayer(spell: SpellInfo, pc: PlayerCharacter) {
+export function unlearnSpellForPlayer(pc: PlayerCharacter, spell: SpellInfo) {
   pc.spells = pc.spells.filter((s) => s.name !== spell.name);
 }

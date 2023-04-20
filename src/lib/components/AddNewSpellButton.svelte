@@ -25,11 +25,11 @@
   });
 
   function learnSpell(s: SpellInfo) {
-    learnSpellForPlayer(s, $pc);
+    learnSpellForPlayer($pc, s);
     $pc = $pc;
   }
   function unLearnSpell(s: SpellInfo) {
-    unlearnSpellForPlayer(s, $pc);
+    unlearnSpellForPlayer($pc, s);
     $pc = $pc;
   }
 </script>

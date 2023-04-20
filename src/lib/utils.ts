@@ -1,4 +1,6 @@
+import { findAny } from "./compendium";
 import { ValueForDiceType } from "./constants";
+import type { Gear, GearInfo } from "./model/Gear";
 import type { DiceType } from "./types";
 
 export function clamp(n: number, min: number, max: number): number {
@@ -23,4 +25,8 @@ export function alphabetically(a: string, b: string): number {
     return 1;
   }
   return 0;
+}
+
+export function toInfo<T extends GearInfo>(g: Gear): T {
+  return findAny(g.name) as T;
 }

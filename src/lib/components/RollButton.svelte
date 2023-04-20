@@ -71,8 +71,8 @@
     on:contextmenu|preventDefault={onRightClick}
     on:touchstart={touchStart}
     on:touchend={touchEnd}
-    class="bg-black text-white p-1 px-2 rounded-md"
-    >🎲
+    class="bg-black text-white pt-1 px-1 rounded-md"
+    ><i class="material-icons">casino</i>
   </button>
 
   {#if showMenu}
