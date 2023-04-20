@@ -83,7 +83,7 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
   const gearBonuses = pc.gear
     .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
     .filter(({ isEquipped, g }) => {
-      return !g.canBeEquipped || (g.canBeEquipped && isEquipped);
+      return !g.canBeEquipped || isEquipped;
     })
     .map(({ g }) => g.playerBonuses)
     .filter(Boolean)
