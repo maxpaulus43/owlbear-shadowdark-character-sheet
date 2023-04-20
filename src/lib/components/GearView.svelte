@@ -7,6 +7,7 @@
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import { alphabetically } from "../utils";
+  import type { WeaponInfo } from "../model/Weapon";
 
   $: costlyGear = $pc.gear
     .filter((g) => findAny(g.name)?.slots.freeCarry === 0)
@@ -42,6 +43,39 @@
     }
     $pc = $pc;
   }
+
+  function toggleEquipped(g: Gear) {
+    g.equipped = !g.equipped;
+    $pc = $pc;
+  }
+
+  function canInteractWithGear(gear: Gear): boolean {
+    if (gear.equipped) return true;
+    const g = findAny(gear.name);
+    if (!g || !g.canBeEquipped) return false;
+    if (g.type === "Weapon") {
+      const equippedWeapons = $pc.gear
+        .filter((w) => w.equipped)
+        .map((w) => findAny(w.name))
+        .filter((w) => w.type === "Weapon")
+        .map((w) => w as WeaponInfo);
+      if (equippedWeapons.length == 0) return true; // no equipped weapons means i can equip
+      if (equippedWeapons.length > 1) return false; // more than 1 equpped weapons means i can't equip
+      if (
+        !equippedWeapons[0].damage.oneHanded ||
+        !(g as WeaponInfo).damage.oneHanded
+      )
+        return false; // holding a two handed means I can't equip
+      return true;
+    } else if (g.type === "Armor") {
+      const equippedArmor = $pc.gear
+        .filter((a) => a.equipped)
+        .map((a) => findAny(a.name))
+        .filter((a) => a.type === "Armor");
+      return equippedArmor.length === 0; // must not be wearing armor
+    }
+    return false;
+  }
 </script>
 
 <div class="flex gap-1 p-1">
@@ -65,32 +99,23 @@
               {i + 1}. {g.name} x {g.quantity} ({slotsForGear(g)} slots)
             </span>
           </div>
-          {#if findAny(g.name).canBeEquipped}
-            {#if !g.equipped}
-              <button
-                class="bg-black text-white p-2"
-                on:click={() => {
-                  g.equipped = true;
-                  $pc = $pc;
-                }}
-              >
-                Equip
-              </button>
-            {:else}
-              <button
-                class="bg-black text-white p-2"
-                on:click={() => {
-                  g.equipped = false;
-                  $pc = $pc;
-                }}>UnEquip</button
-              >
+          <div class="flex gap-1 items-center">
+            {#if findAny(g.name).canBeEquipped}
+              <input
+                title="equipped"
+                type="checkbox"
+                class="w-6 h-6"
+                checked={g.equipped}
+                disabled={!canInteractWithGear(g)}
+                on:click={() => toggleEquipped(g)}
+              />
             {/if}
-          {/if}
-          <button
-            on:click={() => deleteGear(g.name)}
-            class="px-1 pt-1 rounded-md bg-black text-white"
-            ><i class="material-icons">delete</i></button
-          >
+            <button
+              on:click={() => deleteGear(g.name)}
+              class="px-1 pt-1 rounded-md bg-black text-white"
+              ><i class="material-icons">delete</i></button
+            >
+          </div>
         </div>
       </li>
     {/each}
