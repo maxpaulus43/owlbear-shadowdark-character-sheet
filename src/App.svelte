@@ -17,6 +17,7 @@
   import TalentsSpellsView from "./lib/components/TalentsSpellsView.svelte";
   import StatView from "./lib/components/StatView.svelte";
   import GearView from "./lib/components/GearView.svelte";
+  import AttacksView from "./lib/components/AttacksView.svelte";
 
   $pc = importFromJson(drance);
   console.log($pc);
@@ -157,8 +158,7 @@
     </div>
 
     <div class="row-span-2 col-span-2" id="sheet-attacks">
-      <h2>ATTACKS</h2>
-      <textarea />
+      <AttacksView />
     </div>
 
     <div class="col-span-2" id="sheet-background">

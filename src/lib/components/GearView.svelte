@@ -65,6 +65,27 @@
               {i + 1}. {g.name} x {g.quantity} ({slotsForGear(g)} slots)
             </span>
           </div>
+          {#if findAny(g.name).canBeEquipped}
+            {#if !g.equipped}
+              <button
+                class="bg-black text-white p-2"
+                on:click={() => {
+                  g.equipped = true;
+                  $pc = $pc;
+                }}
+              >
+                Equip
+              </button>
+            {:else}
+              <button
+                class="bg-black text-white p-2"
+                on:click={() => {
+                  g.equipped = false;
+                  $pc = $pc;
+                }}>UnEquip</button
+              >
+            {/if}
+          {/if}
           <button
             on:click={() => deleteGear(g.name)}
             class="px-1 pt-1 rounded-md bg-black text-white"

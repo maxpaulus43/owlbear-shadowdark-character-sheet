@@ -7,9 +7,20 @@
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import { addSign, alphabetically } from "../utils";
+  import { findAny } from "../compendium";
 
   $: spells = $pc.spells;
   $: hasSpells = spells.length > 0;
+
+  $: equippableGearWithBonuses = $pc.gear
+    .filter((g) => g.equipped)
+    .map((g) => findAny(g.name))
+    .filter((g) => g && g.canBeEquipped && g.playerBonuses?.length > 0);
+
+  $: otherGearWithBonuses = $pc.gear
+    .filter((g) => !g.equipped)
+    .map((g) => findAny(g.name))
+    .filter((g) => g && g.playerBonuses?.length > 0 && !g.canBeEquipped);
 </script>
 
 <h2>SPELLS / BONUSES / LANGUAGES</h2>
@@ -40,6 +51,30 @@
   <ul class="list-disc">
     {#each $pc.bonuses.sort((a, b) => alphabetically(a.desc, b.desc)) as b}
       <li class="border-b">{b.desc}</li>
+    {/each}
+  </ul>
+
+  <h2>Bonuses From Items</h2>
+  <ul>
+    {#each otherGearWithBonuses.sort( (a, b) => alphabetically(a.name, b.name) ) as g}
+      <li class="border-b">
+        <div class="font-bold bg-gray-300">{g.name}</div>
+        <ul>
+          {#each g.playerBonuses as b}
+            <li class="border-b ps-8">* {b.desc}</li>
+          {/each}
+        </ul>
+      </li>
+    {/each}
+    {#each equippableGearWithBonuses.sort( (a, b) => alphabetically(a.name, b.name) ) as g}
+      <li class="border-b">
+        <div class="font-bold bg-gray-300">{g.name}</div>
+        <ul>
+          {#each g.playerBonuses as b}
+            <li class="border-b ps-8">* {b.desc}</li>
+          {/each}
+        </ul>
+      </li>
     {/each}
   </ul>
 
