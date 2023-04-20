@@ -30,3 +30,21 @@ export function alphabetically(a: string, b: string): number {
 export function toInfo<T extends GearInfo>(g: Gear): T {
   return findAny(g.name) as T;
 }
+
+export function debounce<A = unknown, R = void>(
+  fn: (args: A) => R,
+  ms = 500
+): (args: A) => Promise<R> {
+  let timer: NodeJS.Timeout;
+
+  return (args: A): Promise<R> =>
+    new Promise((resolve) => {
+      if (timer) {
+        clearTimeout(timer);
+      }
+
+      timer = setTimeout(() => {
+        resolve(fn(args));
+      }, ms);
+    });
+}

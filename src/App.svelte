@@ -18,9 +18,13 @@
   import StatView from "./lib/components/StatView.svelte";
   import GearView from "./lib/components/GearView.svelte";
   import AttacksView from "./lib/components/AttacksView.svelte";
+  import {
+    PlayerHistory,
+    trackPlayerHistory,
+  } from "./lib/services/EditHistoryService";
 
   $pc = importFromJson(drance);
-  console.log($pc);
+  trackPlayerHistory();
 
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);
@@ -40,7 +44,8 @@
           <button class="bg-black text-white p-2 text-xs"
             >Import from JSON</button
           >
-          <button class="bg-black text-white p-2 text-xs">Export to JSON</button
+          <button class="bg-black text-white p-2 text-xs" on:click={() => {}}
+            >Export to JSON</button
           >
         </div>
       </div>
