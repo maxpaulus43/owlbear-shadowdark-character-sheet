@@ -113,7 +113,7 @@
       </div>
       <div class="cell">
         <h2>LEVEL</h2>
-        <input type="number" bind:value={$pc.level} max="10" min="0" />
+        <input type="number" inputmode="numeric" bind:value={$pc.level} max="10" min="0" />
       </div>
       <div class="cell">
         <h2>XP</h2>
