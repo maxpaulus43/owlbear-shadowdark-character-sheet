@@ -1,4 +1,4 @@
-import type { GearInfo } from "../types";
+import type { GearInfo } from "../model/Gear";
 
 const MAGIC_ITEMS: GearInfo[] = [
   {
@@ -8,7 +8,7 @@ const MAGIC_ITEMS: GearInfo[] = [
     slots: { freeCarry: 0, perSlot: 1, slotsUsed: 1 },
     playerBonuses: [
       {
-        bonusType: "modifyAmt",
+        type: "modifyAmt",
         bonusTo: "gearSlots",
         bonusAmount: 10,
         name: "+10 Gear Slots",
@@ -25,7 +25,7 @@ const MAGIC_ITEMS: GearInfo[] = [
     slots: { freeCarry: 0, perSlot: 1, slotsUsed: 1 },
     playerBonuses: [
       {
-        bonusType: "generic",
+        type: "generic",
         name: "Jump near, Easy silent checks",
         desc: "This bag has an interdimensional space inside that can hold up to 10 gear slots. Placing this item inside another Bag of Holding or a Portable Hole destroys both items and all held inside them.",
       },
@@ -40,7 +40,7 @@ const MAGIC_ITEMS: GearInfo[] = [
     slots: { freeCarry: 0, perSlot: 1, slotsUsed: 1 },
     playerBonuses: [
       {
-        bonusType: "generic",
+        type: "generic",
         name: "Roll to increase stat",
         desc: "Roll the cube by rolling a d6. Your corresponding stat permanently increases to 18. 1.Strength 2.Dexterity 3.Constitution 4.Intelligence 5.Wisdom 6.Charisma",
       },

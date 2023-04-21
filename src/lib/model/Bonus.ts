@@ -1,4 +1,6 @@
 import type { Merge } from "../types";
+import type { Stat } from "./PlayerCharacter";
+import type { WeaponType } from "./Weapon";
 
 export type BonusTo =
   | "hpRoll"
@@ -26,20 +28,51 @@ export type ArmorBonusMetaData = {
   armor: string;
 };
 
-export type BonusMetaData = WeaponBonusMetaData | ArmorBonusMetaData;
+export type WeaponTypeBonusMetaData = {
+  type: "weaponType";
+  weaponType: WeaponType;
+};
+
+export type StatBonusMetaData = {
+  type: "stat";
+  stat: Stat;
+};
+
+export type ChooseArmorBonusMetaData = {
+  type: "chooseArmor";
+};
+
+export type ChooseWeaponBonusMetaData = {
+  type: "chooseWeapon";
+  filterByWeaponTypes?: WeaponType[];
+};
+
+export type ChooseStatBonusMetaData = {
+  type: "chooseStat";
+  filterByStat?: Stat[];
+};
+
+export type BonusMetaData =
+  | WeaponBonusMetaData
+  | WeaponTypeBonusMetaData
+  | ArmorBonusMetaData
+  | StatBonusMetaData
+  | ChooseArmorBonusMetaData
+  | ChooseWeaponBonusMetaData
+  | ChooseStatBonusMetaData;
 
 export type GenericBonus = {
   name: string;
   desc: string;
   bonusSource?: BonusSourceType;
-  bonusType: "generic";
+  type: "generic";
   metadata?: BonusMetaData;
 };
 
 export type ModifyBonus = Merge<
   GenericBonus,
   {
-    bonusType: "modifyAmt";
+    type: "modifyAmt";
     bonusTo: BonusTo;
     bonusAmount: number;
   }
@@ -48,7 +81,7 @@ export type ModifyBonus = Merge<
 export type AdvantageBonus = Merge<
   GenericBonus,
   {
-    bonusType: "advantage";
+    type: "advantage";
     bonusTo: BonusTo;
   }
 >;
@@ -57,7 +90,7 @@ export type DisadvantageBonus = Merge<
   GenericBonus,
   {
     bonusTo: BonusTo;
-    bonusType: "disadvantage";
+    type: "disadvantage";
   }
 >;
 

@@ -1,6 +1,6 @@
 import type { ArmorInfo } from "../model/Armor";
 
-const ARMORS: ArmorInfo[] = [
+export const ARMORS: ArmorInfo[] = [
   {
     name: "Plate mail",
     type: "Armor",
@@ -10,12 +10,12 @@ const ARMORS: ArmorInfo[] = [
     ac: { base: 15, modifier: 0 },
     playerBonuses: [
       {
-        bonusType: "generic",
+        type: "generic",
         name: "Disadv stealth",
         desc: "Disadvantage on stealth rolls",
       },
       {
-        bonusType: "generic",
+        type: "generic",
         name: "Cannot swim",
         desc: "You cannot swim while wearing this armor",
       },
@@ -38,12 +38,12 @@ const ARMORS: ArmorInfo[] = [
     ac: { base: 13, modifier: 0, stat: "DEX" },
     playerBonuses: [
       {
-        bonusType: "generic",
+        type: "generic",
         name: "Disadv stealth",
         desc: "Disadvantage on stealth rolls",
       },
       {
-        bonusType: "generic",
+        type: "generic",
         name: "Disadv swimming",
         desc: "Disadvantage on swimming rolls",
       },

@@ -1,6 +1,6 @@
-import type { WeaponInfo } from "../types";
+import type { WeaponInfo } from "../model/Weapon";
 
-const WEAPONS: WeaponInfo[] = [
+export const WEAPONS: WeaponInfo[] = [
   {
     name: "Bastard Sword",
     type: "Weapon",

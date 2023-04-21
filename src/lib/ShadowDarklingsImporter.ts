@@ -1,18 +1,19 @@
 import type { comment } from "svelte/internal";
-import { findGear } from "./compendium";
+import { findGear, findSpell } from "./compendium";
 import type { Bonus, SDBonus } from "./model/Bonus";
+import type { Gear } from "./model/Gear";
 import type { PlayerCharacter } from "./model/PlayerCharacter";
+import type { SpellInfo } from "./model/Spell";
 
 export function importFromJson(json: any): PlayerCharacter {
   const spells: SpellInfo[] = getSpellsFromJSON(json);
 
-  const gear = [];
+  const gear: Gear[] = [];
 
   for (const g of json.gear) {
     const foundGear = findGear(g.name);
     if (!foundGear) continue;
-    foundGear.quantity = g.quantity;
-    gear.push(foundGear);
+    gear.push({ name: foundGear.name, quantity: g.quantity });
   }
 
   const languages = json.languages
@@ -68,49 +69,49 @@ function mapSDBonusToBonus(sdb: SDBonus): Bonus | Bonus[] {
       bonusTo: "spellcastRoll",
       desc: "+1 to spellcasting checks",
       bonusAmount: 1,
-      bonusType: "modifyAmt",
+      type: "modifyAmt",
       ...commonBonusData,
     };
   } else if (sdb.name === "WeaponMastery") {
     return [
       {
         bonusTo: "attackRoll",
-        bonusType: "modifyAmt",
+        type: "modifyAmt",
         desc: `${sdb.bonusTo}: +1 to attack rolls`,
         bonusAmount: 1,
-        metadata: { weapon: sdb.bonusTo },
+        metadata: { type: "weapon", weapon: sdb.bonusTo },
         ...commonBonusData,
       },
       {
         bonusTo: "damageRoll",
-        bonusType: "modifyAmt",
+        type: "modifyAmt",
         desc: `${sdb.bonusTo}: +1 to damage rolls`,
         bonusAmount: 1,
-        metadata: { weapon: sdb.bonusTo },
+        metadata: { type: "weapon", weapon: sdb.bonusTo },
         ...commonBonusData,
       },
     ];
   } else if (sdb.name === "Grit") {
     return {
       bonusTo: "statRoll",
-      bonusType: "advantage",
+      type: "advantage",
       desc: `Advantage on ${sdb.bonusName} checks`,
-      metadata: { stat: "STR" },
+      metadata: { type: "stat", stat: "STR" },
       ...commonBonusData,
     };
   } else if (sdb.name === "ArmorMaster") {
     return {
       bonusTo: "armorClass",
-      bonusType: "modifyAmt",
+      type: "modifyAmt",
       bonusAmount: 1,
-      metadata: { armor: sdb.bonusTo },
+      metadata: { type: "armor", armor: sdb.bonusTo },
       desc: `+1 AC from ${sdb.bonusTo} armor`,
       ...commonBonusData,
     };
   } else if (sdb.name === "BackStabIncrease") {
     return {
       bonusTo: "backstabDice",
-      bonusType: "modifyAmt",
+      type: "modifyAmt",
       bonusAmount: 1,
       desc: "Your backstab deals +1 dice of damage",
       ...commonBonusData,
@@ -118,7 +119,7 @@ function mapSDBonusToBonus(sdb: SDBonus): Bonus | Bonus[] {
   } else if (sdb.name === "AdvOnInitiative") {
     return {
       bonusTo: "initiativeRoll",
-      bonusType: "advantage",
+      type: "advantage",
       desc: "Advantage on Initiative rolls",
       ...commonBonusData,
     };
@@ -126,41 +127,31 @@ function mapSDBonusToBonus(sdb: SDBonus): Bonus | Bonus[] {
     return [
       {
         bonusTo: "attackRoll",
-        bonusType: "modifyAmt",
+        type: "modifyAmt",
         bonusAmount: 1,
         desc: "+1 to melee attacks",
-        metadata: { weaponType: "melee" },
+        metadata: { type: "weaponType", weaponType: "Melee" },
         ...commonBonusData,
       },
       {
         bonusTo: "attackRoll",
-        bonusType: "modifyAmt",
+        type: "modifyAmt",
         bonusAmount: 1,
         desc: "+1 to ranged attacks",
-        metadata: { weaponType: "ranged" },
+        metadata: { type: "weaponType", weaponType: "Ranged" },
         ...commonBonusData,
       },
     ];
   } else if (sdb.name === "AdvOnCastOneSpell") {
     return {
       bonusTo: "spellcastRoll",
-      bonusType: "advantage",
+      type: "advantage",
       desc: `Advantage to cast spell: ${sdb.bonusTo}`,
       ...commonBonusData,
     };
   }
 
   return [];
-}
-
-function getTalentsFromJSON(json: any): Talent[] {
-  const talents: Talent[] = [];
-  for (const b of json.bonuses) {
-    if (b.sourceCategory === "Talent") {
-      talents.push(b.name);
-    }
-  }
-  return talents;
 }
 
 function getSpellsFromJSON(json: any): SpellInfo[] {

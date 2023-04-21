@@ -27,16 +27,11 @@ export type Title = (typeof TITLES)[number];
 export type Ancestry = (typeof ANCESTRIES)[number];
 export type Language = (typeof LANGUAGES)[number];
 
+export const STATS = ["STR", "DEX", "CON", "INT", "WIS", "CHA"] as const;
+export type Stat = (typeof STATS)[number];
 export type StatBlock = {
-  STR: number;
-  DEX: number;
-  CON: number;
-  INT: number;
-  WIS: number;
-  CHA: number;
+  [key in Stat]: number;
 };
-
-export type Stat = keyof StatBlock;
 
 export type PlayerCharacter = {
   name: string;
@@ -75,7 +70,7 @@ export function calculateModifierForPlayerStat(
 export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
   let acModifier = 0;
   for (const b of pc.bonuses) {
-    if (b.bonusType === "modifyAmt" && b.bonusTo === "armorClass") {
+    if (b.type === "modifyAmt" && b.bonusTo === "armorClass") {
       acModifier += b.bonusAmount;
     }
   }
@@ -90,7 +85,7 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
     .flat();
 
   for (const b of gearBonuses) {
-    if (b.bonusType === "modifyAmt" && b.bonusTo === "armorClass") {
+    if (b.type === "modifyAmt" && b.bonusTo === "armorClass") {
       acModifier += b.bonusAmount;
     }
   }
@@ -150,7 +145,7 @@ export function calculateGearSlotsForPlayer(pc: PlayerCharacter) {
   // TODO Hauler talent
 
   const bonuses = pc.bonuses.reduce((acc: number, b: Bonus) => {
-    if (b.bonusType === "modifyAmt" && b.bonusTo === "gearSlots") {
+    if (b.type === "modifyAmt" && b.bonusTo === "gearSlots") {
       return acc + b.bonusAmount;
     } else {
       return acc;
