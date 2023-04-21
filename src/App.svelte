@@ -69,7 +69,12 @@
       </div>
       <div class="row-span-2 cell">
         <h2>HP</h2>
-        <input type="number" min="0" bind:value={$pc.hitPoints} />
+        <input
+          type="number"
+          inputmode="numeric"
+          min="0"
+          bind:value={$pc.hitPoints}
+        />
       </div>
       <div class="row-span-2 cell">
         <h2>AC</h2>

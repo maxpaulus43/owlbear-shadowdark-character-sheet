@@ -34,6 +34,7 @@
     <div>Slots</div>
     <input
       type="number"
+      inputmode="numeric"
       min="0"
       bind:value={customGearSlots}
       class="border p-1 w-12"
@@ -43,6 +44,7 @@
     <div>Cost</div>
     <input
       type="number"
+      inputmode="numeric"
       min="0"
       bind:value={customGearCost}
       class="border p-1 w-20"
@@ -60,6 +62,7 @@
     <div>Quantity</div>
     <input
       type="number"
+      inputmode="numeric"
       bind:value={customGearQuantity}
       min="0"
       class="border p-1 w-20"

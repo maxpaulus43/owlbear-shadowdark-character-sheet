@@ -16,6 +16,7 @@
   <div class="sheet-stat flex gap-1">
     <input
       type="number"
+      inputmode="numeric"
       bind:value={$pc.stats[forStat]}
       min="1"
       max="20"

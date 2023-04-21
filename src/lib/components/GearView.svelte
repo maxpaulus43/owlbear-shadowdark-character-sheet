@@ -61,11 +61,10 @@
         .map((w) => w as WeaponInfo);
       if (equippedWeapons.length == 0) return true; // no equipped weapons means i can equip
       if (equippedWeapons.length > 1) return false; // more than 1 equpped weapons means i can't equip
-      if (
-        !equippedWeapons[0].damage.oneHanded ||
-        !(g as WeaponInfo).damage.oneHanded
-      )
-        return false; // holding a two handed means I can't equip
+      // at this point, we know that there is exactly 1 equipped weapon.
+      const isEquippedWeaponTwoHanded = !equippedWeapons[0].damage.oneHanded;
+      const isNewWeaponTwoHanded = !(g as WeaponInfo).damage.oneHanded;
+      if (isEquippedWeaponTwoHanded || isNewWeaponTwoHanded) return false; // holding a two handed means I can't equip
       return true;
     } else if (g.type === "Armor") {
       const equippedArmor = $pc.gear
