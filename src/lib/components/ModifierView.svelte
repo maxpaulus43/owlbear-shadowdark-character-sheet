@@ -3,10 +3,11 @@
     calculateModifierForPlayerStat,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
+  import type { Stat } from "../model/PlayerCharacter";
   import { clamp, addSign } from "../utils";
   import Modal from "./Modal.svelte";
 
-  export let forStat;
+  export let forStat: Stat;
   $: bonuses = [];
   // $pc.bonuses
   //   .filter((b) => b.bonusTo.includes(forStat))

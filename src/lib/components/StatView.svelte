@@ -5,8 +5,9 @@
     PlayerCharacterStore,
     calculateModifierForPlayerStat,
   } from "../model/PlayerCharacter";
+  import type { Stat } from "../model/PlayerCharacter";
 
-  export let forStat;
+  export let forStat: Stat;
   const pc = PlayerCharacterStore;
   $: modifier = calculateModifierForPlayerStat($pc, forStat);
 </script>
