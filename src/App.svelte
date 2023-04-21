@@ -119,7 +119,7 @@
         <h2>XP</h2>
         <div class="sheet-stat flex gap-1">
           {#if $pc.level < 10}
-            <input type="number" min="0" bind:value={$pc.xp} /> /
+            <input type="number" inputmode="numeric" min="0" bind:value={$pc.xp} /> /
             <div>{xpCap}</div>
           {:else}
             MAX LEVEL
