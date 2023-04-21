@@ -52,7 +52,7 @@ export const CLASS_TALENTS: { [key in Class]: Talent[] } = {
           bonusTo: "attackRoll",
           metadata: {
             type: "weaponType",
-            weaponType: "Melee",
+            weaponType: "Ranged",
           },
         },
       ],
