@@ -1,6 +1,6 @@
-import type { SpellInfo } from "../types";
+import type { SpellInfo } from "../model/Spell";
 
-const SPELLS: SpellInfo[] = [
+export const SPELLS: SpellInfo[] = [
   {
     name: "Charm Person",
     range: "Near",

@@ -38,18 +38,9 @@ export type StatBonusMetaData = {
   stat: Stat;
 };
 
-export type ChooseArmorBonusMetaData = {
-  type: "chooseArmor";
-};
-
-export type ChooseWeaponBonusMetaData = {
-  type: "chooseWeapon";
-  filterByWeaponTypes?: WeaponType[];
-};
-
-export type ChooseStatBonusMetaData = {
-  type: "chooseStat";
-  filterByStat?: Stat[];
+export type SpellBonusMetaData = {
+  type: "spell";
+  spell: string;
 };
 
 export type BonusMetaData =
@@ -57,9 +48,7 @@ export type BonusMetaData =
   | WeaponTypeBonusMetaData
   | ArmorBonusMetaData
   | StatBonusMetaData
-  | ChooseArmorBonusMetaData
-  | ChooseWeaponBonusMetaData
-  | ChooseStatBonusMetaData;
+  | SpellBonusMetaData;
 
 export type GenericBonus = {
   name: string;

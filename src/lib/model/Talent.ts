@@ -14,4 +14,12 @@ export type BonusTalent = Merge<
   }
 >;
 
-export type Talent = GenericTalent | BonusTalent;
+export type ChooseBonusTalent = Merge<
+  GenericTalent,
+  {
+    type: "chooseBonus";
+    choices: (Bonus | Bonus[])[];
+  }
+>;
+
+export type Talent = GenericTalent | BonusTalent | ChooseBonusTalent;
