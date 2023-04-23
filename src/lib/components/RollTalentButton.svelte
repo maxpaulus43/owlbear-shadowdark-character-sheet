@@ -1,12 +1,9 @@
 <script lang="ts">
   import Modal from "./Modal.svelte";
   import { rollDice } from "../utils";
-  import { STATS } from "../model/PlayerCharacter";
   import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import { CLASS_TALENTS } from "../compendium/talentCompendium";
-  import type { ChooseStatBonusMetaData } from "../model/Bonus";
-  import { ARMORS } from "../compendium/armorCompendium";
-  import { WEAPONS } from "../compendium/weaponCompendium";
+
   let showModal = false;
 
   $: if (!showModal) {
@@ -41,37 +38,41 @@
   let options = [];
   let selectedOption: string;
 
+  // $: if (highlight > -1) {
+  //   const highlightedTalent = CLASS_TALENTS[$pc.class][highlight];
+  //
+  //   if (highlightedTalent.type === "bonus") {
+  //     for (const b of highlightedTalent.bonuses) {
+  //       const metadata = b.metadata;
+  //
+  //       switch (metadata.type) {
+  //         case "weapon":
+  //         // fall through
+  //         case "weaponType":
+  //         // fall through
+  //         case "armor":
+  //         // fall through
+  //         case "stat":
+  //           $pc.bonuses.push(b);
+  //           break;
+  //         case "chooseArmor":
+  //           options = ARMORS.map((a) => a.name);
+  //           break;
+  //         case "chooseWeapon":
+  //           options = WEAPONS.map((w) => w.name);
+  //           break;
+  //         case "chooseStat":
+  //           options = (metadata as ChooseStatBonusMetaData).filterByStat ?? [
+  //             ...STATS,
+  //           ];
+  //           break;
+  //       }
+  //     }
+  //   }
+  // }
+
   $: if (highlight > -1) {
     const highlightedTalent = CLASS_TALENTS[$pc.class][highlight];
-
-    if (highlightedTalent.type === "bonus") {
-      for (const b of highlightedTalent.bonuses) {
-        const metadata = b.metadata;
-
-        switch (metadata.type) {
-          case "weapon":
-          // fall through
-          case "weaponType":
-          // fall through
-          case "armor":
-          // fall through
-          case "stat":
-            $pc.bonuses.push(b);
-            break;
-          case "chooseArmor":
-            options = ARMORS.map((a) => a.name);
-            break;
-          case "chooseWeapon":
-            options = WEAPONS.map((w) => w.name);
-            break;
-          case "chooseStat":
-            options = (metadata as ChooseStatBonusMetaData).filterByStat ?? [
-              ...STATS,
-            ];
-            break;
-        }
-      }
-    }
   }
 
   function reset() {
@@ -82,7 +83,7 @@
   }
 
   function updateSheet() {
-    // TODO apply the choose bonuses here
+    // TODO apply the bonuses here
     $pc = $pc;
     showModal = false;
   }
@@ -126,64 +127,3 @@
     </button>
   {/if}
 </Modal>
-
-<!--component
-   // const talents: {
-  //   [key in Class]: { [desc: string]: Function };
-  // } = {
-  //   Priest: {
-  //     "Gain advantage on casting one spell you know": () => {},
-  //     "+1 to melee or ranged attacks": () => {
-  //       showMeleeOrRanged = true;
-  //       doneAction = () => {
-  //         $pc.bonuses.push({
-  //           bonusTo: "attackRoll",
-  //           bonusType: "modifyAmt",
-  //           bonusAmount: 1,
-  //           name: `+1${meleeRangedSelection}`,
-  //           desc: `+1 to ${meleeRangedSelection}  weapon attack rolls`,
-  //         });
-  //       };
-  //     },
-  //     "+1 to priest spellcasting checks": () => {
-  //       doneAction = () => {
-  //         $pc.bonuses.push({
-  //           bonusTo: "spellcastRoll",
-  //           bonusType: "modifyAmt",
-  //           bonusAmount: 1,
-  //           name: "blah",
-  //           desc: "+1 to spellcasting checks",
-  //         });
-  //       };
-  //     },
-  //     "+2 to Strength or Wisdom stat": () => {
-  //       showStrOrWis = true;
-  //       doneAction = () => {
-  //         $pc.stats[strWisSelection] += 2;
-  //       };
-  //     },
-  //     "Choose a talent or +2 points to distribute to stats": () => {},
-  //   },
-  //   Fighter: {
-  //     "Gain Weapon Mastery with one additional weapon": () => {},
-  //     "+1 to melee and ranged attacks": () => {},
-  //     "+2 to Strength, Dexterity, or Constitution stat": () => {},
-  //     "Choose one kind of armor. You get +1 AC from that armor": () => {},
-  //     "Choose a talent or +2 points to distribute to stats": () => {},
-  //   },
-  //   Thief: {
-  //     "Gain advantage on initiative rolls (reroll if duplicate)": () => {},
-  //     "Your Backstab deals +1 dice of damage": () => {},
-  //     "+2 to Strength, Dexterity, or Charisma stat": () => {},
-  //     "+1 to melee and ranged attacks": () => {},
-  //     "Choose a talent or +2 points to distribute to stats": () => {},
-  //   },
-  //   Wizard: {
-  //     "Make one random magic item (see GM Quickstart Guide)": () => {},
-  //     "+2 to Intelligence stat or +1 to wizard spellcasting checks": () => {},
-  //     "Gain advantage on casting one spell you know": () => {},
-  //     "Learn one additional wizard spell of any tier you know": () => {},
-  //     "Choose a talent or +2 points to distribute to stats": () => {},
-  //   },
-  // };
--->
