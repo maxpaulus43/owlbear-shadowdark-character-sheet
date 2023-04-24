@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { importFromJson } from "../src/lib/JSONImporter";
   import {
     calculateArmorClassForPlayer,
     calculateTitleForPlayer,
@@ -19,6 +18,7 @@
   import GearView from "./lib/components/GearView.svelte";
   import AttacksView from "./lib/components/AttacksView.svelte";
   import savePlayerToFile from "./lib/services/FileSaver";
+  import { importFromJson } from "./lib/services/JSONImporter";
 
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);

@@ -1,10 +1,9 @@
-import type { Player } from "@owlbear-rodeo/sdk";
-import { findGear, findSpell } from "./compendium";
-import { SCHEMA_TYPE } from "./constants";
-import type { Bonus, SDBonus } from "./model/Bonus";
-import type { Gear } from "./model/Gear";
-import type { PlayerCharacter } from "./model/PlayerCharacter";
-import type { SpellInfo } from "./model/Spell";
+import { findAny, findGear, findSpell } from "../compendium";
+import { SCHEMA_TYPE } from "../constants";
+import type { Bonus, SDBonus } from "../model/Bonus";
+import type { Gear } from "../model/Gear";
+import type { PlayerCharacter } from "../model/PlayerCharacter";
+import type { SpellInfo } from "../model/Spell";
 
 export function importFromJson(jsonStr: string): PlayerCharacter {
   const json = JSON.parse(jsonStr);
@@ -22,7 +21,7 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
   const gear: Gear[] = [];
 
   for (const g of json.gear) {
-    const foundGear = findGear(g.name);
+    const foundGear = findAny(g.name);
     if (!foundGear) continue;
     gear.push({ name: foundGear.name, quantity: g.quantity });
   }

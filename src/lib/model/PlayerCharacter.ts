@@ -134,7 +134,7 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
     acModifier += a.ac.modifier + statModifier;
 
     if (a.ac.base > 0) {
-      return a.ac.base + acModifier;
+      return Math.max(a.ac.base, pc.armorClass) + acModifier;
     }
   }
 
