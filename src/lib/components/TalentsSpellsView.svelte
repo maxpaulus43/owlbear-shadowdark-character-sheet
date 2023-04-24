@@ -13,7 +13,7 @@
   import type { Bonus } from "../model/Bonus";
 
   $: spells = $pc.spells;
-  $: hasSpells = spells.length > 0;
+  $: hasSpells = spells?.length > 0;
 
   $: equippableGearWithBonuses = $pc.gear
     .filter((g) => g.equipped)

@@ -216,3 +216,29 @@ export function addBonusToPlayer(pc: PlayerCharacter, b: Bonus) {
 export function deleteBonusForPlayer(pc: PlayerCharacter, theBonus: Bonus) {
   pc.bonuses = pc.bonuses.filter((b) => b.name !== theBonus.name);
 }
+
+export function defaultPC(): PlayerCharacter {
+  return {
+    name: "",
+    ancestry: "Human",
+    class: "Thief",
+    level: 0,
+    title: "Rook",
+    alignment: "Lawful",
+    background: "Scout",
+    deity: "Gede",
+    gear: [],
+    stats: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
+    bonuses: [],
+    maxHitPoints: 1,
+    armorClass: 10,
+    gearSlotsTotal: 10,
+    gold: 0,
+    silver: 0,
+    copper: 0,
+    languages: ["Common"],
+    xp: 0,
+    spells: [],
+    hitPoints: 1,
+  };
+}

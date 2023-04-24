@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { importFromJson } from "./lib/ShadowDarklingsImporter";
+  import { importFromJson } from "../src/lib/JSONImporter";
   import {
     calculateArmorClassForPlayer,
     calculateTitleForPlayer,
+    defaultPC,
     levelUpPlayer,
     PlayerCharacterStore as pc,
   } from "./lib/model/PlayerCharacter";
@@ -13,20 +14,33 @@
     CLASSES,
     DEITIES,
   } from "./lib/constants";
-  import drance from "./lib/compendium/Drance.json";
   import TalentsSpellsView from "./lib/components/TalentsSpellsView.svelte";
   import StatView from "./lib/components/StatView.svelte";
   import GearView from "./lib/components/GearView.svelte";
   import AttacksView from "./lib/components/AttacksView.svelte";
   import savePlayerToFile from "./lib/services/FileSaver";
 
-  $pc = importFromJson(drance);
-  // trackPlayerHistory();
+  // TODO trackPlayerHistory();
+  $pc = defaultPC();
 
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);
   $: xpCap = $pc.level === 0 ? 10 : $pc.level * 10;
   $: canLevel = $pc.level < 10 && $pc.xp >= xpCap;
+
+  let files: FileList;
+  $: if (files) {
+    // https://developer.mozilla.org/en-US/docs/Web/API/FileList
+    for (const file of files) {
+      file.text().then((txt) => {
+        $pc = importFromJson(txt);
+      });
+      files = undefined;
+      break;
+    }
+  }
+
+  // TODO save/load from local storage
 </script>
 
 <main>
@@ -45,19 +59,20 @@
               for="jsonImport"
               class="bg-black text-white p-2 rounded-md text-xs hover:scale-105 transition active:opacity-50"
             >
-              <div>Import From JSON</div>
+              <div>Import JSON</div>
               <input
                 id="jsonImport"
                 type="file"
                 class="hidden"
                 accept="application/json"
+                bind:files
               />
             </label>
             <button
               class="bg-black text-white p-2 rounded-md text-xs hover:scale-105 transition active:opacity-50"
               on:click={() => {
                 savePlayerToFile($pc);
-              }}>Export to JSON</button
+              }}>Export JSON</button
             >
           </div>
         </div>

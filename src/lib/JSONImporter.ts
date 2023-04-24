@@ -1,11 +1,22 @@
-import type { comment } from "svelte/internal";
+import type { Player } from "@owlbear-rodeo/sdk";
 import { findGear, findSpell } from "./compendium";
+import { SCHEMA_TYPE } from "./constants";
 import type { Bonus, SDBonus } from "./model/Bonus";
 import type { Gear } from "./model/Gear";
 import type { PlayerCharacter } from "./model/PlayerCharacter";
 import type { SpellInfo } from "./model/Spell";
 
-export function importFromJson(json: any): PlayerCharacter {
+export function importFromJson(jsonStr: string): PlayerCharacter {
+  const json = JSON.parse(jsonStr);
+  if (json["schemaType"] === SCHEMA_TYPE) {
+    // TODO schema versioning. i.e. If schema version is old, then migrate to new schema.
+    return json as PlayerCharacter;
+  } else {
+    return importFromShadowDarklingsJson(json);
+  }
+}
+
+function importFromShadowDarklingsJson(json: any): PlayerCharacter {
   const spells: SpellInfo[] = getSpellsFromJSON(json);
 
   const gear: Gear[] = [];
