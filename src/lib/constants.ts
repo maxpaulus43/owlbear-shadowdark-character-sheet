@@ -1,3 +1,6 @@
+export const SCHEMA_VERSION = "1.0.0";
+export const SCHEMA_TYPE = "sd-char-sheet";
+
 export const ALIGNMENTS = ["Neutral", "Lawful", "Chaotic"] as const;
 
 export const DEITIES = [

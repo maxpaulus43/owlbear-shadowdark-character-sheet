@@ -125,7 +125,10 @@
     </button>
   {/if}
   {#if options.length}
-    <select bind:value={selectedOption}>
+    <select
+      bind:value={selectedOption}
+      class="w-full p-1 bg-gray-200 my-4 rounded-md"
+    >
       {#each options as o}
         <option value={o}>{stringForOption(o)}</option>
       {/each}

@@ -117,6 +117,7 @@ export const CLASS_TALENTS: { [key in Class]: Talent[] } = {
             bonusAmount: 1,
             metadata: {
               type: "armor",
+              armor: a.name,
             },
           } as Bonus)
       ),

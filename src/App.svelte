@@ -18,6 +18,7 @@
   import StatView from "./lib/components/StatView.svelte";
   import GearView from "./lib/components/GearView.svelte";
   import AttacksView from "./lib/components/AttacksView.svelte";
+  import savePlayerToFile from "./lib/services/FileSaver";
 
   $pc = importFromJson(drance);
   // trackPlayerHistory();
@@ -40,11 +41,23 @@
         <div class="flex gap-1 justify-around">
           <h1 class="">Shadowdark</h1>
           <div class="flex flex-col gap-1">
-            <button class="bg-black text-white p-2 text-xs"
-              >Import from JSON</button
+            <label
+              for="jsonImport"
+              class="bg-black text-white p-2 rounded-md text-xs hover:scale-105 transition active:opacity-50"
             >
-            <button class="bg-black text-white p-2 text-xs" on:click={() => {}}
-              >Export to JSON</button
+              <div>Import From JSON</div>
+              <input
+                id="jsonImport"
+                type="file"
+                class="hidden"
+                accept="application/json"
+              />
+            </label>
+            <button
+              class="bg-black text-white p-2 rounded-md text-xs hover:scale-105 transition active:opacity-50"
+              on:click={() => {
+                savePlayerToFile($pc);
+              }}>Export to JSON</button
             >
           </div>
         </div>
