@@ -14,6 +14,7 @@ export const BONUS_TOS = [
   "initiativeRoll",
   "talentRoll",
   "backstabDice",
+  "hp",
 ] as const;
 
 export type BonusTo = (typeof BONUS_TOS)[number];

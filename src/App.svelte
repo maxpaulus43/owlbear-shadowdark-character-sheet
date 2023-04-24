@@ -3,7 +3,7 @@
   import {
     calculateArmorClassForPlayer,
     calculateTitleForPlayer,
-    defaultPC,
+    calculateTotalHitPointsForPlayer,
     levelUpPlayer,
     PlayerCharacterStore as pc,
   } from "./lib/model/PlayerCharacter";
@@ -119,13 +119,19 @@
         <input
           type="number"
           inputmode="numeric"
+          class="pirata text-6xl text-center"
           min="0"
           bind:value={$pc.hitPoints}
         />
+        <div>Total HP: {calculateTotalHitPointsForPlayer($pc)}</div>
       </div>
       <div class="row-span-2 cell">
         <h2>AC</h2>
-        <div>{ac}</div>
+        <div
+          class="flex justify-center items-center w-full h-full text-7xl pirata"
+        >
+          {ac}
+        </div>
       </div>
       <div class="col-span-full row-span-2 cell">
         <AttacksView />

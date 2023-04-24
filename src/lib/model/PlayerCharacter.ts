@@ -220,6 +220,18 @@ export function deleteBonusForPlayer(pc: PlayerCharacter, theBonus: Bonus) {
   pc.bonuses = pc.bonuses.filter((b) => b.name !== theBonus.name);
 }
 
+export function calculateTotalHitPointsForPlayer(pc: PlayerCharacter): number {
+  const baseMaxHP = pc.maxHitPoints;
+  const bonuses = pc.bonuses
+    .filter((b) => {
+      return b.type === "modifyAmt" && b.bonusTo === "hp";
+    })
+    .reduce((acc, b: ModifyBonus) => {
+      return acc + b.bonusAmount;
+    }, 0);
+  return baseMaxHP + bonuses;
+}
+
 export function defaultPC(): PlayerCharacter {
   return {
     name: "",
