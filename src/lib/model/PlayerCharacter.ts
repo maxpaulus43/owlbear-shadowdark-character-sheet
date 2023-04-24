@@ -94,14 +94,14 @@ export function calculateBonusForPlayerStat(
         b.metadata?.type === "stat" &&
         b.metadata.stat === stat
     )
-    .reduce((acc, b: ModifyBonus) => acc + b.bonusAmount, 0);
+    .reduce((acc, b: ModifyBonus) => acc + calculateBonusAmount(pc, b), 0);
 }
 
 export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
   let acModifier = 0;
   for (const b of pc.bonuses) {
     if (b.type === "modifyAmt" && b.bonusTo === "armorClass") {
-      acModifier += b.bonusAmount;
+      acModifier += calculateBonusAmount(pc, b);
     }
   }
 
@@ -116,7 +116,7 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
 
   for (const b of gearBonuses) {
     if (b.type === "modifyAmt" && b.bonusTo === "armorClass") {
-      acModifier += b.bonusAmount;
+      acModifier += calculateBonusAmount(pc, b);
     }
   }
 
@@ -157,7 +157,7 @@ export function calculateSpellCastingModifierForPlayer(
   );
   result += baseModifier;
 
-  // TODO bonuses
+  // TODO spellcasting bonuses
 
   return result;
 }
@@ -176,7 +176,7 @@ export function calculateGearSlotsForPlayer(pc: PlayerCharacter) {
 
   const bonuses = pc.bonuses.reduce((acc: number, b: Bonus) => {
     if (b.type === "modifyAmt" && b.bonusTo === "gearSlots") {
-      return acc + b.bonusAmount;
+      return acc + calculateBonusAmount(pc, b);
     } else {
       return acc;
     }
@@ -227,9 +227,19 @@ export function calculateTotalHitPointsForPlayer(pc: PlayerCharacter): number {
       return b.type === "modifyAmt" && b.bonusTo === "hp";
     })
     .reduce((acc, b: ModifyBonus) => {
-      return acc + b.bonusAmount;
+      return acc + calculateBonusAmount(pc, b);
     }, 0);
   return baseMaxHP + bonuses;
+}
+
+export function calculateBonusAmount(
+  pc: PlayerCharacter,
+  b: ModifyBonus
+): number {
+  if (b.bonusIncreaseRatePerLevel) {
+    return b.bonusAmount + Math.floor(pc.level * b.bonusIncreaseRatePerLevel);
+  }
+  return b.bonusAmount;
 }
 
 export function defaultPC(): PlayerCharacter {

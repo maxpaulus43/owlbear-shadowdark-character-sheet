@@ -69,6 +69,7 @@ export type ModifyBonus = Merge<
     type: "modifyAmt";
     bonusTo: BonusTo;
     bonusAmount: number;
+    bonusIncreaseRatePerLevel?: number; // bonus amount increases at this rate per level (rounded down)
   }
 >;
 
