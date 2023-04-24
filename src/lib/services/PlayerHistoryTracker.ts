@@ -18,11 +18,9 @@ export function createUndoRedoStore<T>(store: Writable<T>) {
     }
 
     if (history.length > MAX_HISTORY_ENTRIES) {
-      console.log("purging old entries...");
       history.splice(0, 1);
       historyIndex = Math.max(0, historyIndex - 1);
     }
-    console.log("History: ", history);
 
     canUndo.set(true);
     canRedo.set(false);
