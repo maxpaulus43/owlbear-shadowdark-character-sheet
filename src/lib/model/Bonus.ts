@@ -2,18 +2,21 @@ import type { Merge } from "../types";
 import type { Stat } from "./PlayerCharacter";
 import type { WeaponType } from "./Weapon";
 
-export type BonusTo =
-  | "hpRoll"
-  | "attackRoll"
-  | "spellcastRoll"
-  | "damageRoll"
-  | "gearSlots"
-  | "statRoll"
-  | "stat"
-  | "armorClass"
-  | "initiativeRoll"
-  | "talentRoll"
-  | "backstabDice";
+export const BONUS_TOS = [
+  "hpRoll",
+  "attackRoll",
+  "spellcastRoll",
+  "damageRoll",
+  "gearSlots",
+  "statRoll",
+  "stat",
+  "armorClass",
+  "initiativeRoll",
+  "talentRoll",
+  "backstabDice",
+] as const;
+
+export type BonusTo = (typeof BONUS_TOS)[number];
 
 export type BonusSourceCategory = "Ability" | "Talent";
 export type BonusSourceType = "Ancestry" | "Class" | "Gear";
@@ -56,6 +59,7 @@ export type GenericBonus = {
   bonusSource?: BonusSourceType;
   type: "generic";
   metadata?: BonusMetaData;
+  editable?: boolean;
 };
 
 export type ModifyBonus = Merge<

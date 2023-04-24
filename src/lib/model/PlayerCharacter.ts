@@ -12,7 +12,7 @@ import {
 } from "../constants";
 import { clamp, toInfo } from "../utils";
 import type { ArmorInfo } from "./Armor";
-import type { Bonus } from "./Bonus";
+import type { Bonus, ModifyBonus } from "./Bonus";
 import type { Gear } from "./Gear";
 import type { SpellInfo } from "./Spell";
 import type { WeaponInfo } from "./Weapon";
@@ -62,9 +62,36 @@ export function calculateModifierForPlayerStat(
   stat: Stat
 ): number {
   let finalModifier = 0;
-  const baseModifier = clamp(Math.floor((pc.stats[stat] - 10) / 2), -4, 4);
+  const baseModifier = clamp(
+    Math.floor((calculateStatValueForPlayerStat(pc, stat) - 10) / 2),
+    -4,
+    4
+  );
   finalModifier += baseModifier;
   return finalModifier;
+}
+
+export function calculateStatValueForPlayerStat(
+  pc: PlayerCharacter,
+  stat: Stat
+): number {
+  const baseStat = pc.stats[stat];
+  return baseStat + calculateBonusForPlayerStat(pc, stat);
+}
+
+export function calculateBonusForPlayerStat(
+  pc: PlayerCharacter,
+  stat: Stat
+): number {
+  return pc.bonuses
+    .filter(
+      (b) =>
+        b.type === "modifyAmt" &&
+        b.bonusTo === "stat" &&
+        b.metadata?.type === "stat" &&
+        b.metadata.stat === stat
+    )
+    .reduce((acc, b: ModifyBonus) => acc + b.bonusAmount, 0);
 }
 
 export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
@@ -180,4 +207,12 @@ export function learnSpellForPlayer(pc: PlayerCharacter, spell: SpellInfo) {
 
 export function unlearnSpellForPlayer(pc: PlayerCharacter, spell: SpellInfo) {
   pc.spells = pc.spells.filter((s) => s.name !== spell.name);
+}
+
+export function addBonusToPlayer(pc: PlayerCharacter, b: Bonus) {
+  pc.bonuses.push(b);
+}
+
+export function deleteBonusForPlayer(pc: PlayerCharacter, theBonus: Bonus) {
+  pc.bonuses = pc.bonuses.filter((b) => b.name !== theBonus.name);
 }

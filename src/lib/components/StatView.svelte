@@ -3,13 +3,21 @@
   import ModifierView from "./ModifierView.svelte";
   import {
     PlayerCharacterStore,
+    calculateBonusForPlayerStat,
     calculateModifierForPlayerStat,
+    calculateStatValueForPlayerStat,
   } from "../model/PlayerCharacter";
   import type { Stat } from "../model/PlayerCharacter";
 
   export let forStat: Stat;
   const pc = PlayerCharacterStore;
   $: modifier = calculateModifierForPlayerStat($pc, forStat);
+  $: statValue = calculateStatValueForPlayerStat($pc, forStat);
+  function onInput(e: Event) {
+    $pc.stats[forStat] =
+      parseInt((e.target as HTMLInputElement).value) -
+      calculateBonusForPlayerStat($pc, forStat);
+  }
 </script>
 
 <div class="flex flex-col">
@@ -18,7 +26,8 @@
     <input
       type="number"
       inputmode="numeric"
-      bind:value={$pc.stats[forStat]}
+      value={statValue}
+      on:input={onInput}
       min="1"
       max="20"
       class="w-1/2 border border-gray-500 p-1"

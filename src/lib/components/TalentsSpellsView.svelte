@@ -4,10 +4,13 @@
   import RollTalentButton from "./RollTalentButton.svelte";
   import {
     calculateSpellCastingModifierForPlayer,
+    deleteBonusForPlayer,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import { addSign, alphabetically } from "../utils";
   import { findAny } from "../compendium";
+  import AddBonusButton from "./AddBonusButton.svelte";
+  import type { Bonus } from "../model/Bonus";
 
   $: spells = $pc.spells;
   $: hasSpells = spells.length > 0;
@@ -21,6 +24,16 @@
     .filter((g) => !g.equipped)
     .map((g) => findAny(g.name))
     .filter((g) => g && g.playerBonuses?.length > 0 && !g.canBeEquipped);
+
+  function deleteBonus(b: Bonus) {
+    deleteBonusForPlayer($pc, b);
+    $pc = $pc;
+  }
+
+  function editBonus(b: Bonus) {
+    // TODO edit bonus
+    $pc = $pc;
+  }
 </script>
 
 <h2>SPELLS / BONUSES / LANGUAGES</h2>
@@ -48,9 +61,27 @@
   <AddNewSpellButton />
 
   <h2>Bonuses</h2>
-  <ul class="list-disc">
+  <ul class="px-1">
     {#each $pc.bonuses.sort((a, b) => alphabetically(a.desc, b.desc)) as b}
-      <li class="border-b">{b.desc}</li>
+      <li class="border-b flex justify-between gap-3 items-center">
+        <div>{b.desc}</div>
+        {#if b.editable}
+          <div class="flex gap-1">
+            <button
+              class="pt-1 px-1 rounded-md bg-black text-white"
+              on:click={() => editBonus(b)}
+            >
+              <i class="material-icons">edit</i>
+            </button>
+            <button
+              class="pt-1 px-1 rounded-md bg-black text-white"
+              on:click={() => deleteBonus(b)}
+            >
+              <i class="material-icons">delete</i>
+            </button>
+          </div>
+        {/if}
+      </li>
     {/each}
   </ul>
 
@@ -79,6 +110,8 @@
   </ul>
 
   <RollTalentButton />
+
+  <AddBonusButton />
 
   <h2>Languages</h2>
   <ul>
