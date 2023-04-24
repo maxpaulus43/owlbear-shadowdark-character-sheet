@@ -10,6 +10,7 @@ import {
   TITLES,
   TITLE_MAP,
 } from "../constants";
+import { createUndoRedoStore } from "../services/PlayerHistoryTracker";
 import { clamp, toInfo } from "../utils";
 import type { ArmorInfo } from "./Armor";
 import type { Bonus, ModifyBonus } from "./Bonus";
@@ -17,7 +18,9 @@ import type { Gear } from "./Gear";
 import type { SpellInfo } from "./Spell";
 import type { WeaponInfo } from "./Weapon";
 
-export const PlayerCharacterStore = writable<PlayerCharacter>();
+export const PlayerCharacterStore = createUndoRedoStore(
+  writable<PlayerCharacter>(defaultPC())
+);
 
 export type Alignment = (typeof ALIGNMENTS)[number];
 export type Deity = (typeof DEITIES)[number];

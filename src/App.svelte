@@ -20,17 +20,16 @@
   import AttacksView from "./lib/components/AttacksView.svelte";
   import savePlayerToFile from "./lib/services/FileSaver";
 
-  // TODO trackPlayerHistory();
-  $pc = defaultPC();
-
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);
   $: xpCap = $pc.level === 0 ? 10 : $pc.level * 10;
   $: canLevel = $pc.level < 10 && $pc.xp >= xpCap;
+  const { canUndo, canRedo } = pc;
 
   let files: FileList;
   $: if (files) {
     // https://developer.mozilla.org/en-US/docs/Web/API/FileList
+    // there should only be one file
     for (const file of files) {
       file.text().then((txt) => {
         $pc = importFromJson(txt);
@@ -53,7 +52,27 @@
     >
       <div class="col-span-full cell">
         <div class="flex gap-1 justify-around">
-          <h1 class="">Shadowdark</h1>
+          <div class="flex flex-col items-center">
+            <h1 class="">Shadowdark</h1>
+            <div class="-translate-y-2">
+              <button
+                on:click={() => pc.undo()}
+                class:opacity-50={!$canUndo}
+                disabled={!$canUndo}
+                class="bg-black text-white rounded-md"
+              >
+                <i class="material-icons translate-y-1 px-1">undo</i>
+              </button>
+              <button
+                on:click={() => pc.redo()}
+                class:opacity-50={!$canRedo}
+                disabled={!$canRedo}
+                class="bg-black text-white rounded-md"
+              >
+                <i class="material-icons translate-y-1 px-1">redo</i>
+              </button>
+            </div>
+          </div>
           <div class="flex flex-col gap-1">
             <label
               for="jsonImport"
