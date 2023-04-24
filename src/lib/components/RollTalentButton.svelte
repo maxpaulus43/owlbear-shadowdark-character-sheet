@@ -1,8 +1,12 @@
 <script lang="ts">
   import Modal from "./Modal.svelte";
   import { rollDice } from "../utils";
-  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
+  import {
+    addBonusToPlayer,
+    PlayerCharacterStore as pc,
+  } from "../model/PlayerCharacter";
   import { CLASS_TALENTS } from "../compendium/talentCompendium";
+  import type { Bonus } from "../model/Bonus";
 
   let showModal = false;
 
@@ -23,6 +27,7 @@
   let highlight = -1;
   function rollTalent() {
     const result = rollDice("d6") + rollDice("d6");
+    // const result = 2;
 
     canRoll = false;
     for (let i = 0; i < ranges.length; i++) {
@@ -35,44 +40,39 @@
     }
   }
 
-  let options = [];
-  let selectedOption: string;
+  let options: (Bonus | Bonus[])[] = [];
+  let selectedOption: Bonus | Bonus[];
+  let updateAction = () => {};
 
-  // $: if (highlight > -1) {
-  //   const highlightedTalent = CLASS_TALENTS[$pc.class][highlight];
-  //
-  //   if (highlightedTalent.type === "bonus") {
-  //     for (const b of highlightedTalent.bonuses) {
-  //       const metadata = b.metadata;
-  //
-  //       switch (metadata.type) {
-  //         case "weapon":
-  //         // fall through
-  //         case "weaponType":
-  //         // fall through
-  //         case "armor":
-  //         // fall through
-  //         case "stat":
-  //           $pc.bonuses.push(b);
-  //           break;
-  //         case "chooseArmor":
-  //           options = ARMORS.map((a) => a.name);
-  //           break;
-  //         case "chooseWeapon":
-  //           options = WEAPONS.map((w) => w.name);
-  //           break;
-  //         case "chooseStat":
-  //           options = (metadata as ChooseStatBonusMetaData).filterByStat ?? [
-  //             ...STATS,
-  //           ];
-  //           break;
-  //       }
-  //     }
-  //   }
-  // }
+  function setOptionsForHighlight(highlight: number) {
+    const highlightedTalent = CLASS_TALENTS[$pc.class][highlight];
+
+    switch (highlightedTalent.type) {
+      case "generic":
+        // TODO generic talent?
+        break;
+      case "bonus":
+        updateAction = () => {
+          for (const b of highlightedTalent.bonuses) {
+            addBonusToPlayer($pc, b);
+          }
+        };
+        break;
+      case "chooseBonus":
+        options = highlightedTalent.choices;
+    }
+  }
+
+  function stringForOption(o: Bonus | Bonus[]): string {
+    if (Array.isArray(o)) {
+      return o.map((o) => o.name).join(" & ");
+    } else {
+      return o.name;
+    }
+  }
 
   $: if (highlight > -1) {
-    const highlightedTalent = CLASS_TALENTS[$pc.class][highlight];
+    setOptionsForHighlight(highlight);
   }
 
   function reset() {
@@ -80,10 +80,21 @@
     highlight = -1;
     showDone = false;
     options = [];
+    selectedOption = undefined;
   }
 
   function updateSheet() {
-    // TODO apply the bonuses here
+    if (selectedOption) {
+      if (Array.isArray(selectedOption)) {
+        for (const b of selectedOption) {
+          addBonusToPlayer($pc, b);
+        }
+      } else {
+        addBonusToPlayer($pc, selectedOption);
+      }
+    } else {
+      updateAction();
+    }
     $pc = $pc;
     showModal = false;
   }
@@ -116,11 +127,10 @@
   {#if options.length}
     <select bind:value={selectedOption}>
       {#each options as o}
-        <option>{o}</option>
+        <option value={o}>{stringForOption(o)}</option>
       {/each}
     </select>
   {/if}
-  {selectedOption}
   {#if showDone}
     <button class="w-full bg-black text-white p-1" on:click={updateSheet}>
       Update Sheet

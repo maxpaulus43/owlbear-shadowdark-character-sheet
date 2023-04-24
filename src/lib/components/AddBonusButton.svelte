@@ -85,7 +85,7 @@
 
 <button
   class="w-full p-2 bg-black text-white mt-1"
-  on:click={() => (showModal = true)}>Add Bonus</button
+  on:click={() => (showModal = true)}>Add Custom Bonus</button
 >
 
 <Modal bind:showModal>

@@ -73,7 +73,7 @@ export const CLASS_TALENTS: { [key in Class]: Talent[] } = {
         {
           name: "+2 to STR",
           type: "modifyAmt",
-          desc: "+2 to",
+          desc: "+2 to STR",
           bonusTo: "stat",
           bonusAmount: 2,
           metadata: {
