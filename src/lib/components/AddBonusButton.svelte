@@ -98,15 +98,9 @@
     <label for="type">What kind of bonus is it?</label>
     <select id="type" bind:value={type}>
       <option value="generic">Generic</option>
-      <option value="modifyAmt">
-        Modifier (modifies some numerical value from your character sheet)
-      </option>
-      <option value="advantage">
-        Advantage (gives you advantage when rolling for something)
-      </option>
-      <option value="disadvantage">
-        Disadvantage (gives you disadvantage when rolling for something)
-      </option>
+      <option value="modifyAmt"> Numerical Modifier </option>
+      <option value="advantage"> Advantage </option>
+      <option value="disadvantage"> Disadvantage </option>
     </select>
     {#if type !== "generic"}
       <label for="bto">Bonus To:</label>

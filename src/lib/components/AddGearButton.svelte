@@ -83,8 +83,8 @@
 >
 
 <Modal bind:showModal>
-  <h1 slot="header">Gear</h1>
-  <div class="border-b flex flex-col gap-1">
+  <h1 slot="header" class="min-w-[300px]">Gear</h1>
+  <div class="border-b flex flex-col gap-1 h-max">
     <div class="w-full flex gap-1">
       <input
         class="p-1 w-full border"
@@ -101,7 +101,7 @@
         </button>
       {/if}
     </div>
-    <div class="h-48 overflow-y-auto">
+    <div class="h-64 overflow-y-auto">
       <table class="w-full">
         <thead class="text-left sticky top-0 bg-white">
           <tr>

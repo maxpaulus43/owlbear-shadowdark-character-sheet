@@ -7,6 +7,7 @@
   let customGearCost: number = 0;
   let customGearCurrency: Currency = "sp";
   let customGearQuantity: number = 1;
+  let showForm = false;
 
   $: canAdd = customGearName?.length > 0 && customGearQuantity > 0;
 
@@ -25,55 +26,61 @@
   }
 </script>
 
-<div class="flex gap-1 items-center">
-  <div>
-    <div>Add Custom Gear</div>
-    <input type="text" bind:value={customGearName} class="border p-1" />
-  </div>
-  <div>
-    <div>Slots</div>
+<button
+  class="w-full text-center bg-black text-white"
+  on:click={() => {
+    showForm = !showForm;
+  }}>{showForm ? "Hide " : "Create "}Custom Gear</button
+>
+
+{#if showForm}
+  <div class="flex flex-col gap-1">
+    <label for="name">Add Custom Gear</label>
+    <input id="name" type="text" bind:value={customGearName} />
+    <label for="slots">Slots</label>
     <input
+      id="slots"
       type="number"
       inputmode="numeric"
       min="0"
       bind:value={customGearSlots}
-      class="border p-1 w-12"
     />
-  </div>
-  <div>
-    <div>Cost</div>
+    <label for="cost">Cost</label>
     <input
+      id="cost"
       type="number"
       inputmode="numeric"
       min="0"
       bind:value={customGearCost}
-      class="border p-1 w-20"
     />
-  </div>
-  <div>
-    <div>Currency</div>
-    <select bind:value={customGearCurrency} class="border p-1 w-20 pt-2">
+    <label for="currency">Currency</label>
+    <select id="currency" bind:value={customGearCurrency}>
       {#each ["gp", "sp", "cp"] as currency}
         <option>{currency}</option>
       {/each}
     </select>
-  </div>
-  <div>
-    <div>Quantity</div>
+    <label for="quantity">Quantity</label>
     <input
+      id="quantity"
       type="number"
       inputmode="numeric"
       bind:value={customGearQuantity}
       min="0"
-      class="border p-1 w-20"
     />
+    <button
+      on:click={createGearItem}
+      class="px-3 hover:bg-gray-400 bg-black text-white"
+      class:opacity-50={!canAdd}
+      disabled={!canAdd}
+    >
+      ADD
+    </button>
   </div>
-  <button
-    on:click={createGearItem}
-    class="translate-y-3.5 px-3 hover:bg-gray-400"
-    class:opacity-20={!canAdd}
-    disabled={!canAdd}
-  >
-    <i class="material-icons translate-y-1">add_circle</i>
-  </button>
-</div>
+{/if}
+
+<style lang="postcss">
+  input,
+  select {
+    @apply border p-1 bg-gray-100 rounded-md;
+  }
+</style>
