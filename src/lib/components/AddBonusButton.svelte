@@ -84,7 +84,7 @@
 </script>
 
 <button
-  class="w-full p-2 bg-black text-white mt-1"
+  class="w-full bg-black text-white p-2"
   on:click={() => (showModal = true)}>Add Custom Bonus</button
 >
 

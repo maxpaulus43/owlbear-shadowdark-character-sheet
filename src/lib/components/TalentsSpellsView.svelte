@@ -109,9 +109,10 @@
     {/each}
   </ul>
 
-  <RollTalentButton />
-
-  <AddBonusButton />
+  <div class="flex gap-1">
+    <RollTalentButton />
+    <AddBonusButton />
+  </div>
 
   <h2>Languages</h2>
   <ul>

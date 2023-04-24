@@ -101,7 +101,7 @@
 </script>
 
 <button
-  class="bg-black text-white p-2 w-full"
+  class="bg-black text-white w-full p-2"
   on:click={() => (showModal = true)}>Roll New Talent</button
 >
 
