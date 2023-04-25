@@ -9,6 +9,7 @@
     unlearnSpellForPlayer,
   } from "../model/PlayerCharacter";
   import type { SpellInfo } from "../model/Spell";
+  import SpellView from "./SpellView.svelte";
   let showModal = false;
   let spellInput: string = "";
 
@@ -52,21 +53,7 @@
       {#each spells as s}
         <li>
           <div class="shadow-md border border-gray-200 mb-3 p-2">
-            <div>
-              <span class="font-bold text-lg">{s.name}</span>
-              <span>(Tier {s.tier}, {s.class})</span>
-            </div>
-            <div>
-              <span class="font-bold">Duration:</span>
-              <span
-                >{s.duration.amt ?? ""}{s.duration.roll?.diceType ?? ""}{" " +
-                  s.duration.type}</span
-              >
-            </div>
-            <div>
-              <span class="font-bold mr-1">Range:</span><span>{s.range}</span>
-            </div>
-            <div>{s.desc}</div>
+            <SpellView {s} />
             {#if playerHasSpell($pc, s)}
               <button
                 class="bg-gray-600 text-white w-full p-3"

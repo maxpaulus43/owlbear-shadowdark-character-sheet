@@ -12,6 +12,9 @@
   import AddBonusButton from "./AddBonusButton.svelte";
   import type { Bonus } from "../model/Bonus";
   import { LANGUAGES } from "../constants";
+  import type { SpellInfo } from "../model/Spell";
+  import Modal from "./Modal.svelte";
+  import SpellView from "./SpellView.svelte";
 
   $: spells = $pc.spells;
   $: hasSpells = spells?.length > 0;
@@ -25,6 +28,9 @@
     .filter((g) => !g.equipped)
     .map((g) => findAny(g.name))
     .filter((g) => g && g.playerBonuses?.length > 0 && !g.canBeEquipped);
+
+  let showSpellInfoForSpell: SpellInfo;
+  let showModal = false;
 
   function deleteBonus(b: Bonus) {
     deleteBonusForPlayer($pc, b);
@@ -62,11 +68,21 @@
           <div
             class="flex justify-between border-b border-gray-400 items-center"
           >
+            <div class="flex gap-1">
+              <div>{spell.name}</div>
+              <button
+                on:click={() => {
+                  showSpellInfoForSpell = spell;
+                  showModal = true;
+                }}
+              >
+                <i class="material-icons">info</i>
+              </button>
+            </div>
             <div class="flex">
               <RollButton modifier={mod} />
               <span>({addSign(mod)})</span>
             </div>
-            <div>{spell.name}</div>
           </div>
         </li>
       {/each}
@@ -155,3 +171,10 @@
     {/each}
   </ul>
 </div>
+
+{#if showSpellInfoForSpell}
+  <Modal bind:showModal>
+    <h2 slot="header">{showSpellInfoForSpell.name}</h2>
+    <SpellView s={showSpellInfoForSpell} />
+  </Modal>
+{/if}
