@@ -9,7 +9,11 @@ export function importFromJson(jsonStr: string): PlayerCharacter {
   const json = JSON.parse(jsonStr);
   if (json["schemaType"] === SCHEMA_TYPE) {
     // TODO schema versioning. i.e. If schema version is old, then migrate to new schema.
-    return json as PlayerCharacter;
+    const p = json as PlayerCharacter;
+    if (!p["customGear"]) {
+      p["customGear"] = [];
+    }
+    return p;
   } else {
     return importFromShadowDarklingsJson(json);
   }
@@ -51,6 +55,7 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     background: json.background,
     deity: json.deity,
     gear,
+    customGear: [],
     stats: json.stats,
     bonuses,
     maxHitPoints: json.maxHitPoints,
