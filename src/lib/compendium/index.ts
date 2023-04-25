@@ -14,7 +14,7 @@ let customGear: GearInfo[] = [];
 
 export function subscribeToCustomGearForPlayer() {
   pc.subscribe((pc) => {
-    customGear = pc.customGear;
+    customGear = pc.customGear ?? [];
   });
 }
 

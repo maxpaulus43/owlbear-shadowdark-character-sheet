@@ -1,6 +1,6 @@
 <script lang="ts">
   import GEAR_COMPENDIUM from "../compendium/basicGearCompendium";
-  import { findAny, findGear } from "../compendium";
+  import { findAny } from "../compendium";
   import ARMOR_COMPENDIUM from "../compendium/armorCompendium";
   import WEAPON_COMPENDIUM from "../compendium/weaponCompendium";
   import type { Gear, GearInfo } from "../model/Gear";
@@ -48,9 +48,10 @@
   $: weaponResults = Object.values(WEAPON_COMPENDIUM).filter((w) =>
     w.name.toLowerCase().includes(gearInput.toLowerCase())
   );
-  $: customResults = $pc.customGear.filter((g) =>
-    g.name.toLowerCase().includes(gearInput.toLowerCase())
-  );
+  $: customResults =
+    $pc.customGear?.filter((g) =>
+      g.name.toLowerCase().includes(gearInput.toLowerCase())
+    ) ?? [];
   $: allResults = gearResults
     .concat(armorResults)
     .concat(weaponResults)
