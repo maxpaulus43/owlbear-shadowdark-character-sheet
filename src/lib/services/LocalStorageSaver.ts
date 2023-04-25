@@ -21,7 +21,6 @@ export async function savePlayerToLocalStorage(pc: PlayerCharacter) {
   if (isOBRAvailable()) {
     console.log("saving to OBR player");
   } else {
-    console.log("saving to local storage");
     asyncLocalStorage.setItem(`sd-character-sheet`, JSON.stringify(pc));
   }
 }
@@ -30,7 +29,6 @@ export async function loadPlayerFromLocalStorage(): Promise<PlayerCharacter> {
   if (isOBRAvailable()) {
     console.log("loading Player from OBR");
   } else {
-    console.log("loading from local storage");
     const pcJson = await asyncLocalStorage.getItem(`sd-character-sheet`);
     return pcJson ? (JSON.parse(pcJson) as PlayerCharacter) : defaultPC();
   }
