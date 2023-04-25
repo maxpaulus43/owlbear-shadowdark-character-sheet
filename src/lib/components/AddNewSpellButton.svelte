@@ -42,7 +42,7 @@
 
 <Modal bind:showModal>
   <h2 slot="header" class="text-lg font-bold">Spells</h2>
-  <div class="max-h-96 overflow-auto">
+  <div class="max-h-[500px] overflow-auto">
     <input
       class="w-full"
       type="text"
