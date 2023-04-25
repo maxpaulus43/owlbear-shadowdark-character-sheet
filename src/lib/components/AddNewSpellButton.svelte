@@ -59,7 +59,7 @@
             <div>
               <span class="font-bold">Duration:</span>
               <span
-                >{s.duration.amt ?? ""}{s.duration.diceType ?? ""}{" " +
+                >{s.duration.amt ?? ""}{s.duration.roll?.diceType ?? ""}{" " +
                   s.duration.type}</span
               >
             </div>
