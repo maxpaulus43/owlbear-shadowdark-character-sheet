@@ -163,7 +163,8 @@ export function calculateTitleForPlayer(pc: PlayerCharacter): Title {
 }
 
 export function calculateSpellCastingModifierForPlayer(
-  pc: PlayerCharacter
+  pc: PlayerCharacter,
+  spell: SpellInfo
 ): number {
   let result = 0;
   const baseModifier = calculateModifierForPlayerStat(
@@ -172,7 +173,36 @@ export function calculateSpellCastingModifierForPlayer(
   );
   result += baseModifier;
 
-  // TODO spellcasting bonuses
+  // from bonuses
+  const bonuses = pc.bonuses
+    .filter((b) => b.type === "modifyAmt" && b.bonusTo === "spellcastRoll")
+    .reduce((acc: number, b: ModifyBonus) => {
+      if (
+        !b.metadata ||
+        (b.metadata.type === "spell" && b.metadata.spell === spell.name)
+      ) {
+        acc += calculateBonusAmount(pc, b);
+      }
+      return acc;
+    }, 0);
+
+  result += bonuses;
+
+  // from gear
+  const gearBonuses = pc.gear
+    .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
+    .filter(({ isEquipped, g }) => {
+      return !g.canBeEquipped || isEquipped;
+    })
+    .map(({ g }) => g.playerBonuses)
+    .filter(Boolean)
+    .flat();
+
+  for (const b of gearBonuses) {
+    if (b.type === "modifyAmt" && b.bonusTo === "spellcastRoll") {
+      result += calculateBonusAmount(pc, b);
+    }
+  }
 
   return result;
 }
@@ -181,7 +211,46 @@ export function calculateAttackBonusForPlayerWeapon(
   pc: PlayerCharacter,
   w: WeaponInfo
 ): number {
-  return 0;
+  let result = 0;
+  // melee vs ranged
+  result +=
+    w.weaponType === "Melee"
+      ? calculateModifierForPlayerStat(pc, "STR")
+      : calculateModifierForPlayerStat(pc, "DEX");
+
+  // pc bonuses
+  const bonuses = pc.bonuses
+    .filter((b) => b.type === "modifyAmt" && b.bonusTo === "attackRoll")
+    .reduce((acc: number, b: ModifyBonus) => {
+      if (
+        !b.metadata ||
+        (b.metadata.type === "weapon" && b.metadata.weapon === w.name) ||
+        (b.metadata.type === "weaponType" &&
+          b.metadata.weaponType === w.weaponType)
+      ) {
+        acc += calculateBonusAmount(pc, b);
+      }
+      return acc;
+    }, 0);
+  result += bonuses;
+
+  // gear bonuses
+  const gearBonuses = pc.gear
+    .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
+    .filter(({ isEquipped, g }) => {
+      return g.canBeEquipped || isEquipped;
+    })
+    .map(({ g }) => g.playerBonuses)
+    .filter(Boolean)
+    .flat();
+
+  for (const b of gearBonuses) {
+    if (b.type === "modifyAmt" && b.bonusTo === "attackRoll") {
+      result += calculateBonusAmount(pc, b);
+    }
+  }
+
+  return result;
 }
 
 export function calculateGearSlotsForPlayer(pc: PlayerCharacter) {

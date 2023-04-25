@@ -63,7 +63,7 @@
   {#if hasSpells}
     <ul class="flex flex-col gap-1">
       {#each spells as spell}
-        {@const mod = calculateSpellCastingModifierForPlayer($pc)}
+        {@const mod = calculateSpellCastingModifierForPlayer($pc, spell)}
         <li>
           <div
             class="flex justify-between border-b border-gray-400 items-center"
