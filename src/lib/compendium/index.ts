@@ -8,13 +8,14 @@ import MAGIC_ITEM_COMPENDIUM from "./magicItemCompendium";
 import SPELL_COMPENDIUM from "./spellCompendium";
 import WEAPON_COMPENDIUM from "./weaponCompendium";
 import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
-import type { PlayerCharacter } from "../model/PlayerCharacter";
 
 let customGear: GearInfo[] = [];
+let customSpells: SpellInfo[] = [];
 
 export function subscribeToCustomGearForPlayer() {
   pc.subscribe((pc) => {
     customGear = pc.customGear ?? [];
+    customSpells = pc.customSpells ?? [];
   });
 }
 
@@ -30,14 +31,20 @@ export function findGear(name: string): GearInfo {
     MAGIC_ITEM_COMPENDIUM[name.toLowerCase()]
   );
 }
-export function findSpell(name: string): SpellInfo {
-  return SPELL_COMPENDIUM[name.toLowerCase()];
+export function findCustomSpell(name: string): SpellInfo {
+  return customSpells.find((s) => s.name.toLowerCase() === name.toLowerCase());
 }
-export function findCustom(name: string): GearInfo {
+export function findSpell(name: string): SpellInfo {
+  return SPELL_COMPENDIUM[name.toLowerCase()] || findCustomSpell(name);
+}
+export function findCustomGear(name: string): GearInfo {
   return customGear.find((g) => g.name.toLowerCase() === name.toLowerCase());
 }
 export function findAny(name: string): GearInfo {
   return (
-    findWeapon(name) || findArmor(name) || findGear(name) || findCustom(name)
+    findWeapon(name) ||
+    findArmor(name) ||
+    findGear(name) ||
+    findCustomGear(name)
   );
 }

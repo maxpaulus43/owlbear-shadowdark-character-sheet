@@ -16,6 +16,7 @@ import type { ArmorInfo } from "./Armor";
 import type { Bonus, ModifyBonus } from "./Bonus";
 import type { Gear, GearInfo } from "./Gear";
 import type { SpellInfo } from "./Spell";
+import type { Talent } from "./Talent";
 import type { WeaponInfo } from "./Weapon";
 
 export const PlayerCharacterStore = createUndoRedoStore(
@@ -49,6 +50,8 @@ export type PlayerCharacter = {
   customGear: GearInfo[];
   stats: StatBlock;
   bonuses: Bonus[];
+  customBonuses: Bonus[];
+  customTalents: Talent[];
   maxHitPoints: number;
   armorClass: number;
   gearSlotsTotal: number;
@@ -56,8 +59,10 @@ export type PlayerCharacter = {
   silver: number;
   copper: number;
   languages: string[];
+  customLanguages: string[];
   xp: number;
   spells: SpellInfo[];
+  customSpells: SpellInfo[];
   hitPoints: number;
 };
 
@@ -266,6 +271,8 @@ export function defaultPC(): PlayerCharacter {
     customGear: [],
     stats: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
     bonuses: [],
+    customBonuses: [],
+    customTalents: [],
     maxHitPoints: 1,
     armorClass: 10,
     gearSlotsTotal: 10,
@@ -273,8 +280,10 @@ export function defaultPC(): PlayerCharacter {
     silver: 0,
     copper: 0,
     languages: ["Common"],
+    customLanguages: [],
     xp: 0,
     spells: [],
+    customSpells: [],
     hitPoints: 1,
   };
 }

@@ -8,14 +8,26 @@ import type { SpellInfo } from "../model/Spell";
 export function importFromJson(jsonStr: string): PlayerCharacter {
   const json = JSON.parse(jsonStr);
   if (json["schemaType"] === SCHEMA_TYPE) {
-    // TODO schema versioning. i.e. If schema version is old, then migrate to new schema.
     const p = json as PlayerCharacter;
-    if (!p["customGear"]) {
-      p["customGear"] = [];
-    }
+    maintainBackwardsCompat(p);
     return p;
   } else {
     return importFromShadowDarklingsJson(json);
+  }
+}
+
+function maintainBackwardsCompat(p: PlayerCharacter) {
+  if (!p["customGear"]) {
+    p["customGear"] = [];
+  }
+  if (!p["customBonuses"]) {
+    p["customBonuses"] = [];
+  }
+  if (!p["customTalents"]) {
+    p["customTalents"] = [];
+  }
+  if (!p["customLanguages"]) {
+    p["customLanguages"] = [];
   }
 }
 
@@ -58,6 +70,8 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     customGear: [],
     stats: json.stats,
     bonuses,
+    customBonuses: [],
+    customTalents: [],
     maxHitPoints: json.maxHitPoints,
     hitPoints: json.maxHitPoints,
     armorClass: json.armorClass,
@@ -66,8 +80,10 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     silver: json.silver,
     copper: json.copper,
     languages,
+    customLanguages: [],
     xp: 0,
     spells,
+    customSpells: [],
   };
 
   return pc;
