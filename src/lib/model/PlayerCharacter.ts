@@ -196,13 +196,19 @@ export function calculateSpellCastingModifierForPlayer(
     })
     .map(({ g }) => g.playerBonuses)
     .filter(Boolean)
-    .flat();
+    .flat()
+    .filter((b) => b.type === "modifyAmt" && b.bonusTo === "spellcastRoll")
+    .reduce((acc: number, b: ModifyBonus) => {
+      if (
+        !b.metadata ||
+        (b.metadata.type === "spell" && b.metadata.spell === spell.name)
+      ) {
+        acc += calculateBonusAmount(pc, b);
+      }
+      return acc;
+    }, 0);
 
-  for (const b of gearBonuses) {
-    if (b.type === "modifyAmt" && b.bonusTo === "spellcastRoll") {
-      result += calculateBonusAmount(pc, b);
-    }
-  }
+  result += gearBonuses;
 
   return result;
 }
@@ -213,10 +219,13 @@ export function calculateAttackBonusForPlayerWeapon(
 ): number {
   let result = 0;
   // melee vs ranged
-  result +=
-    w.weaponType === "Melee"
-      ? calculateModifierForPlayerStat(pc, "STR")
-      : calculateModifierForPlayerStat(pc, "DEX");
+  const strMod = calculateModifierForPlayerStat(pc, "STR");
+  const dexMod = calculateModifierForPlayerStat(pc, "DEX");
+  if (w.properties?.includes("Finesse") || w.weaponType === "MeleeRanged") {
+    result += Math.max(strMod, dexMod);
+  } else {
+    result += w.weaponType === "Melee" ? strMod : dexMod;
+  }
 
   // pc bonuses
   const bonuses = pc.bonuses
@@ -236,19 +245,29 @@ export function calculateAttackBonusForPlayerWeapon(
 
   // gear bonuses
   const gearBonuses = pc.gear
+    // only want to apply equippable bonuses or bonuses that don't require equipping
     .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
     .filter(({ isEquipped, g }) => {
       return g.canBeEquipped || isEquipped;
     })
     .map(({ g }) => g.playerBonuses)
     .filter(Boolean)
-    .flat();
-
-  for (const b of gearBonuses) {
-    if (b.type === "modifyAmt" && b.bonusTo === "attackRoll") {
-      result += calculateBonusAmount(pc, b);
-    }
-  }
+    .flat()
+    // only apply bonuses to attackRoll
+    .filter((b) => b.type === "modifyAmt" && b.bonusTo === "attackRoll")
+    .reduce((acc: number, b: ModifyBonus) => {
+      if (
+        // this bonus might target a specific weapon/weaponType
+        !b.metadata ||
+        (b.metadata.type === "weapon" && b.metadata.weapon === w.name) ||
+        (b.metadata.type === "weaponType" &&
+          b.metadata.weaponType === w.weaponType)
+      ) {
+        acc += calculateBonusAmount(pc, b);
+      }
+      return acc;
+    }, 0);
+  result += gearBonuses;
 
   return result;
 }
