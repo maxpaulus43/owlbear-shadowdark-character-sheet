@@ -19,6 +19,7 @@
   import AttacksView from "./lib/components/AttacksView.svelte";
   import savePlayerToFile from "./lib/services/FileSaver";
   import { importFromJson } from "./lib/services/JSONImporter";
+  import HpView from "./lib/components/HPView.svelte";
 
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);
@@ -115,15 +116,7 @@
         <StatView forStat="CHA" />
       </div>
       <div class="row-span-2 cell">
-        <h2>HP</h2>
-        <input
-          type="number"
-          inputmode="numeric"
-          class="pirata text-6xl text-center"
-          min="0"
-          bind:value={$pc.hitPoints}
-        />
-        <div>Max HP: {calculateTotalHitPointsForPlayer($pc)}</div>
+        <HpView />
       </div>
       <div class="row-span-2 cell">
         <h2>AC</h2>
