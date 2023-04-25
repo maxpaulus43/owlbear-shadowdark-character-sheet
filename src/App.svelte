@@ -52,207 +52,209 @@
   });
 </script>
 
-<main>
-  <div
-    id="sheet"
-    class="bg-black min-w-[277px] max-w-[1000px] p-2 flex flex-wrap gap-2"
-  >
+<div class="flex items-center justify-center bg-black min-[805px]:h-screen">
+  <main>
     <div
-      class="flex-[2] min-w-[257px] h-[700px] grid grid-rows-8 grid-cols-2 gap-2"
+      id="sheet"
+      class="bg-black min-w-[277px] max-w-[1000px] p-2 flex flex-wrap gap-2"
     >
-      <div class="col-span-full cell">
-        <div class="flex gap-1 justify-around">
-          <div class="flex flex-col items-center">
-            <div class="flex items-center gap-1">
-              <h1 class="">Shadowdark</h1>
-              <InfoButton />
+      <div
+        class="flex-[2] min-w-[257px] h-[700px] grid grid-rows-8 grid-cols-2 gap-2"
+      >
+        <div class="col-span-full cell">
+          <div class="flex gap-1 justify-around">
+            <div class="flex flex-col items-center">
+              <div class="flex items-center gap-1">
+                <h1 class="">Shadowdark</h1>
+                <InfoButton />
+              </div>
+              <div class="-translate-y-2">
+                <button
+                  on:click={() => pc.undo()}
+                  class:opacity-50={!$canUndo}
+                  disabled={!$canUndo}
+                  class="bg-black text-white rounded-md"
+                >
+                  <i class="material-icons translate-y-1 px-1">undo</i>
+                </button>
+                <button
+                  on:click={() => pc.redo()}
+                  class:opacity-50={!$canRedo}
+                  disabled={!$canRedo}
+                  class="bg-black text-white rounded-md"
+                >
+                  <i class="material-icons translate-y-1 px-1">redo</i>
+                </button>
+              </div>
             </div>
-            <div class="-translate-y-2">
-              <button
-                on:click={() => pc.undo()}
-                class:opacity-50={!$canUndo}
-                disabled={!$canUndo}
-                class="bg-black text-white rounded-md"
+            <div class="flex flex-col gap-1">
+              <label
+                for="jsonImport"
+                class="bg-black text-white p-2 rounded-md text-xs hover:scale-105 transition active:opacity-50"
               >
-                <i class="material-icons translate-y-1 px-1">undo</i>
-              </button>
+                <div>Import JSON</div>
+                <input
+                  id="jsonImport"
+                  type="file"
+                  class="hidden"
+                  accept="application/json"
+                  bind:files
+                />
+              </label>
               <button
-                on:click={() => pc.redo()}
-                class:opacity-50={!$canRedo}
-                disabled={!$canRedo}
-                class="bg-black text-white rounded-md"
+                class="bg-black text-white p-2 rounded-md text-xs hover:scale-105 transition active:opacity-50"
+                on:click={() => {
+                  savePlayerToFile($pc);
+                }}>Export JSON</button
               >
-                <i class="material-icons translate-y-1 px-1">redo</i>
-              </button>
             </div>
           </div>
-          <div class="flex flex-col gap-1">
-            <label
-              for="jsonImport"
-              class="bg-black text-white p-2 rounded-md text-xs hover:scale-105 transition active:opacity-50"
-            >
-              <div>Import JSON</div>
-              <input
-                id="jsonImport"
-                type="file"
-                class="hidden"
-                accept="application/json"
-                bind:files
-              />
-            </label>
-            <button
-              class="bg-black text-white p-2 rounded-md text-xs hover:scale-105 transition active:opacity-50"
-              on:click={() => {
-                savePlayerToFile($pc);
-              }}>Export JSON</button
-            >
-          </div>
         </div>
-      </div>
-      <div class="cell">
-        <StatView forStat="STR" />
-      </div>
-      <div class="cell">
-        <StatView forStat="INT" />
-      </div>
-      <div class="cell">
-        <StatView forStat="DEX" />
-      </div>
-      <div class="cell">
-        <StatView forStat="WIS" />
-      </div>
-      <div class="cell">
-        <StatView forStat="CON" />
-      </div>
-      <div class="cell">
-        <StatView forStat="CHA" />
-      </div>
-      <div class="row-span-2 cell">
-        <HpView />
-      </div>
-      <div class="row-span-2 cell">
-        <h2>AC</h2>
-        <div
-          class="flex justify-center items-center w-full h-full text-7xl pirata"
-        >
-          {ac}
+        <div class="cell">
+          <StatView forStat="STR" />
         </div>
-      </div>
-      <div class="col-span-full row-span-2 cell">
-        <AttacksView />
-      </div>
-    </div>
-    <div
-      class="flex-[2] min-w-[257px] h-[700px] grid grid-rows-8 grid-cols-2 gap-2"
-    >
-      <div class="col-span-full cell">
-        <h2>NAME</h2>
-        <input type="text" bind:value={$pc.name} />
-      </div>
-      <div class="col-span-full cell">
-        <h2>ANCESTRY</h2>
-        <select bind:value={$pc.ancestry}>
-          {#each ANCESTRIES as ancestry}
-            <option value={ancestry}>
-              {ancestry}
-            </option>
-          {/each}
-        </select>
-      </div>
-      <div class="col-span-full cell">
-        <h2>CLASS</h2>
-        <select bind:value={$pc.class}>
-          {#each CLASSES as clazz}
-            <option value={clazz}>
-              {clazz}
-            </option>
-          {/each}
-        </select>
-      </div>
-      <div class="cell">
-        <h2>LEVEL</h2>
-        <input
-          type="number"
-          inputmode="numeric"
-          bind:value={$pc.level}
-          max="10"
-          min="0"
-        />
-      </div>
-      <div class="cell">
-        <h2>XP</h2>
-        <div class="sheet-stat flex gap-1">
-          {#if $pc.level < 10}
-            <input
-              type="number"
-              inputmode="numeric"
-              min="0"
-              bind:value={$pc.xp}
-            />
-            /
-            <div>{xpCap}</div>
-          {:else}
-            MAX LEVEL
-          {/if}
-          <button
-            class="text-2xl"
-            class:opacity-20={!canLevel}
-            disabled={!canLevel}
-            on:click={() => {
-              levelUpPlayer($pc);
-              $pc = $pc;
-            }}>🆙</button
+        <div class="cell">
+          <StatView forStat="INT" />
+        </div>
+        <div class="cell">
+          <StatView forStat="DEX" />
+        </div>
+        <div class="cell">
+          <StatView forStat="WIS" />
+        </div>
+        <div class="cell">
+          <StatView forStat="CON" />
+        </div>
+        <div class="cell">
+          <StatView forStat="CHA" />
+        </div>
+        <div class="row-span-2 cell">
+          <HpView />
+        </div>
+        <div class="row-span-2 cell">
+          <h2>AC</h2>
+          <div
+            class="flex justify-center items-center w-full h-full text-7xl pirata"
           >
+            {ac}
+          </div>
+        </div>
+        <div class="col-span-full row-span-2 cell">
+          <AttacksView />
         </div>
       </div>
-      <div class="col-span-full cell">
-        <h2>TITLE</h2>
-        <div>{title}</div>
-      </div>
-      <div class="col-span-full cell">
-        <h2>ALIGNMENT</h2>
-        <select bind:value={$pc.alignment}>
-          {#each ALIGNMENTS as alignment}
-            <option value={alignment}>
-              {alignment}
-            </option>
-          {/each}
-        </select>
-      </div>
-      <div class="col-span-full cell">
-        <h2>BACKGROUND</h2>
-        <select>
-          {#each BACKGROUNDS as background}
-            <option value={$pc.background}>
-              {background}
-            </option>
-          {/each}
-        </select>
-      </div>
+      <div
+        class="flex-[2] min-w-[257px] h-[700px] grid grid-rows-8 grid-cols-2 gap-2"
+      >
+        <div class="col-span-full cell">
+          <h2>NAME</h2>
+          <input type="text" bind:value={$pc.name} />
+        </div>
+        <div class="col-span-full cell">
+          <h2>ANCESTRY</h2>
+          <select bind:value={$pc.ancestry}>
+            {#each ANCESTRIES as ancestry}
+              <option value={ancestry}>
+                {ancestry}
+              </option>
+            {/each}
+          </select>
+        </div>
+        <div class="col-span-full cell">
+          <h2>CLASS</h2>
+          <select bind:value={$pc.class}>
+            {#each CLASSES as clazz}
+              <option value={clazz}>
+                {clazz}
+              </option>
+            {/each}
+          </select>
+        </div>
+        <div class="cell">
+          <h2>LEVEL</h2>
+          <input
+            type="number"
+            inputmode="numeric"
+            bind:value={$pc.level}
+            max="10"
+            min="0"
+          />
+        </div>
+        <div class="cell">
+          <h2>XP</h2>
+          <div class="sheet-stat flex gap-1">
+            {#if $pc.level < 10}
+              <input
+                type="number"
+                inputmode="numeric"
+                min="0"
+                bind:value={$pc.xp}
+              />
+              /
+              <div>{xpCap}</div>
+            {:else}
+              MAX LEVEL
+            {/if}
+            <button
+              class="text-2xl"
+              class:opacity-20={!canLevel}
+              disabled={!canLevel}
+              on:click={() => {
+                levelUpPlayer($pc);
+                $pc = $pc;
+              }}>🆙</button
+            >
+          </div>
+        </div>
+        <div class="col-span-full cell">
+          <h2>TITLE</h2>
+          <div>{title}</div>
+        </div>
+        <div class="col-span-full cell">
+          <h2>ALIGNMENT</h2>
+          <select bind:value={$pc.alignment}>
+            {#each ALIGNMENTS as alignment}
+              <option value={alignment}>
+                {alignment}
+              </option>
+            {/each}
+          </select>
+        </div>
+        <div class="col-span-full cell">
+          <h2>BACKGROUND</h2>
+          <select>
+            {#each BACKGROUNDS as background}
+              <option value={$pc.background}>
+                {background}
+              </option>
+            {/each}
+          </select>
+        </div>
 
-      <div class="col-span-full cell">
-        <h2>DEITY</h2>
-        <select>
-          {#each DEITIES as deity}
-            <option value={deity}>
-              {deity}
-            </option>
-          {/each}
-        </select>
+        <div class="col-span-full cell">
+          <h2>DEITY</h2>
+          <select>
+            {#each DEITIES as deity}
+              <option value={deity}>
+                {deity}
+              </option>
+            {/each}
+          </select>
+        </div>
+      </div>
+      <div
+        class="flex-[3] min-w-[257px] min-[805px]:h-[700px] grid grid-rows-2 gap-2"
+      >
+        <div class="cell">
+          <TalentsSpellsView />
+        </div>
+        <div class="cell">
+          <GearView />
+        </div>
       </div>
     </div>
-    <div
-      class="flex-[3] min-w-[257px] min-[805px]:h-[700px] grid grid-rows-2 gap-2"
-    >
-      <div class="cell">
-        <TalentsSpellsView />
-      </div>
-      <div class="cell">
-        <GearView />
-      </div>
-    </div>
-  </div>
-</main>
+  </main>
+</div>
 
 <style>
   input,
