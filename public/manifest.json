@@ -4,7 +4,7 @@
   "manifest_version": 1,
   "action": {
     "title": "SD Character Sheet",
-    "icon": "/sd.svg",
+    "icon": "/assets/sd.svg",
     "popover": "/",
     "height": 720,
     "width": 1000
