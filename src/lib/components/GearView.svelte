@@ -83,6 +83,33 @@
   <AddGearButton />
 </div>
 
+<div class="flex gap-1">
+  <div class="flex items-center">
+    <div>GP:</div>
+    <input
+      type="number"
+      bind:value={$pc.gold}
+      class="bg-gray-200 rounded-md p-1 w-16"
+    />
+  </div>
+  <div class="flex items-center">
+    <div>SP:</div>
+    <input
+      type="number"
+      bind:value={$pc.silver}
+      class="bg-gray-200 rounded-md p-1 w-16"
+    />
+  </div>
+  <div class="flex items-center">
+    <div>CP:</div>
+    <input
+      type="number"
+      bind:value={$pc.copper}
+      class="bg-gray-200 rounded-md p-1 w-16"
+    />
+  </div>
+</div>
+
 <div
   class="overflow-scroll flex flex-col gap-1 p-2"
   style="box-shadow: inset 0 0 5px #000;"
