@@ -19,6 +19,19 @@
   function rollToString(roll: Roll): string {
     return roll.numDice + roll.diceType;
   }
+
+  function rollDamage(w: WeaponInfo, h: "OneHanded" | "TwoHanded") {
+    const modifier = 0; // todo calculate modifier
+    const outcome = rollDice(
+      h === "TwoHanded"
+        ? w.damage.twoHanded.diceType
+        : w.damage.oneHanded.diceType
+    );
+    const msg = `${outcome} + ${modifier} = ${outcome + modifier}`;
+    // TODO OBR integration
+    alert(msg);
+  }
+  // TODO handle finesse weapons (roll either str or dex)
 </script>
 
 <h2>ATTACKS</h2>
@@ -40,6 +53,7 @@
       <td class="flex gap-1">
         {#if w.damage.oneHanded}
           <button
+            on:click={() => rollDamage(w, "OneHanded")}
             class="bg-black text-white p-1 px-2 rounded-md flex flex-col items-center"
           >
             <span>{rollToString(w.damage.oneHanded)}</span>
@@ -48,6 +62,7 @@
         {/if}
         {#if w.damage.twoHanded}
           <button
+            on:click={() => rollDamage(w, "TwoHanded")}
             class="bg-black text-white rounded-md p-1 px-2 flex flex-col items-center"
             class:opacity-50={!canAttackTwoHanded}
             disabled={!canAttackTwoHanded}
