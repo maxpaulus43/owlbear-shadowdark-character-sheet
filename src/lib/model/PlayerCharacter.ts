@@ -133,6 +133,15 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
 
     acModifier += a.ac.modifier + statModifier;
 
+    acModifier += pc.bonuses
+      .filter(
+        (b) =>
+          b.type === "modifyAmt" &&
+          b.metadata?.type === "armor" &&
+          b.metadata.armor === a.name
+      )
+      .reduce((acc, b: ModifyBonus) => acc + b.bonusAmount, 0);
+
     if (a.ac.base > 0) {
       return Math.max(a.ac.base, pc.armorClass) + acModifier;
     }
