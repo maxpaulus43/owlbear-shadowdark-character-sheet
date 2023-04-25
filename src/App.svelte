@@ -54,7 +54,7 @@
   });
 </script>
 
-<div class="flex items-center justify-center bg-black min-[805px]:h-screen">
+<div class="flex items-center justify-center bg-black">
   <main>
     <div
       id="sheet"
