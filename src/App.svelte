@@ -123,7 +123,7 @@
           min="0"
           bind:value={$pc.hitPoints}
         />
-        <div>Total HP: {calculateTotalHitPointsForPlayer($pc)}</div>
+        <div>Max HP: {calculateTotalHitPointsForPlayer($pc)}</div>
       </div>
       <div class="row-span-2 cell">
         <h2>AC</h2>
