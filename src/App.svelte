@@ -246,8 +246,6 @@
   input,
   select {
     width: 100%;
-    padding: 0.25rem;
-    border: 1px solid gray;
   }
 
   .cell {

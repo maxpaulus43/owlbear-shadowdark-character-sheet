@@ -30,7 +30,7 @@
       on:input={onInput}
       min="1"
       max="20"
-      class="w-1/2 border border-gray-500 p-1"
+      class="w-1/2"
     />
     <RollButton {modifier} />
     <ModifierView {forStat} />

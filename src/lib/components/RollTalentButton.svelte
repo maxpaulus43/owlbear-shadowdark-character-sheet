@@ -8,6 +8,7 @@
   import type { Stat } from "../model/PlayerCharacter";
   import { CLASS_TALENTS } from "../compendium/talentCompendium";
   import type { Bonus, ModifyBonus, SpellBonusMetaData } from "../model/Bonus";
+  import { rollDice } from "../utils";
 
   let showModal = false;
 
@@ -26,8 +27,8 @@
   let showDone = false;
   let highlight = -1;
   function rollTalent() {
-    // const result = rollDice("d6") + rollDice("d6");
-    const result = 12;
+    const result = rollDice("d6") + rollDice("d6");
+    // const result = 12;
 
     canRoll = false;
 
@@ -259,6 +260,6 @@
 
 <style lang="postcss">
   select {
-    @apply p-1 bg-gray-200 my-1 rounded-md;
+    @apply my-1;
   }
 </style>

@@ -87,7 +87,7 @@
   <div class="border-b flex flex-col gap-1 h-max">
     <div class="w-full flex gap-1">
       <input
-        class="p-1 w-full border"
+        class="w-full"
         type="text"
         bind:value={gearInput}
         placeholder="search e.g. Torch"

@@ -39,7 +39,7 @@
       mdType = "stat";
       reqsMet = Boolean(name) && Boolean(desc) && Boolean(selectedStat);
     } else {
-      mdType = "";
+      if (mdType === "stat") mdType = "";
       reqsMet = Boolean(name) && Boolean(desc);
     }
     buttonText = reqsMet ? "ADD" : "Please add required fields";
@@ -127,8 +127,8 @@
       <option value="weapon">Equipped Weapon</option>
       <option value="armor">Equipped Armor</option>
       <option value="spell">Spell</option>
-      <option value="stat">Stat (i.e. STR)</option>
-      <option value="weaponType">Weapon Type (i.e. melee)</option>
+      <option value="stat">Stat</option>
+      <option value="weaponType">Weapon Type</option>
     </select>
 
     {#if mdType === "weapon"}
@@ -176,10 +176,3 @@
     >
   </div>
 </Modal>
-
-<style lang="postcss">
-  input,
-  select {
-    @apply border p-1 bg-gray-100 rounded-md;
-  }
-</style>

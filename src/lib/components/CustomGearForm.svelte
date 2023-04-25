@@ -77,10 +77,3 @@
     </button>
   </div>
 {/if}
-
-<style lang="postcss">
-  input,
-  select {
-    @apply border p-1 bg-gray-100 rounded-md;
-  }
-</style>

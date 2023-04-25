@@ -16,3 +16,10 @@ h1 {
   font-family: Grenze Gotisch, Pirata One, Cochin, Georgia, Times, 'Times New Roman', serif;
 }
 
+input, select {
+  @apply bg-gray-200 p-1 rounded-md;
+}
+
+button {
+  @apply rounded-md;
+}

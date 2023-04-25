@@ -141,10 +141,7 @@
       >
     </button>
     {#if addingNewLanguage}
-      <select
-        class="flex-grow bg-gray-300 rounded-md p-1"
-        on:change={onLanguageChange}
-      >
+      <select class="flex-grow" on:change={onLanguageChange}>
         <option />
         {#each LANGUAGES.filter(doesNotKnowLanguage) as l}
           <option>{l}</option>

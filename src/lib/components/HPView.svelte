@@ -23,7 +23,7 @@
 <input
   type="number"
   inputmode="numeric"
-  class="pirata text-6xl text-center"
+  class="pirata text-5xl text-center"
   min="0"
   bind:value={$pc.hitPoints}
 />

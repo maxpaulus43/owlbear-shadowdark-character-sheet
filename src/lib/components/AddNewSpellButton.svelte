@@ -43,7 +43,7 @@
   <h2 slot="header" class="text-lg font-bold">Spells</h2>
   <div class="max-h-96 overflow-auto">
     <input
-      class="p-1 w-full"
+      class="w-full"
       type="text"
       bind:value={spellInput}
       placeholder="search e.g. Burning Hands"
