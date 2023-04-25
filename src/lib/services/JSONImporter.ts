@@ -1,4 +1,4 @@
-import { findAny, findGear, findSpell } from "../compendium";
+import { findAny, findSpell } from "../compendium";
 import { SCHEMA_TYPE } from "../constants";
 import type { Bonus, SDBonus } from "../model/Bonus";
 import type { Gear } from "../model/Gear";

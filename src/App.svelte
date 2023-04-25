@@ -24,6 +24,7 @@
     loadPlayerFromLocalStorage,
     trackAndSavePlayerToLocalStorage,
   } from "./lib/services/LocalStorageSaver";
+  import InfoButton from "./lib/components/InfoButton.svelte";
 
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);
@@ -62,7 +63,10 @@
       <div class="col-span-full cell">
         <div class="flex gap-1 justify-around">
           <div class="flex flex-col items-center">
-            <h1 class="">Shadowdark</h1>
+            <div class="flex items-center gap-1">
+              <h1 class="">Shadowdark</h1>
+              <InfoButton />
+            </div>
             <div class="-translate-y-2">
               <button
                 on:click={() => pc.undo()}
