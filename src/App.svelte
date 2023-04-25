@@ -2,7 +2,6 @@
   import {
     calculateArmorClassForPlayer,
     calculateTitleForPlayer,
-    calculateTotalHitPointsForPlayer,
     levelUpPlayer,
     PlayerCharacterStore as pc,
   } from "./lib/model/PlayerCharacter";
@@ -20,6 +19,11 @@
   import savePlayerToFile from "./lib/services/FileSaver";
   import { importFromJson } from "./lib/services/JSONImporter";
   import HpView from "./lib/components/HPView.svelte";
+  import { onMount } from "svelte";
+  import {
+    loadPlayerFromLocalStorage,
+    trackAndSavePlayerToLocalStorage,
+  } from "./lib/services/LocalStorageSaver";
 
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);
@@ -41,6 +45,10 @@
   }
 
   // TODO save/load from local storage
+  onMount(async () => {
+    $pc = await loadPlayerFromLocalStorage();
+    trackAndSavePlayerToLocalStorage();
+  });
 </script>
 
 <main>

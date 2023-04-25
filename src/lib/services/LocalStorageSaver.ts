@@ -1,0 +1,50 @@
+import type { PlayerCharacter } from "../model/PlayerCharacter";
+import {
+  defaultPC,
+  PlayerCharacterStore as pc,
+} from "../model/PlayerCharacter";
+import { debounce } from "../utils";
+
+export function trackAndSavePlayerToLocalStorage() {
+  const saveToLocalStorage = debounce(savePlayerToLocalStorage, 2000);
+
+  pc.subscribe((pc) => {
+    saveToLocalStorage(pc);
+  });
+}
+
+function isOBRAvailable(): boolean {
+  return false; // TODO isOBRAvailable
+}
+
+export async function savePlayerToLocalStorage(pc: PlayerCharacter) {
+  if (isOBRAvailable()) {
+    console.log("saving to OBR player");
+  } else {
+    console.log("saving to local storage");
+    asyncLocalStorage.setItem(`sd-character-sheet`, JSON.stringify(pc));
+  }
+}
+
+export async function loadPlayerFromLocalStorage(): Promise<PlayerCharacter> {
+  if (isOBRAvailable()) {
+    console.log("loading Player from OBR");
+  } else {
+    console.log("loading from local storage");
+    const pcJson = await asyncLocalStorage.getItem(`sd-character-sheet`);
+    return pcJson ? (JSON.parse(pcJson) as PlayerCharacter) : defaultPC();
+  }
+}
+
+const asyncLocalStorage = {
+  setItem: async function (key: string, value: string) {
+    return Promise.resolve().then(function () {
+      window.localStorage.setItem(key, value);
+    });
+  },
+  getItem: async function (key: string) {
+    return Promise.resolve().then(function () {
+      return window.localStorage.getItem(key);
+    });
+  },
+};
