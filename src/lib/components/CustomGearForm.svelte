@@ -9,19 +9,27 @@
   let customGearQuantity: number = 1;
   let showForm = false;
 
+  $: freeCarry = customGearSlots > 0 ? 0 : 1;
   $: canAdd = customGearName?.length > 0 && customGearQuantity > 0;
 
   function createGearItem() {
-    // $pc.gear.push({
-    //   gearId: customGearName,
-    //   quantity: customGearQuantity,
-    //   slots: customGearSlots * customGearQuantity,
-    //   totalUnits: customGearQuantity,
-    //   cost: customGearCost,
-    //   currency: customGearCurrency,
-    //   name: customGearName,
-    //   type: "custom",
-    // });
+    $pc.customGear.push({
+      name: customGearName,
+      type: "Basic",
+      canBeEquipped: false,
+      desc: customGearName,
+      slots: { slotsUsed: customGearSlots, perSlot: 1, freeCarry },
+      cost: {
+        gp: 0,
+        sp: 0,
+        cp: 0,
+        [customGearCurrency]: customGearCost,
+      },
+    });
+    $pc.gear.push({
+      name: customGearName,
+      quantity: 1,
+    });
     $pc = $pc;
   }
 </script>

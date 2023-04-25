@@ -48,7 +48,13 @@
   $: weaponResults = Object.values(WEAPON_COMPENDIUM).filter((w) =>
     w.name.toLowerCase().includes(gearInput.toLowerCase())
   );
-  $: allResults = gearResults.concat(armorResults).concat(weaponResults);
+  $: customResults = $pc.customGear.filter((g) =>
+    g.name.toLowerCase().includes(gearInput.toLowerCase())
+  );
+  $: allResults = gearResults
+    .concat(armorResults)
+    .concat(weaponResults)
+    .concat(customResults);
 
   function addGear(g: GearInfo) {
     const existingGear = $pc.gear.find(

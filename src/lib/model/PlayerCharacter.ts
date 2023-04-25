@@ -14,7 +14,7 @@ import { createUndoRedoStore } from "../services/PlayerHistoryTracker";
 import { clamp, toInfo } from "../utils";
 import type { ArmorInfo } from "./Armor";
 import type { Bonus, ModifyBonus } from "./Bonus";
-import type { Gear } from "./Gear";
+import type { Gear, GearInfo } from "./Gear";
 import type { SpellInfo } from "./Spell";
 import type { WeaponInfo } from "./Weapon";
 
@@ -46,6 +46,7 @@ export type PlayerCharacter = {
   background: Background;
   deity: Deity;
   gear: Gear[];
+  customGear: GearInfo[];
   stats: StatBlock;
   bonuses: Bonus[];
   maxHitPoints: number;
@@ -262,6 +263,7 @@ export function defaultPC(): PlayerCharacter {
     background: "Scout",
     deity: "Gede",
     gear: [],
+    customGear: [],
     stats: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
     bonuses: [],
     maxHitPoints: 1,

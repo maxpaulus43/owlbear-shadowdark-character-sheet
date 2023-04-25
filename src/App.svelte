@@ -25,6 +25,7 @@
     trackAndSavePlayerToLocalStorage,
   } from "./lib/services/LocalStorageSaver";
   import InfoButton from "./lib/components/InfoButton.svelte";
+  import { subscribeToCustomGearForPlayer } from "./lib/compendium";
 
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);
@@ -49,6 +50,7 @@
   onMount(async () => {
     $pc = await loadPlayerFromLocalStorage();
     trackAndSavePlayerToLocalStorage();
+    subscribeToCustomGearForPlayer();
   });
 </script>
 
