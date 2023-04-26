@@ -6,7 +6,7 @@ export const SPELLS: SpellInfo[] = [
     range: "Near",
     class: "Wizard",
     tier: 1,
-    desc: "You magically beguile one humanoid of LV 2 or less within near range, who regards you as a friend for the duration.The spell ends if you or your allies do anything harmful to the target.The target knows it was magically charmed after the spell ends.Roll [[/r 1d8]] to determine amount of days effective",
+    desc: "You magically beguile one humanoid of LV 2 or less within near range, who regards you as a friend for the duration.The spell ends if you or your allies do anything harmful to the target.The target knows it was magically charmed after the spell ends.Roll 1d8 to determine amount of days effective",
     duration: { type: "Day", roll: { numDice: 1, diceType: "d8" } },
   },
   {
@@ -22,7 +22,7 @@ export const SPELLS: SpellInfo[] = [
     range: "Far",
     class: "Wizard",
     tier: 2,
-    desc: "You conjure a corrosive bolt that hits one foe, dealing [[/r 1d6]] damage a round. The bolt remains in the target for as long as you focus.",
+    desc: "You conjure a corrosive bolt that hits one foe, dealing 1d6 damage a round. The bolt remains in the target for as long as you focus.",
     duration: { type: "Focus", amt: 0 },
   },
   {
@@ -38,7 +38,7 @@ export const SPELLS: SpellInfo[] = [
     range: "Close",
     class: "Priest",
     tier: 2,
-    desc: "One weapon you touch is wreathed in purifying flames. It deals an additional [[/r 1d4]] damage ([[/r 1d6]] vs. undead) for the duration.",
+    desc: "One weapon you touch is wreathed in purifying flames. It deals an additional 1d4 damage (1d6 vs. undead) for the duration.",
     duration: { type: "Round", amt: 5 },
   },
   {
@@ -110,7 +110,7 @@ export const SPELLS: SpellInfo[] = [
     range: "Close",
     class: "Wizard",
     tier: 1,
-    desc: "You spread your fingers with thumbs touching, unleashing a circle of flame that fills a close area around where you stand.Creatures within the area of effect take [[/r 1d6]] damage.Unattended flammable objects ignite.",
+    desc: "You spread your fingers with thumbs touching, unleashing a circle of flame that fills a close area around where you stand.Creatures within the area of effect take 1d6 damage.Unattended flammable objects ignite.",
     duration: { type: "Instant", amt: 0 },
   },
   {
@@ -174,7 +174,7 @@ export const SPELLS: SpellInfo[] = [
     range: "Far",
     class: "Wizard",
     tier: 1,
-    desc: "You have advantage on your check to cast this spell.A glowing bolt of force streaks from your open hand, dealing [[/r 1d4]] damage to one target.",
+    desc: "You have advantage on your check to cast this spell.A glowing bolt of force streaks from your open hand, dealing 1d4 damage to one target.",
     duration: { type: "Instant", amt: 0 },
   },
   {
@@ -190,7 +190,7 @@ export const SPELLS: SpellInfo[] = [
     range: "Near",
     class: "Priest",
     tier: 2,
-    desc: "You call down punishing flames on a creature you can see within range. It takes [[/r 1d6]] damage.",
+    desc: "You call down punishing flames on a creature you can see within range. It takes 1d6 damage.",
     duration: { type: "Instant", amt: 0 },
   },
   {
