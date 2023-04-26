@@ -374,11 +374,19 @@ export function calculateAttackBonusForPlayerWeapon(
 export function calculateGearSlotsForPlayer(pc: PlayerCharacter) {
   const base = Math.max(10, pc.stats.STR);
 
-  // TODO Hauler talent
-
   const bonuses = pc.bonuses.reduce((acc: number, b: Bonus) => {
     if (b.type === "modifyAmt" && b.bonusTo === "gearSlots") {
-      return acc + calculateBonusAmount(pc, b);
+      if (b.metadata?.type === "stat") {
+        return (
+          acc +
+          Math.max(
+            b.bonusAmount,
+            calculateModifierForPlayerStat(pc, b.metadata.stat)
+          )
+        );
+      } else {
+        return acc + calculateBonusAmount(pc, b);
+      }
     } else {
       return acc;
     }
