@@ -10,6 +10,12 @@ import {
   TITLES,
   TITLE_MAP,
 } from "../constants";
+import {
+  ensureAncestryBonuses,
+  ensureClassBonuses,
+  ensureClassGear,
+  ensureLanguages,
+} from "../services/AncestryClassEnsurer";
 import { createUndoRedoStore } from "../services/PlayerHistoryTracker";
 import { clamp, toInfo } from "../utils";
 import type { ArmorInfo } from "./Armor";
@@ -112,8 +118,15 @@ export function calculateModifierForPlayerStat(
 }
 
 export function setClassForPlayer(pc: PlayerCharacter, c: Class) {
-  // TODO possibly change class bonuses dynamically.
   pc.class = c;
+  ensureClassBonuses(pc);
+  ensureClassGear(pc);
+}
+
+export function setAncestryForPlayer(pc: PlayerCharacter, a: Ancestry) {
+  pc.ancestry = a;
+  ensureAncestryBonuses(pc);
+  ensureLanguages(pc);
 }
 
 export function calculateStatValueForPlayerStat(

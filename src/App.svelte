@@ -4,9 +4,10 @@
     calculateTitleForPlayer,
     levelUpPlayer,
     PlayerCharacterStore as pc,
+    setAncestryForPlayer,
     setClassForPlayer,
   } from "./lib/model/PlayerCharacter";
-  import type { Class } from "./lib/model/PlayerCharacter";
+  import type { Class, Ancestry } from "./lib/model/PlayerCharacter";
   import {
     ALIGNMENTS,
     ANCESTRIES,
@@ -55,7 +56,14 @@
   }
 
   function onClassChange(e: Event) {
-    setClassForPlayer($pc, (e.target as HTMLSelectElement).value as Class);
+    const c: Class = (e.target as HTMLSelectElement).value as Class;
+    setClassForPlayer($pc, c);
+    $pc = $pc;
+  }
+  function onAncestryChange(e: Event) {
+    const a: Ancestry = (e.target as HTMLSelectElement).value as Ancestry;
+    setAncestryForPlayer($pc, a);
+    $pc = $pc;
   }
 </script>
 
@@ -159,7 +167,7 @@
         </div>
         <div class="col-span-full cell">
           <h2>ANCESTRY</h2>
-          <select bind:value={$pc.ancestry}>
+          <select value={$pc.ancestry} on:change={onAncestryChange}>
             {#each ANCESTRIES as ancestry}
               <option value={ancestry}>
                 {ancestry}

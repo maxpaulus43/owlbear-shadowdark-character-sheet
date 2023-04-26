@@ -8,6 +8,12 @@ import type {
   PlayerCharacter,
 } from "../model/PlayerCharacter";
 import type { SpellInfo } from "../model/Spell";
+import {
+  ensureAncestryBonuses,
+  ensureClassBonuses,
+  ensureClassGear,
+  ensureLanguages,
+} from "./AncestryClassEnsurer";
 
 export function importFromJson(jsonStr: string): PlayerCharacter {
   const json = JSON.parse(jsonStr);
@@ -34,168 +40,11 @@ export function maintainBackwardsCompat(pc: PlayerCharacter) {
     pc["customLanguages"] = [];
   }
 
-  addAncestryBonusesIfNecessary(pc.bonuses, pc.ancestry);
-  addClassBonusesIfNecessary(pc.bonuses, pc.class);
-  addClassGearIfNecessary(pc.gear, pc.class);
-}
-
-function addClassGearIfNecessary(gear: Gear[], c: Class) {
-  if (c === "Thief" && !gear.find((g) => g.name === "Thieving Tools")) {
-    gear.push({ name: "Thieving Tools", quantity: 1 });
-  }
-}
-
-function addAncestryBonusesIfNecessary(bonuses: Bonus[], a: Ancestry) {
-  switch (a) {
-    case "Elf":
-      break;
-    case "Human":
-      break;
-    case "Dwarf": {
-      const name = "Stout";
-      if (!bonuses.find((b) => b.name === name)) {
-        bonuses.push({
-          name,
-          bonusSource: "Ancestry",
-          desc: "Roll your hit point gains with advantage",
-          type: "advantage",
-          bonusTo: "hpRoll",
-        });
-      }
-      break;
-    }
-    case "Goblin": {
-      const name = "Keen senses";
-      if (!bonuses.find((b) => b.name === name)) {
-        bonuses.push({
-          name,
-          bonusSource: "Ancestry",
-          desc: "You can't be surprised",
-          type: "generic",
-        });
-      }
-      break;
-    }
-    case "Halfling": {
-      const name = "Stealthy";
-      if (!bonuses.find((b) => b.name === name)) {
-        bonuses.push({
-          name,
-          bonusSource: "Ancestry",
-          desc: "Once per day, you can become invisible for 3 rounds",
-          type: "generic",
-        });
-      }
-      break;
-    }
-    case "Half-Orc": {
-      const nameAtk = "Mighty Attack ancestry";
-      const nameDmg = "Mighty Damage ancestry";
-      if (!bonuses.find((b) => b.name === nameAtk || b.name === nameDmg)) {
-        bonuses.push(
-          {
-            name: nameAtk,
-            desc: "You have a +1 bonus to attack rolls with melee weapons",
-            bonusSource: "Ancestry",
-            type: "modifyAmt",
-            bonusTo: "attackRoll",
-            bonusAmount: 1,
-            metadata: {
-              type: "weaponType",
-              weaponType: "Melee",
-            },
-          },
-          {
-            name: nameDmg,
-            desc: "You have a +1 bonus to damage rolls with melee weapons",
-            bonusSource: "Ancestry",
-            type: "modifyAmt",
-            bonusTo: "damageRoll",
-            bonusAmount: 1,
-            metadata: {
-              type: "weaponType",
-              weaponType: "Melee",
-            },
-          }
-        );
-      }
-      break;
-    }
-  }
-}
-
-function addClassBonusesIfNecessary(bonuses: Bonus[], c: Class) {
-  switch (c) {
-    case "Thief": {
-      let name = "Thievery";
-      if (!bonuses.find((b) => b.name === name)) {
-        bonuses.push(
-          {
-            name,
-            bonusSource: "Class",
-            desc: "Advantage on Climbing",
-            type: "generic",
-          },
-          {
-            name: name + ": Sneaking/Hiding",
-            bonusSource: "Class",
-            desc: "Advantage on Sneaking/Hiding",
-            type: "generic",
-          },
-          {
-            name: name + ": disguises",
-            bonusSource: "Class",
-            desc: "Advantage on applying disguises",
-            type: "generic",
-          },
-          {
-            name: name + ": traps",
-            bonusSource: "Class",
-            desc: "Advantage on disabling traps",
-            type: "generic",
-          },
-          {
-            name: name + ": delicate",
-            bonusSource: "Class",
-            desc: "Advantage on picking pockets/opening locks",
-            type: "generic",
-          }
-        );
-      }
-
-      name = "Backstab";
-      if (!bonuses.find((b) => b.name === name)) {
-        bonuses.push({
-          name,
-          bonusSource: "Class",
-          desc: "+1 additional weapon dice of damage on unaware enemies",
-          type: "modifyAmt",
-          bonusTo: "backstabDice",
-          bonusAmount: 1,
-          bonusIncreaseRatePerLevel: 0.5,
-        });
-      }
-      break;
-    }
-    case "Priest": {
-      break;
-    }
-    case "Wizard": {
-      const name = "Learning Spells";
-      if (!bonuses.find((b) => b.name === name)) {
-        bonuses.push({
-          name,
-          bonusSource: "Class",
-          desc: "Study a scroll (1 Day) + DC 15 check to permanently learn scroll",
-          type: "generic",
-        });
-      }
-      break;
-    }
-    case "Fighter": {
-      break;
-    }
-  }
+  // ensure player has proper bonuses every time we load json
+  ensureAncestryBonuses(pc);
+  ensureClassBonuses(pc);
+  ensureClassGear(pc);
+  ensureLanguages(pc);
 }
 
 function importFromShadowDarklingsJson(json: any): PlayerCharacter {
@@ -224,9 +73,9 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     .map(mapSDBonusToBonus)
     .flat();
 
-  addClassBonusesIfNecessary(bonuses, json.class as Class);
-  addClassGearIfNecessary(gear, json.class as Class);
-  addAncestryBonusesIfNecessary(bonuses, json.ancestry as Ancestry);
+  addClassBonuses(bonuses, json.class as Class);
+  addClassGear(gear, json.class as Class);
+  addAncestryBonuses(bonuses, json.ancestry as Ancestry);
 
   const pc: PlayerCharacter = {
     name: json.name,
