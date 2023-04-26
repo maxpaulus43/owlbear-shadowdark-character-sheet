@@ -66,6 +66,37 @@ export type PlayerCharacter = {
   hitPoints: number;
 };
 
+export function defaultPC(): PlayerCharacter {
+  return {
+    name: "",
+    ancestry: "Human",
+    class: "Thief",
+    level: 0,
+    title: "Rook",
+    alignment: "Lawful",
+    background: "Scout",
+    deity: "Gede",
+    gear: [],
+    customGear: [],
+    stats: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
+    bonuses: [],
+    customBonuses: [],
+    customTalents: [],
+    maxHitPoints: 1,
+    armorClass: 10,
+    gearSlotsTotal: 10,
+    gold: 0,
+    silver: 0,
+    copper: 0,
+    languages: ["Common"],
+    customLanguages: [],
+    xp: 0,
+    spells: [],
+    customSpells: [],
+    hitPoints: 1,
+  };
+}
+
 export function calculateModifierForPlayerStat(
   pc: PlayerCharacter,
   stat: Stat
@@ -218,6 +249,56 @@ export function calculateSpellCastingModifierForPlayer(
   return result;
 }
 
+export function calculateDamageBonusForPlayerWeapon(
+  pc: PlayerCharacter,
+  w: WeaponInfo
+): number {
+  let result = 0;
+
+  const bonuses = pc.bonuses
+    .filter((b) => b.type === "modifyAmt" && b.bonusTo === "damageRoll")
+    .reduce((acc: number, b: ModifyBonus) => {
+      if (
+        !b.metadata ||
+        (b.metadata.type === "weapon" && b.metadata.weapon === w.name) ||
+        (b.metadata.type === "weaponType" &&
+          b.metadata.weaponType === w.weaponType) // TODO deal with MeleeRanged weapons
+      ) {
+        acc += calculateBonusAmount(pc, b);
+      }
+      return acc;
+    }, 0);
+  result += bonuses;
+
+  // gear bonuses
+  const gearBonuses = pc.gear
+    // only want to apply equippable bonuses or bonuses that don't require equipping
+    .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
+    .filter(({ isEquipped, g }) => {
+      return !g.canBeEquipped || isEquipped;
+    })
+    .map(({ g }) => g.playerBonuses)
+    .filter(Boolean)
+    .flat()
+    // only apply bonuses to attackRoll
+    .filter((b) => b.type === "modifyAmt" && b.bonusTo === "damageRoll")
+    .reduce((acc: number, b: ModifyBonus) => {
+      if (
+        // this bonus might target a specific weapon/weaponType
+        !b.metadata ||
+        (b.metadata.type === "weapon" && b.metadata.weapon === w.name) ||
+        (b.metadata.type === "weaponType" &&
+          b.metadata.weaponType === w.weaponType)
+      ) {
+        acc += calculateBonusAmount(pc, b);
+      }
+      return acc;
+    }, 0);
+  result += gearBonuses;
+
+  return result;
+}
+
 export function calculateAttackBonusForPlayerWeapon(
   pc: PlayerCharacter,
   w: WeaponInfo
@@ -253,7 +334,7 @@ export function calculateAttackBonusForPlayerWeapon(
     // only want to apply equippable bonuses or bonuses that don't require equipping
     .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
     .filter(({ isEquipped, g }) => {
-      return g.canBeEquipped || isEquipped;
+      return !g.canBeEquipped || isEquipped;
     })
     .map(({ g }) => g.playerBonuses)
     .filter(Boolean)
@@ -348,35 +429,4 @@ export function calculateBonusAmount(
     return b.bonusAmount + Math.floor(pc.level * b.bonusIncreaseRatePerLevel);
   }
   return b.bonusAmount;
-}
-
-export function defaultPC(): PlayerCharacter {
-  return {
-    name: "",
-    ancestry: "Human",
-    class: "Thief",
-    level: 0,
-    title: "Rook",
-    alignment: "Lawful",
-    background: "Scout",
-    deity: "Gede",
-    gear: [],
-    customGear: [],
-    stats: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
-    bonuses: [],
-    customBonuses: [],
-    customTalents: [],
-    maxHitPoints: 1,
-    armorClass: 10,
-    gearSlotsTotal: 10,
-    gold: 0,
-    silver: 0,
-    copper: 0,
-    languages: ["Common"],
-    customLanguages: [],
-    xp: 0,
-    spells: [],
-    customSpells: [],
-    hitPoints: 1,
-  };
 }

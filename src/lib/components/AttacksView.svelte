@@ -2,6 +2,7 @@
   import { findWeapon } from "../compendium";
   import {
     calculateAttackBonusForPlayerWeapon,
+    calculateDamageBonusForPlayerWeapon,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import type { WeaponInfo } from "../model/Weapon";
@@ -52,24 +53,32 @@
       </td>
       <td class="flex gap-1">
         {#if w.damage.oneHanded}
-          <button
-            on:click={() => rollDamage(w, "OneHanded")}
-            class="bg-black text-white p-1 px-2 rounded-md flex flex-col items-center"
+          <RollButton
+            diceType={w.damage.oneHanded.diceType}
+            modifier={calculateDamageBonusForPlayerWeapon($pc, w)}
           >
-            <span>{rollToString(w.damage.oneHanded)}</span>
-            <i class="material-icons"> back_hand </i>
-          </button>
+            <div
+              class="bg-black text-white p-1 px-2 rounded-md flex flex-col items-center"
+            >
+              <span>{rollToString(w.damage.oneHanded)}</span>
+              <i class="material-icons"> back_hand </i>
+            </div>
+          </RollButton>
         {/if}
         {#if w.damage.twoHanded}
-          <button
-            on:click={() => rollDamage(w, "TwoHanded")}
-            class="bg-black text-white rounded-md p-1 px-2 flex flex-col items-center"
-            class:opacity-50={!canAttackTwoHanded}
+          <RollButton
+            diceType={w.damage.twoHanded.diceType}
+            modifier={calculateDamageBonusForPlayerWeapon($pc, w)}
             disabled={!canAttackTwoHanded}
           >
-            <span>{rollToString(w.damage.twoHanded)}</span>
-            <i class="material-icons"> sign_language </i>
-          </button>
+            <div
+              class="bg-black text-white rounded-md p-1 px-2 flex flex-col items-center"
+              class:opacity-50={!canAttackTwoHanded}
+            >
+              <span>{rollToString(w.damage.twoHanded)}</span>
+              <i class="material-icons"> sign_language </i>
+            </div>
+          </RollButton>
         {/if}
       </td>
     </tr>
