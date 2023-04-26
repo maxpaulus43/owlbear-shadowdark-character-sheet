@@ -1,4 +1,4 @@
-import { LANGUAGES } from "../constants";
+import type { LANGUAGES } from "../constants";
 import type { Bonus } from "../model/Bonus";
 import type { Gear } from "../model/Gear";
 import type {
