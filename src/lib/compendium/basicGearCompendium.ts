@@ -162,6 +162,13 @@ const GEAR: GearInfo[] = [
     type: "Basic",
     slots: { perSlot: 1, slotsUsed: 1, freeCarry: 0 },
   },
+  {
+    name: "Thieving Tools",
+    cost: { gp: 0, sp: 0, cp: 0 },
+    canBeEquipped: false,
+    type: "Basic",
+    slots: { perSlot: 1, slotsUsed: 0, freeCarry: 1 },
+  },
 ];
 
 const GEAR_COMPENDIUM: { [name: string]: GearInfo } = {};

@@ -132,7 +132,7 @@ export const SPELLS: SpellInfo[] = [
   {
     name: "Light",
     range: "Close",
-    class: "Priest",
+    class: "PriestWizard",
     tier: 1,
     desc: "One object you touch glows with bright, heatless light, illuminating out to a near distance for 1 hour of real time.",
     duration: { type: "Hour", subType: "RealTime", amt: 1 },

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { findSpell } from "../compendium";
   import {
     calculateSpellCastingModifierForPlayer,
     PlayerCharacterStore as pc,
@@ -13,7 +14,7 @@
   let showSpellInfoForSpell: SpellInfo;
   let showModal = false;
 
-  $: spells = $pc.spells;
+  $: spells = $pc.spells.map((s) => findSpell(s.name));
   $: hasSpells = spells?.length > 0;
 </script>
 

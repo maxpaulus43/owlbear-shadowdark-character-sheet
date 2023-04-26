@@ -36,6 +36,13 @@ function maintainBackwardsCompat(pc: PlayerCharacter) {
 
   addAncestryBonusesIfNecessary(pc.bonuses, pc.ancestry);
   addClassBonusesIfNecessary(pc.bonuses, pc.class);
+  addClassGearIfNecessary(pc.gear, pc.class);
+}
+
+function addClassGearIfNecessary(gear: Gear[], c: Class) {
+  if (c === "Thief" && !gear.find((g) => g.name === "Thieving Tools")) {
+    gear.push({ name: "Thieving Tools", quantity: 1 });
+  }
 }
 
 function addAncestryBonusesIfNecessary(bonuses: Bonus[], a: Ancestry) {
@@ -49,6 +56,7 @@ function addAncestryBonusesIfNecessary(bonuses: Bonus[], a: Ancestry) {
       if (!bonuses.find((b) => b.name === name)) {
         bonuses.push({
           name,
+          bonusSource: "Ancestry",
           desc: "Roll your hit point gains with advantage",
           type: "advantage",
           bonusTo: "hpRoll",
@@ -61,6 +69,7 @@ function addAncestryBonusesIfNecessary(bonuses: Bonus[], a: Ancestry) {
       if (!bonuses.find((b) => b.name === name)) {
         bonuses.push({
           name,
+          bonusSource: "Ancestry",
           desc: "You can't be surprised",
           type: "generic",
         });
@@ -72,6 +81,7 @@ function addAncestryBonusesIfNecessary(bonuses: Bonus[], a: Ancestry) {
       if (!bonuses.find((b) => b.name === name)) {
         bonuses.push({
           name,
+          bonusSource: "Ancestry",
           desc: "Once per day, you can become invisible for 3 rounds",
           type: "generic",
         });
@@ -86,6 +96,7 @@ function addAncestryBonusesIfNecessary(bonuses: Bonus[], a: Ancestry) {
           {
             name: nameAtk,
             desc: "You have a +1 bonus to attack rolls with melee weapons",
+            bonusSource: "Ancestry",
             type: "modifyAmt",
             bonusTo: "attackRoll",
             bonusAmount: 1,
@@ -97,6 +108,7 @@ function addAncestryBonusesIfNecessary(bonuses: Bonus[], a: Ancestry) {
           {
             name: nameDmg,
             desc: "You have a +1 bonus to damage rolls with melee weapons",
+            bonusSource: "Ancestry",
             type: "modifyAmt",
             bonusTo: "damageRoll",
             bonusAmount: 1,
@@ -114,14 +126,75 @@ function addAncestryBonusesIfNecessary(bonuses: Bonus[], a: Ancestry) {
 
 function addClassBonusesIfNecessary(bonuses: Bonus[], c: Class) {
   switch (c) {
-    case "Thief":
+    case "Thief": {
+      let name = "Thievery";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: name + ": Climbing",
+            bonusSource: "Class",
+            desc: "Advantage on Climbing",
+            type: "generic",
+          },
+          {
+            name: name + ": Sneaking/Hiding",
+            bonusSource: "Class",
+            desc: "Advantage on Sneaking/Hiding",
+            type: "generic",
+          },
+          {
+            name: name + ": disguises",
+            bonusSource: "Class",
+            desc: "Advantage on applying disguises",
+            type: "generic",
+          },
+          {
+            name: name + ": traps",
+            bonusSource: "Class",
+            desc: "Advantage on disabling traps",
+            type: "generic",
+          },
+          {
+            name: name + ": delicate",
+            bonusSource: "Class",
+            desc: "Advantage on picking pockets/opening locks",
+            type: "generic",
+          }
+        );
+      }
+
+      name = "Backstab";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push({
+          name,
+          bonusSource: "Class",
+          desc: "+1 additional weapon dice of damage on unaware enemies",
+          type: "modifyAmt",
+          bonusTo: "backstabDice",
+          bonusAmount: 1,
+          bonusIncreaseRatePerLevel: 0.5,
+        });
+      }
       break;
-    case "Priest":
+    }
+    case "Priest": {
       break;
-    case "Wizard":
+    }
+    case "Wizard": {
+      const name = "Learning Spells";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push({
+          name,
+          bonusSource: "Class",
+          desc: "Study a scroll (1 Day) + DC 15 check to permanently learn scroll",
+          type: "generic",
+        });
+      }
       break;
-    case "Fighter":
+    }
+    case "Fighter": {
       break;
+    }
   }
 }
 
@@ -152,6 +225,7 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     .flat();
 
   addClassBonusesIfNecessary(bonuses, json.class as Class);
+  addClassGearIfNecessary(gear, json.class as Class);
   addAncestryBonusesIfNecessary(bonuses, json.ancestry as Ancestry);
 
   const pc: PlayerCharacter = {

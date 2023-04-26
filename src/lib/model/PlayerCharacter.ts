@@ -15,7 +15,7 @@ import { clamp, toInfo } from "../utils";
 import type { ArmorInfo } from "./Armor";
 import type { Bonus, ModifyBonus } from "./Bonus";
 import type { Gear, GearInfo } from "./Gear";
-import type { SpellInfo } from "./Spell";
+import type { Spell, SpellInfo } from "./Spell";
 import type { Talent } from "./Talent";
 import type { WeaponInfo } from "./Weapon";
 
@@ -61,7 +61,7 @@ export type PlayerCharacter = {
   languages: string[];
   customLanguages: string[];
   xp: number;
-  spells: SpellInfo[];
+  spells: Spell[];
   customSpells: SpellInfo[];
   hitPoints: number;
 };
@@ -308,12 +308,12 @@ export function playerHasSpell(pc: PlayerCharacter, spell: SpellInfo) {
 }
 
 export function playerCanLearnSpell(pc: PlayerCharacter, spell: SpellInfo) {
-  return pc.class.toLowerCase() === spell.class.toLowerCase();
+  return spell.class.toLowerCase().includes(pc.class.toLowerCase());
 }
 
 export function learnSpellForPlayer(pc: PlayerCharacter, spell: SpellInfo) {
   if (playerHasSpell(pc, spell)) return;
-  pc.spells.push(spell);
+  pc.spells.push({ name: spell.name });
 }
 
 export function unlearnSpellForPlayer(pc: PlayerCharacter, spell: SpellInfo) {
