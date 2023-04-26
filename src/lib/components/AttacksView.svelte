@@ -5,9 +5,7 @@
     calculateDamageBonusForPlayerWeapon,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
-  import type { WeaponInfo } from "../model/Weapon";
   import type { Roll } from "../types";
-  import { rollDice } from "../utils";
   import RollButton from "./RollButton.svelte";
 
   $: weapons = $pc.gear
@@ -21,17 +19,6 @@
     return roll.numDice + roll.diceType;
   }
 
-  function rollDamage(w: WeaponInfo, h: "OneHanded" | "TwoHanded") {
-    const modifier = 0; // todo calculate modifier
-    const outcome = rollDice(
-      h === "TwoHanded"
-        ? w.damage.twoHanded.diceType
-        : w.damage.oneHanded.diceType
-    );
-    const msg = `${outcome} + ${modifier} = ${outcome + modifier}`;
-    // TODO OBR integration
-    alert(msg);
-  }
   // TODO handle finesse weapons (roll either str or dex)
 </script>
 

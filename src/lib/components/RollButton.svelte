@@ -4,7 +4,6 @@
   import Menu from "./Menu/Menu.svelte";
   import MenuOption from "./Menu/MenuOption.svelte";
   import { notifiy } from "../services/Notifier";
-  import { ValueForDiceType } from "../constants";
 
   export let modifier: number = 0;
   export let diceType: DiceType = "d20"; // default to d20
