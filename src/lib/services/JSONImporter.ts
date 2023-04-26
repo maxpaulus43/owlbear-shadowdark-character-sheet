@@ -1,3 +1,4 @@
+import { loop } from "svelte/internal";
 import { findAny, findSpell } from "../compendium";
 import { SCHEMA_TYPE } from "../constants";
 import type { Bonus, SDBonus } from "../model/Bonus";
@@ -73,10 +74,6 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     .map(mapSDBonusToBonus)
     .flat();
 
-  addClassBonuses(bonuses, json.class as Class);
-  addClassGear(gear, json.class as Class);
-  addAncestryBonuses(bonuses, json.ancestry as Ancestry);
-
   const pc: PlayerCharacter = {
     name: json.name,
     ancestry: json.ancestry,
@@ -105,6 +102,11 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     spells,
     customSpells: [],
   };
+
+  ensureClassBonuses(pc);
+  ensureClassGear(pc);
+  ensureLanguages(pc);
+  ensureAncestryBonuses(pc);
 
   return pc;
 }
