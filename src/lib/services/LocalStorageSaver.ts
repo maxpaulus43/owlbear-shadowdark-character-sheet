@@ -4,7 +4,6 @@ import {
   PlayerCharacterStore as pc,
 } from "../model/PlayerCharacter";
 import { debounce } from "../utils";
-import { maintainBackwardsCompat } from "./JSONImporter";
 
 export function trackAndSavePlayerToLocalStorage() {
   const saveToLocalStorage = debounce(savePlayerToLocalStorage, 2000);
@@ -31,10 +30,7 @@ export async function loadPlayerFromLocalStorage(): Promise<PlayerCharacter> {
     console.log("loading Player from OBR");
   } else {
     const pcJson = await asyncLocalStorage.getItem(`sd-character-sheet`);
-    if (!pcJson) return defaultPC();
-    const pc = JSON.parse(pcJson) as PlayerCharacter;
-    maintainBackwardsCompat(pc);
-    return pc;
+    return pcJson ? (JSON.parse(pcJson) as PlayerCharacter) : defaultPC();
   }
 }
 
