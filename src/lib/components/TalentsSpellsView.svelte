@@ -15,6 +15,7 @@
   import type { SpellInfo } from "../model/Spell";
   import Modal from "./Modal.svelte";
   import SpellView from "./SpellView.svelte";
+  import LanguagesView from "./LanguagesView.svelte";
 
   $: spells = $pc.spells;
   $: hasSpells = spells?.length > 0;
@@ -40,19 +41,6 @@
   function editBonus(b: Bonus) {
     // TODO edit bonus
     $pc = $pc;
-  }
-
-  let addingNewLanguage = false;
-  function doesNotKnowLanguage(l: string) {
-    return !$pc.languages.includes(l);
-  }
-  function onAddNewLanguage(l: string) {
-    $pc.languages.push(l);
-    addingNewLanguage = false;
-    $pc = $pc;
-  }
-  function onLanguageChange(e: Event) {
-    onAddNewLanguage((e.target as HTMLSelectElement).value);
   }
 </script>
 
@@ -144,32 +132,7 @@
     <AddBonusButton />
   </div>
 
-  <div class="flex gap-2">
-    <h2>Languages</h2>
-    <button
-      on:click={() => {
-        addingNewLanguage = !addingNewLanguage;
-      }}
-      class="px-3 hover:bg-gray-400"
-    >
-      <i class="material-icons translate-y-1"
-        >{addingNewLanguage ? "do_not_disturb_on" : "add_circle"}</i
-      >
-    </button>
-    {#if addingNewLanguage}
-      <select class="flex-grow" on:change={onLanguageChange}>
-        <option />
-        {#each LANGUAGES.filter(doesNotKnowLanguage) as l}
-          <option>{l}</option>
-        {/each}
-      </select>
-    {/if}
-  </div>
-  <ul>
-    {#each $pc.languages as l}
-      <li class="border-b">{l}</li>
-    {/each}
-  </ul>
+  <LanguagesView />
 </div>
 
 {#if showSpellInfoForSpell}
