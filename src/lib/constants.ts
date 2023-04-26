@@ -6,11 +6,11 @@ export const ALIGNMENTS = ["Neutral", "Lawful", "Chaotic"] as const;
 export const DEITIES = [
   "Saint Terragnis",
   "Gede",
-  "Maderra The Covenant",
+  "Madeera the Covenant",
   "Ord",
   "Memnon",
   "Ramlaat",
-  "Shune The Vile",
+  "Shune the Vile",
   "The Lost",
 ] as const;
 
@@ -82,7 +82,7 @@ export const ANCESTRIES = [
   "Human",
   "Goblin",
   "Halfling",
-  "Half-orc",
+  "Half-Orc",
   "Dwarf",
 ] as const;
 

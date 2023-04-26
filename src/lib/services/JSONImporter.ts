@@ -2,7 +2,11 @@ import { findAny, findSpell } from "../compendium";
 import { SCHEMA_TYPE } from "../constants";
 import type { Bonus, SDBonus } from "../model/Bonus";
 import type { Gear } from "../model/Gear";
-import type { PlayerCharacter } from "../model/PlayerCharacter";
+import type {
+  Ancestry,
+  Class,
+  PlayerCharacter,
+} from "../model/PlayerCharacter";
 import type { SpellInfo } from "../model/Spell";
 
 export function importFromJson(jsonStr: string): PlayerCharacter {
@@ -16,18 +20,108 @@ export function importFromJson(jsonStr: string): PlayerCharacter {
   }
 }
 
-function maintainBackwardsCompat(p: PlayerCharacter) {
-  if (!p["customGear"]) {
-    p["customGear"] = [];
+function maintainBackwardsCompat(pc: PlayerCharacter) {
+  if (!pc["customGear"]) {
+    pc["customGear"] = [];
   }
-  if (!p["customBonuses"]) {
-    p["customBonuses"] = [];
+  if (!pc["customBonuses"]) {
+    pc["customBonuses"] = [];
   }
-  if (!p["customTalents"]) {
-    p["customTalents"] = [];
+  if (!pc["customTalents"]) {
+    pc["customTalents"] = [];
   }
-  if (!p["customLanguages"]) {
-    p["customLanguages"] = [];
+  if (!pc["customLanguages"]) {
+    pc["customLanguages"] = [];
+  }
+
+  addAncestryBonusesIfNecessary(pc.bonuses, pc.ancestry);
+  addClassBonusesIfNecessary(pc.bonuses, pc.class);
+}
+
+function addAncestryBonusesIfNecessary(bonuses: Bonus[], a: Ancestry) {
+  switch (a) {
+    case "Elf":
+      break;
+    case "Human":
+      break;
+    case "Dwarf": {
+      const name = "Stout";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push({
+          name,
+          desc: "Roll your hit point gains with advantage",
+          type: "advantage",
+          bonusTo: "hpRoll",
+        });
+      }
+      break;
+    }
+    case "Goblin": {
+      const name = "Keen senses";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push({
+          name,
+          desc: "You can't be surprised",
+          type: "generic",
+        });
+      }
+      break;
+    }
+    case "Halfling": {
+      const name = "Stealthy";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push({
+          name,
+          desc: "Once per day, you can become invisible for 3 rounds",
+          type: "generic",
+        });
+      }
+      break;
+    }
+    case "Half-Orc": {
+      const nameAtk = "Mighty Attack ancestry";
+      const nameDmg = "Mighty Damage ancestry";
+      if (!bonuses.find((b) => b.name === nameAtk || b.name === nameDmg)) {
+        bonuses.push(
+          {
+            name: nameAtk,
+            desc: "You have a +1 bonus to attack rolls with melee weapons",
+            type: "modifyAmt",
+            bonusTo: "attackRoll",
+            bonusAmount: 1,
+            metadata: {
+              type: "weaponType",
+              weaponType: "Melee",
+            },
+          },
+          {
+            name: nameDmg,
+            desc: "You have a +1 bonus to damage rolls with melee weapons",
+            type: "modifyAmt",
+            bonusTo: "damageRoll",
+            bonusAmount: 1,
+            metadata: {
+              type: "weaponType",
+              weaponType: "Melee",
+            },
+          }
+        );
+      }
+      break;
+    }
+  }
+}
+
+function addClassBonusesIfNecessary(bonuses: Bonus[], c: Class) {
+  switch (c) {
+    case "Thief":
+      break;
+    case "Priest":
+      break;
+    case "Wizard":
+      break;
+    case "Fighter":
+      break;
   }
 }
 
@@ -56,6 +150,9 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     )
     .map(mapSDBonusToBonus)
     .flat();
+
+  addClassBonusesIfNecessary(bonuses, json.class as Class);
+  addAncestryBonusesIfNecessary(bonuses, json.ancestry as Ancestry);
 
   const pc: PlayerCharacter = {
     name: json.name,

@@ -4,7 +4,9 @@
     calculateTitleForPlayer,
     levelUpPlayer,
     PlayerCharacterStore as pc,
+    setClassForPlayer,
   } from "./lib/model/PlayerCharacter";
+  import type { Class } from "./lib/model/PlayerCharacter";
   import {
     ALIGNMENTS,
     ANCESTRIES,
@@ -27,6 +29,12 @@
   import InfoButton from "./lib/components/InfoButton.svelte";
   import { subscribeToCustomGearForPlayer } from "./lib/compendium";
 
+  onMount(async () => {
+    $pc = await loadPlayerFromLocalStorage();
+    trackAndSavePlayerToLocalStorage();
+    subscribeToCustomGearForPlayer();
+  });
+
   $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);
   $: xpCap = $pc.level === 0 ? 10 : $pc.level * 10;
@@ -46,12 +54,9 @@
     }
   }
 
-  // TODO save/load from local storage
-  onMount(async () => {
-    $pc = await loadPlayerFromLocalStorage();
-    trackAndSavePlayerToLocalStorage();
-    subscribeToCustomGearForPlayer();
-  });
+  function onClassChange(e: Event) {
+    setClassForPlayer($pc, (e.target as HTMLSelectElement).value as Class);
+  }
 </script>
 
 <div class="flex items-center justify-center bg-black">
@@ -164,7 +169,7 @@
         </div>
         <div class="col-span-full cell">
           <h2>CLASS</h2>
-          <select bind:value={$pc.class}>
+          <select value={$pc.class} on:change={onClassChange}>
             {#each CLASSES as clazz}
               <option value={clazz}>
                 {clazz}
@@ -235,7 +240,7 @@
 
         <div class="col-span-full cell">
           <h2>DEITY</h2>
-          <select>
+          <select bind:value={$pc.deity}>
             {#each DEITIES as deity}
               <option value={deity}>
                 {deity}

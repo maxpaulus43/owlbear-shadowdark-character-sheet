@@ -80,6 +80,11 @@ export function calculateModifierForPlayerStat(
   return finalModifier;
 }
 
+export function setClassForPlayer(pc: PlayerCharacter, c: Class) {
+  // TODO possibly change class bonuses dynamically.
+  pc.class = c;
+}
+
 export function calculateStatValueForPlayerStat(
   pc: PlayerCharacter,
   stat: Stat
