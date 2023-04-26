@@ -20,7 +20,7 @@ export function importFromJson(jsonStr: string): PlayerCharacter {
   }
 }
 
-function maintainBackwardsCompat(pc: PlayerCharacter) {
+export function maintainBackwardsCompat(pc: PlayerCharacter) {
   if (!pc["customGear"]) {
     pc["customGear"] = [];
   }
@@ -131,7 +131,7 @@ function addClassBonusesIfNecessary(bonuses: Bonus[], c: Class) {
       if (!bonuses.find((b) => b.name === name)) {
         bonuses.push(
           {
-            name: name + ": Climbing",
+            name,
             bonusSource: "Class",
             desc: "Advantage on Climbing",
             type: "generic",
