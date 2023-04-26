@@ -16,6 +16,7 @@
     <div>
       This is an unofficial fan made tool to track your shadow dark character!
       Buy shadow dark <a
+        target="_blank"
         href="https://www.thearcanelibrary.com/pages/shadowdark">here</a
       >
     </div>
@@ -24,7 +25,7 @@
     <div>
       This tool can import your character directly from <a
         href="https://www.shadowdarklings.net"
-        >Shadowdarkling Character Creator</a
+        target="_blank">Shadowdarkling Character Creator</a
       >. It can also import any previously exported json.
     </div>
 
@@ -37,7 +38,7 @@
 
     <h2>Contact</h2>
     <div>
-      Email me at <a href="mailto:maxpaulus43@gmail.com"
+      Email me at <a href="mailto:maxpaulus43@gmail.com" target="_blank"
         >maxpaulus43@gmail.com</a
       >
       I also lurk on the official Shadowdark discord channel.
@@ -48,14 +49,22 @@
       This project is free and open source! Feel free to make a pull request or
       create an issue <a
         href="https://github.com/maxpaulus43/owlbear-shadowdark-character-sheet"
-        >here</a
+        target="_blank">here</a
       >
     </div>
 
     <h2>Acknowledgements</h2>
     <div>Check out these other awesome shadowdark tools!</div>
-    <a href="https://shadowdarklings.net">https://shadowdarklings.net</a><br />
-    <a href="https://www.shadowdork.com">https://www.shadowdork.com</a>
+    <div>
+      <a href="https://shadowdarklings.net" target="_blank"
+        >https://shadowdarklings.net</a
+      >
+    </div>
+    <div>
+      <a href="https://www.shadowdork.com" target="_blank"
+        >https://www.shadowdork.com</a
+      >
+    </div>
 
     <h2>License</h2>
     <div>

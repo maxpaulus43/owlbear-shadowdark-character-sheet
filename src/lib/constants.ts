@@ -97,6 +97,10 @@ export const LANGUAGES = [
   "Reptillian",
   "Sylvan",
   "Thanian",
+  "Celestial",
+  "Diabolic",
+  "Draconic",
+  "Primordial",
 ] as const;
 
 export const ValueForDiceType = {
