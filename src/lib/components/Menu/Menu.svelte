@@ -3,15 +3,23 @@
   import { fade } from "svelte/transition";
   import { key } from "./MenuModel";
 
+  export let x: number;
+  export let y: number;
+  let menuEl: HTMLElement;
+
+  $: if (menuEl) {
+    const rect = menuEl.getBoundingClientRect();
+    x = Math.min(window.innerWidth - rect.width, x);
+    y = Math.min(window.innerHeight - rect.height, y);
+  }
+
   const dispatch = createEventDispatcher();
 
   setContext(key, {
     dispatchClick: () => dispatch("click"),
   });
 
-  let menuEl: HTMLElement;
-
-  function onPageClick(e: MouseEvent) {
+  function onPageClick(e: Event) {
     if (e.target === menuEl || menuEl.contains(e.target as Node)) return;
     dispatch("clickoutside");
   }
@@ -22,10 +30,19 @@
 <div
   transition:fade={{ duration: 100 }}
   bind:this={menuEl}
-  class="left-5 shadow-lg bg-white z-10 border-black border absolute"
+  style="top: {y}px; left: {x}px;"
 >
   <slot />
 </div>
 
 <style>
+  div {
+    position: fixed;
+    display: grid;
+    border: 1px solid #0003;
+    box-shadow: 2px 2px 5px 0px #0002;
+    background: white;
+    z-index: 10;
+  }
 </style>
+

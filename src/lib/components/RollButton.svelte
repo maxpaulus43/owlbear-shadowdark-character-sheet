@@ -10,11 +10,12 @@
   export let disabled = false;
 
   let showMenu = false;
+  let pos = { x: 0, y: 0 };
   let touchTimer: ReturnType<typeof setTimeout>;
 
-  function touchStart() {
+  function touchStart(e) {
     touchTimer = setTimeout(() => {
-      onRightClick();
+      onRightClick(e);
       touchTimer = null;
     }, 500);
   }
@@ -69,8 +70,15 @@
     notifiy(msg);
   }
 
-  function onRightClick() {
+  async function onRightClick(e) {
     if (!disabled) {
+      if (showMenu) {
+        showMenu = false;
+        await new Promise((res) => setTimeout(res, 100));
+      }
+
+      // console.log(e);
+      pos = { x: e.clientX, y: e.clientY };
       showMenu = true;
     }
   }
@@ -80,7 +88,7 @@
   }
 </script>
 
-<div class="relative">
+<div>
   <button
     on:click={roll}
     {disabled}
@@ -92,7 +100,7 @@
   </button>
 
   {#if showMenu}
-    <Menu on:click={closeMenu} on:clickoutside={closeMenu}>
+    <Menu {...pos} on:click={closeMenu} on:clickoutside={closeMenu}>
       <MenuOption on:click={roll} text="Roll" />
       <MenuOption on:click={rollWithAdvantage}>
         <div class="text-green-700">Roll With Advantage</div>
