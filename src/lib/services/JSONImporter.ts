@@ -20,7 +20,7 @@ export function importFromJson(jsonStr: string): PlayerCharacter {
   }
 }
 
-function maintainBackwardsCompat(pc: PlayerCharacter) {
+export function maintainBackwardsCompat(pc: PlayerCharacter) {
   if (!pc["customGear"]) {
     pc["customGear"] = [];
   }
