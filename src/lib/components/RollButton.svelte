@@ -29,11 +29,11 @@
   function roll() {
     const outcome = rollDice(diceType);
     let critMsg = "";
-    if (outcome === ValueForDiceType[diceType]) {
-      critMsg = "CRITICAL SUCCESS! ... ";
-    } else if (outcome === 1) {
-      critMsg = "CRITICAL FAILURE! ... ";
-    }
+    // if (outcome === ValueForDiceType[diceType]) {
+    //   critMsg = "CRITICAL SUCCESS! ... ";
+    // } else if (outcome === 1) {
+    //   critMsg = "CRITICAL FAILURE! ... ";
+    // }
     const msg = `${critMsg}${outcome} + ${modifier} = ${outcome + modifier}`;
     notifiy(msg);
   }
@@ -43,11 +43,11 @@
     const outcome2 = rollDice(diceType);
     const higher = Math.max(outcome1, outcome2);
     let critMsg = "";
-    if (higher === ValueForDiceType[diceType]) {
-      critMsg = "CRITICAL SUCCESS! ... ";
-    } else if (higher === 1) {
-      critMsg = "CRITICAL FAILURE! ... ";
-    }
+    // if (higher === ValueForDiceType[diceType]) {
+    //   critMsg = "CRITICAL SUCCESS! ... ";
+    // } else if (higher === 1) {
+    //   critMsg = "CRITICAL FAILURE! ... ";
+    // }
     const msg = `${critMsg}${outcome1} vs. ${outcome2};\n ${higher} + ${modifier} = ${
       higher + modifier
     }`;
@@ -59,11 +59,11 @@
     const outcome2 = rollDice(diceType);
     const lower = Math.min(outcome1, outcome2);
     let critMsg = "";
-    if (lower === ValueForDiceType[diceType]) {
-      critMsg = "CRITICAL SUCCESS! ... ";
-    } else if (lower === 1) {
-      critMsg = "CRITICAL FAILURE! ... ";
-    }
+    // if (lower === ValueForDiceType[diceType]) {
+    //   critMsg = "CRITICAL SUCCESS! ... ";
+    // } else if (lower === 1) {
+    //   critMsg = "CRITICAL FAILURE! ... ";
+    // }
     const msg = `${critMsg}${outcome1} vs. ${outcome2};\n ${lower} + ${modifier} = ${
       lower + modifier
     }`;
