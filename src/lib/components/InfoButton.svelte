@@ -75,6 +75,7 @@
 
     <a
       href="https://www.buymeacoffee.com/tKsqTr4ABl"
+      target="_blank"
       class="pirata text-xl rounded-md p-2 self-center">Buy Me a Ration 🍖</a
     >
   </div>
