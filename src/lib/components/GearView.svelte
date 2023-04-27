@@ -7,11 +7,18 @@
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import { alphabetically } from "../utils";
-  import type { WeaponInfo } from "../model/Weapon";
+  //import type { WeaponInfo } from "../model/Weapon";
 
   $: costlyGear = $pc.gear
     .filter((g) => findAny(g.name)?.slots.freeCarry === 0)
     .sort((a, b) => alphabetically(a.name, b.name));
+
+  $: if (costlyGear) {
+    costlyGear.push({
+      name: "Coins",
+      quantity: $pc.gold + $pc.silver + $pc.copper,
+    });
+  }
 
   $: freeGear = $pc.gear
     .filter((g) => findAny(g.name)?.slots.freeCarry)
@@ -26,6 +33,10 @@
     }, 0);
 
   function slotsForGear(g: Gear): number {
+    if (g.name === "Coins") {
+      return Math.ceil(g.quantity / 100);
+    }
+
     const foundGear = findAny(g.name);
     return (
       Math.ceil(g.quantity / foundGear.slots.perSlot) *
@@ -83,6 +94,9 @@
   <span>({totalSlots} slots, {freeSlots} free)</span>
   <AddGearButton />
 </div>
+{#if freeSlots < 0}
+  <div class="text-red-600">Overencumbered</div>
+{/if}
 
 <div class="flex gap-1">
   <div class="flex items-center">
@@ -114,23 +128,25 @@
               {i + 1}. {g.name} x {g.quantity} ({slotsForGear(g)} slots)
             </span>
           </div>
-          <div class="flex gap-1 items-center">
-            {#if findAny(g.name).canBeEquipped}
-              <input
-                title="equipped"
-                type="checkbox"
-                class="w-6 h-6"
-                checked={g.equipped}
-                disabled={!canInteractWithGear(g)}
-                on:click={() => toggleEquipped(g)}
-              />
-            {/if}
-            <button
-              on:click={() => deleteGear(g.name)}
-              class="px-1 pt-1 rounded-md bg-black text-white"
-              ><i class="material-icons">delete</i></button
-            >
-          </div>
+          {#if g.name !== "Coins"}
+            <div class="flex gap-1 items-center">
+              {#if findAny(g.name).canBeEquipped}
+                <input
+                  title="equipped"
+                  type="checkbox"
+                  class="w-6 h-6"
+                  checked={g.equipped}
+                  disabled={!canInteractWithGear(g)}
+                  on:click={() => toggleEquipped(g)}
+                />
+              {/if}
+              <button
+                on:click={() => deleteGear(g.name)}
+                class="px-1 pt-1 rounded-md bg-black text-white"
+                ><i class="material-icons">delete</i></button
+              >
+            </div>
+          {/if}
         </div>
       </li>
     {/each}

@@ -123,3 +123,7 @@ export function groupBonusesByType(bonuses: Bonus[]) {
     ) as DisadvantageBonus[],
   };
 }
+
+export function isEqual(a: Bonus, b: Bonus) {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
