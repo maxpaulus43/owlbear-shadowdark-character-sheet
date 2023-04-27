@@ -95,7 +95,7 @@
   <AddGearButton />
 </div>
 {#if freeSlots < 0}
-  <div class="text-red-600">Over Encumbered</div>
+  <div class="text-red-600">Overencumbered</div>
 {/if}
 
 <div class="flex gap-1">
