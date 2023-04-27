@@ -44,7 +44,7 @@
       I also lurk on the official Shadowdark discord channel.
     </div>
 
-    <h2>Contribute</h2>
+    <h2>Issues</h2>
     <div>
       This project is free and open source! Feel free to make a pull request or
       create an issue <a
