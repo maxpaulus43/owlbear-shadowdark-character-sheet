@@ -45,10 +45,10 @@
             modifier={calculateDamageBonusForPlayerWeapon($pc, w)}
           >
             <div
-              class="bg-black text-white p-1 px-2 rounded-md flex flex-col items-center"
+              class="bg-black text-white p-1 px-2 rounded-md flex flex-col items-center text-xs"
             >
               <span>{rollToString(w.damage.oneHanded)}</span>
-              <i class="material-icons"> back_hand </i>
+              <i class="material-icons">back_hand</i>
             </div>
           </RollButton>
         {/if}

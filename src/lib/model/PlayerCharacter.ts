@@ -175,10 +175,19 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
     }
   }
 
+  const shields = pc.gear
+    .filter((g) => g.equipped)
+    .map(toInfo<ArmorInfo>)
+    .filter((g) => g.type === "Armor" && g.properties?.includes("OneHanded"));
+
+  for (const s of shields) {
+    acModifier += s.ac.modifier;
+  }
+
   const armor = pc.gear
     .filter((g) => g.equipped)
     .map(toInfo<ArmorInfo>)
-    .filter((g) => g.type === "Armor");
+    .filter((g) => g.type === "Armor" && !g.properties?.includes("OneHanded"));
 
   for (const a of armor) {
     let statModifier = 0;
@@ -458,4 +467,59 @@ export function calculateBonusAmount(
     pc.level * (b.bonusIncreaseRatePerLevel ?? 0)
   );
   return result + levelRateBonus;
+}
+
+function isArmorAShield(g: GearInfo): boolean {
+  return g.type === "Armor" && g.properties?.includes("OneHanded");
+}
+
+function isPlayerHoldingShield(pc: PlayerCharacter): boolean {
+  return Boolean(
+    pc.gear
+      .filter((g) => g.equipped)
+      .map((g) => findAny(g.name))
+      .find(isArmorAShield)
+  );
+}
+
+export function canPlayerEquipGear(pc: PlayerCharacter, gear: Gear) {
+  if (gear.equipped) return false;
+  const g = findAny(gear.name);
+  if (!g || !g.canBeEquipped) return false;
+
+  const equippedWeapons = pc.gear
+    .filter((w) => w.equipped)
+    .map((w) => findAny(w.name))
+    .filter((w) => w.type === "Weapon")
+    .map((w) => w as WeaponInfo);
+  const equippedArmor = pc.gear
+    .filter((a) => a.equipped)
+    .map((a) => findAny(a.name))
+    .filter((a) => a.type === "Armor");
+
+  let freeHands = 2;
+  // shields and weapons take up hands
+  freeHands -= equippedWeapons.reduce((acc, w) => {
+    const isWeaponOneHandable = Boolean(w.damage.oneHanded);
+    return acc + (isWeaponOneHandable ? 1 : 2);
+  }, 0);
+  freeHands -= equippedArmor.filter((a) =>
+    a.properties?.includes("OneHanded")
+  ).length;
+
+  if (freeHands <= 0) return false;
+  if (freeHands == 2) return true;
+
+  // we know the pc has only 1 free hand here
+  if (g.type === "Weapon") {
+    const w = g as WeaponInfo;
+    return Boolean(w.damage.oneHanded);
+  } else if (g.type === "Armor") {
+    if (isArmorAShield(g)) {
+      return freeHands >= 1;
+    }
+
+    return equippedArmor.length === 0; // must not be wearing armor
+  }
+  return false;
 }
