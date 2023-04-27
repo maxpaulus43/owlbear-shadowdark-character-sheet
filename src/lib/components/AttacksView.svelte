@@ -3,6 +3,7 @@
   import {
     calculateAttackBonusForPlayerWeapon,
     calculateDamageBonusForPlayerWeapon,
+    calculateFreeHands,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import type { Roll } from "../types";
@@ -13,7 +14,7 @@
     .map((g) => findWeapon(g.name))
     .filter(Boolean);
 
-  $: canAttackTwoHanded = weapons.length === 1;
+  $: canAttackTwoHanded = calculateFreeHands($pc) >= 1;
 
   function rollToString(roll: Roll): string {
     return roll.numDice + roll.diceType;

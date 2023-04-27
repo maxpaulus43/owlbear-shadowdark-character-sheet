@@ -486,26 +486,7 @@ export function canPlayerEquipGear(pc: PlayerCharacter, gear: Gear) {
   if (gear.equipped) return false;
   const g = findAny(gear.name);
   if (!g || !g.canBeEquipped) return false;
-
-  const equippedWeapons = pc.gear
-    .filter((w) => w.equipped)
-    .map((w) => findAny(w.name))
-    .filter((w) => w.type === "Weapon")
-    .map((w) => w as WeaponInfo);
-  const equippedArmor = pc.gear
-    .filter((a) => a.equipped)
-    .map((a) => findAny(a.name))
-    .filter((a) => a.type === "Armor");
-
-  let freeHands = 2;
-  // shields and weapons take up hands
-  freeHands -= equippedWeapons.reduce((acc, w) => {
-    const isWeaponOneHandable = Boolean(w.damage.oneHanded);
-    return acc + (isWeaponOneHandable ? 1 : 2);
-  }, 0);
-  freeHands -= equippedArmor.filter((a) =>
-    a.properties?.includes("OneHanded")
-  ).length;
+  const freeHands = calculateFreeHands(pc);
 
   if (freeHands <= 0) return false;
   if (freeHands == 2) return true;
@@ -519,7 +500,38 @@ export function canPlayerEquipGear(pc: PlayerCharacter, gear: Gear) {
       return freeHands >= 1;
     }
 
+    const equippedArmor = pc.gear
+      .filter((a) => a.equipped)
+      .map((a) => findAny(a.name))
+      .filter((a) => a.type === "Armor");
     return equippedArmor.length === 0; // must not be wearing armor
   }
   return false;
+}
+
+export function calculateFreeHands(pc: PlayerCharacter): number {
+  let freeHands = 2;
+
+  const equippedWeapons = pc.gear
+    .filter((w) => w.equipped)
+    .map((w) => findAny(w.name))
+    .filter((w) => w.type === "Weapon")
+    .map((w) => w as WeaponInfo);
+
+  const equippedArmor = pc.gear
+    .filter((a) => a.equipped)
+    .map((a) => findAny(a.name))
+    .filter((a) => a.type === "Armor");
+
+  // shields and weapons take up hands
+  freeHands -= equippedWeapons.reduce((acc, w) => {
+    const isWeaponOneHandable = Boolean(w.damage.oneHanded);
+    return acc + (isWeaponOneHandable ? 1 : 2);
+  }, 0);
+
+  freeHands -= equippedArmor.filter((a) =>
+    a.properties?.includes("OneHanded")
+  ).length;
+
+  return freeHands;
 }
