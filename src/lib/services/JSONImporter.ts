@@ -62,7 +62,7 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
   const bonuses: Bonus[] = json.bonuses
     .filter(
       (b: SDBonus) =>
-        !b.name.includes("Spell") &&
+        !b.name.includes("Spell:") &&
         !b.bonusName.includes("StatBonus") &&
         !b.bonusTo.includes("Languages")
     )
