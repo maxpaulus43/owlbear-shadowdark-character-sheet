@@ -27,8 +27,8 @@
   let showDone = false;
   let highlight = -1;
   function rollTalent() {
-    // const result = rollDice("d6") + rollDice("d6");
-    const result = 12;
+    const result = rollDice("d6") + rollDice("d6");
+    // const result = 12;
 
     canRoll = false;
 

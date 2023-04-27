@@ -50,30 +50,31 @@
   }
 
   function canInteractWithGear(gear: Gear): boolean {
-    if (gear.equipped) return true;
-    const g = findAny(gear.name);
-    if (!g || !g.canBeEquipped) return false;
-    if (g.type === "Weapon") {
-      const equippedWeapons = $pc.gear
-        .filter((w) => w.equipped)
-        .map((w) => findAny(w.name))
-        .filter((w) => w.type === "Weapon")
-        .map((w) => w as WeaponInfo);
-      if (equippedWeapons.length == 0) return true; // no equipped weapons means i can equip
-      if (equippedWeapons.length > 1) return false; // more than 1 equpped weapons means i can't equip
-      // at this point, we know that there is exactly 1 equipped weapon.
-      const isEquippedWeaponTwoHanded = !equippedWeapons[0].damage.oneHanded;
-      const isNewWeaponTwoHanded = !(g as WeaponInfo).damage.oneHanded;
-      if (isEquippedWeaponTwoHanded || isNewWeaponTwoHanded) return false; // holding a two handed means I can't equip
-      return true;
-    } else if (g.type === "Armor") {
-      const equippedArmor = $pc.gear
-        .filter((a) => a.equipped)
-        .map((a) => findAny(a.name))
-        .filter((a) => a.type === "Armor");
-      return equippedArmor.length === 0; // must not be wearing armor
-    }
-    return false;
+    return true; // return true for now. maybe come back to this later.
+    // if (gear.equipped) return true;
+    // const g = findAny(gear.name);
+    // if (!g || !g.canBeEquipped) return false;
+    // if (g.type === "Weapon") {
+    //   const equippedWeapons = $pc.gear
+    //     .filter((w) => w.equipped)
+    //     .map((w) => findAny(w.name))
+    //     .filter((w) => w.type === "Weapon")
+    //     .map((w) => w as WeaponInfo);
+    //   if (equippedWeapons.length == 0) return true; // no equipped weapons means i can equip
+    //   if (equippedWeapons.length > 1) return false; // more than 1 equpped weapons means i can't equip
+    //   // at this point, we know that there is exactly 1 equipped weapon.
+    //   const isEquippedWeaponTwoHanded = !equippedWeapons[0].damage.oneHanded;
+    //   const isNewWeaponTwoHanded = !(g as WeaponInfo).damage.oneHanded;
+    //   if (isEquippedWeaponTwoHanded || isNewWeaponTwoHanded) return false; // holding a two handed means I can't equip
+    //   return true;
+    // } else if (g.type === "Armor") {
+    //   const equippedArmor = $pc.gear
+    //     .filter((a) => a.equipped)
+    //     .map((a) => findAny(a.name))
+    //     .filter((a) => a.type === "Armor");
+    //   return equippedArmor.length === 0; // must not be wearing armor
+    // }
+    // return false;
   }
 </script>
 
