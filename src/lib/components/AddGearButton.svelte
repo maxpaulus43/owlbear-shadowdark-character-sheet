@@ -125,9 +125,7 @@
               <td>{g.slots.freeCarry ? "Free" : g.slots.slotsUsed}</td>
               <td class="flex justify-end">
                 <button
-                  disabled={freeSlots < getSlots(g)}
                   on:click={() => addGear(g)}
-                  class:opacity-20={freeSlots < getSlots(g)}
                   class="px-3 hover:bg-gray-400"
                 >
                   <i class="material-icons translate-y-1">add_circle</i>
