@@ -469,23 +469,27 @@ export function calculateBonusAmount(
   return result + levelRateBonus;
 }
 
-function isArmorAShield(g: GearInfo): boolean {
+function isArmorShield(g: GearInfo): boolean {
   return g.type === "Armor" && g.properties?.includes("OneHanded");
 }
 
-function isPlayerHoldingShield(pc: PlayerCharacter): boolean {
-  return Boolean(
-    pc.gear
-      .filter((g) => g.equipped)
-      .map((g) => findAny(g.name))
-      .find(isArmorAShield)
-  );
+function isWearableArmor(g: GearInfo): boolean {
+  return g.type === "Armor" && !g.properties?.includes("OneHanded");
 }
 
 export function canPlayerEquipGear(pc: PlayerCharacter, gear: Gear) {
   if (gear.equipped) return false;
   const g = findAny(gear.name);
   if (!g || !g.canBeEquipped) return false;
+
+  if (isWearableArmor(g)) {
+    const equippedArmor = pc.gear
+      .filter((a) => a.equipped)
+      .map((a) => findAny(a.name))
+      .filter(isWearableArmor);
+    return equippedArmor.length === 0; // must not be wearing armor
+  }
+
   const freeHands = calculateFreeHands(pc);
 
   if (freeHands <= 0) return false;
@@ -495,19 +499,10 @@ export function canPlayerEquipGear(pc: PlayerCharacter, gear: Gear) {
   if (g.type === "Weapon") {
     const w = g as WeaponInfo;
     return Boolean(w.damage.oneHanded);
-  } else if (g.type === "Armor") {
-    if (isArmorAShield(g)) {
-      return freeHands >= 1;
-    }
-
-    const equippedArmor = pc.gear
-      .filter((a) => a.equipped)
-      .map((a) => findAny(a.name))
-      .filter(
-        (a) => a.type === "Armor" && !a.properties?.includes("OneHanded")
-      );
-    return equippedArmor.length === 0; // must not be wearing armor
+  } else if (isArmorShield(g)) {
+    return freeHands >= 1;
   }
+
   return false;
 }
 
