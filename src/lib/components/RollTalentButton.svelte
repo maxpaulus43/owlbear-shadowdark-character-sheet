@@ -27,8 +27,8 @@
   let showDone = false;
   let highlight = -1;
   function rollTalent() {
-    const result = rollDice("d6") + rollDice("d6");
-    // const result = 12;
+    // const result = rollDice("d6") + rollDice("d6");
+    const result = 12;
 
     canRoll = false;
 
@@ -213,7 +213,7 @@
       </div>
     {/if}
     {#if talentChoiceOrStatsChoice === "talent"}
-      <select on:change={onTalentSelectChange} class="w-full">
+      <select on:change={onTalentSelectChange} value={highlight} class="w-full">
         {#each CLASS_TALENTS[$pc.class].map((t) => t.name) as t, i}
           <option value={i}>{t}</option>
         {/each}
