@@ -10,14 +10,18 @@
   import { alphabetically } from "../utils";
   import type { WeaponInfo } from "../model/Weapon";
 
+  const COIN_NAME = "Extra Coins";
+
   $: costlyGear = $pc.gear
     .filter((g) => findAny(g.name)?.slots.freeCarry === 0)
     .sort((a, b) => alphabetically(a.name, b.name));
 
-  $: if (costlyGear) {
+  $: totalCoins = $pc.gold + $pc.silver + $pc.copper;
+
+  $: if (costlyGear && totalCoins > 100) {
     costlyGear.push({
-      name: "Coins",
-      quantity: $pc.gold + $pc.silver + $pc.copper,
+      name: COIN_NAME,
+      quantity: totalCoins - 100,
     });
   }
 
@@ -34,7 +38,7 @@
     }, 0);
 
   function slotsForGear(g: Gear): number {
-    if (g.name === "Coins") {
+    if (g.name === COIN_NAME) {
       return Math.ceil(g.quantity / 100);
     }
 
@@ -106,7 +110,7 @@
               {i + 1}. {g.name} x {g.quantity} ({slotsForGear(g)} slots)
             </span>
           </div>
-          {#if g.name !== "Coins"}
+          {#if g.name !== COIN_NAME}
             <div class="flex gap-1 items-center">
               {#if findAny(g.name).canBeEquipped}
                 <input
