@@ -24,6 +24,7 @@
   import HpView from "./lib/components/HPView.svelte";
   import { onMount } from "svelte";
   import {
+    clearLocalStorage,
     loadPlayerFromLocalStorage,
     trackAndSavePlayerToLocalStorage,
   } from "./lib/services/LocalStorageSaver";
@@ -100,6 +101,12 @@
                 >
                   <i class="material-icons translate-y-1 px-1">redo</i>
                 </button>
+                <button
+                  class="bg-black text-white rounded-md px-1 text-xs"
+                  on:click={() => {
+                    clearLocalStorage();
+                  }}>Clear Storage</button
+                >
               </div>
             </div>
             <div class="flex flex-col gap-1">
@@ -176,8 +183,17 @@
           </select>
         </div>
         <div class="col-span-full cell">
-          <h2>CLASS</h2>
-          <select value={$pc.class} on:change={onClassChange}>
+          <div class="flex">
+            <h2>CLASS</h2>
+            {#if !$pc.class}
+              <div>(Must Be At Least Level 1)</div>
+            {/if}
+          </div>
+          <select
+            value={$pc.class}
+            on:change={onClassChange}
+            disabled={$pc.level === 0}
+          >
             {#each CLASSES as clazz}
               <option value={clazz}>
                 {clazz}
@@ -192,7 +208,7 @@
             inputmode="numeric"
             bind:value={$pc.level}
             max="10"
-            min="0"
+            min="1"
           />
         </div>
         <div class="cell">

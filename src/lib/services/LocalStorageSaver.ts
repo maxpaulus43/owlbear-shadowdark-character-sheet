@@ -18,6 +18,10 @@ function isOBRAvailable(): boolean {
   return false; // TODO isOBRAvailable
 }
 
+export async function clearLocalStorage() {
+  asyncLocalStorage.removeItem(`sd-character-sheet`);
+}
+
 export async function savePlayerToLocalStorage(pc: PlayerCharacter) {
   if (isOBRAvailable()) {
     console.log("saving to OBR player");
@@ -47,6 +51,11 @@ const asyncLocalStorage = {
   getItem: async function (key: string) {
     return Promise.resolve().then(function () {
       return window.localStorage.getItem(key);
+    });
+  },
+  removeItem: async function (key: string) {
+    return Promise.resolve().then(function () {
+      return window.localStorage.removeItem(key);
     });
   },
 };

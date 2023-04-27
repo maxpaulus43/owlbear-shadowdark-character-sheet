@@ -53,6 +53,8 @@
 </ul>
 
 <div class="flex gap-1">
-  <RollTalentButton />
+  {#if $pc.level > 0 && $pc.class !== ""}
+    <RollTalentButton />
+  {/if}
   <AddBonusButton />
 </div>

@@ -45,11 +45,13 @@ export function ensureAncestryBonuses(pc: PlayerCharacter) {
 
 export function ensureClassBonuses(pc: PlayerCharacter) {
   clearClassBonuses(pc);
+  if (pc.class === "") return;
   addClassBonuses(pc.bonuses, pc.class);
 }
 
 export function ensureClassGear(pc: PlayerCharacter) {
   clearClassGear(pc);
+  if (pc.class === "") return;
   addClassGear(pc.gear, pc.class);
 }
 

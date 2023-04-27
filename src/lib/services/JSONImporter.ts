@@ -36,6 +36,10 @@ export function maintainBackwardsCompat(pc: PlayerCharacter) {
     pc["customLanguages"] = [];
   }
 
+  // eslint-disable-next-line
+  // @ts-ignore
+  if (pc.class === "Level 0") pc.class = "";
+
   // ensure player has proper bonuses every time we load json
   ensureAncestryBonuses(pc);
   ensureClassBonuses(pc);
@@ -43,6 +47,7 @@ export function maintainBackwardsCompat(pc: PlayerCharacter) {
   ensureLanguages(pc);
 }
 
+// eslint-disable-next-line
 function importFromShadowDarklingsJson(json: any): PlayerCharacter {
   const spells: SpellInfo[] = getSpellsFromJSON(json);
 
@@ -69,10 +74,12 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     .map(mapSDBonusToBonus)
     .flat();
 
+  const theClass = json.class === "Level 0" ? "" : json.class;
+
   const pc: PlayerCharacter = {
     name: json.name,
     ancestry: json.ancestry,
-    class: json.class,
+    class: theClass,
     level: json.level,
     title: json.title,
     alignment: json.alignment,
@@ -204,8 +211,10 @@ function mapSDBonusToBonus(sdb: SDBonus): Bonus | Bonus[] {
   return [];
 }
 
+// eslint-disable-next-line
 function getSpellsFromJSON(json: any): SpellInfo[] {
   const spells: SpellInfo[] = [];
+  // eslint-disable-next-line
   json.bonuses.forEach(async (b: any) => {
     if (b.name.includes("Spell:") || b.name === "LearnExtraSpell") {
       spells.push(findSpell(b.bonusName));

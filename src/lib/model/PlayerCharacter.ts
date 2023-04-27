@@ -46,7 +46,7 @@ export type StatBlock = {
 export type PlayerCharacter = {
   name: string;
   ancestry: Ancestry;
-  class: Class;
+  class?: Class | "";
   level: number;
   title: Title;
   alignment: Alignment;
@@ -76,7 +76,7 @@ export function defaultPC(): PlayerCharacter {
   return {
     name: "",
     ancestry: "Human",
-    class: "Thief",
+    class: "",
     level: 0,
     title: "Rook",
     alignment: "Lawful",
@@ -214,7 +214,8 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
   return pc.armorClass + acModifier;
 }
 
-export function calculateTitleForPlayer(pc: PlayerCharacter): Title {
+export function calculateTitleForPlayer(pc: PlayerCharacter): Title | "" {
+  if (pc.level === 0 || pc.class === "") return "";
   return TITLE_MAP[pc.class][pc.alignment][
     Math.max(0, Math.floor((pc.level - 1) / 2))
   ];

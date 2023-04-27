@@ -8,7 +8,6 @@
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import { alphabetically } from "../utils";
-  import type { WeaponInfo } from "../model/Weapon";
 
   const COIN_NAME = "Extra Coins";
 
