@@ -106,3 +106,20 @@ export type SDBonus = {
   bonusTo: string;
   bonusAmount: number;
 };
+
+function byType(b: Bonus, t: Bonus["type"]): boolean {
+  return b.type === t;
+}
+
+export function groupBonusesByType(bonuses: Bonus[]) {
+  return {
+    generic: bonuses.filter((b) => byType(b, "generic")) as GenericBonus[],
+    modifyAmt: bonuses.filter((b) => byType(b, "modifyAmt")) as ModifyBonus[],
+    advantage: bonuses.filter((b) =>
+      byType(b, "advantage")
+    ) as AdvantageBonus[],
+    disadvantage: bonuses.filter((b) =>
+      byType(b, "disadvantage")
+    ) as DisadvantageBonus[],
+  };
+}

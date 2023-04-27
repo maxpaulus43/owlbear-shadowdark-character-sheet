@@ -18,11 +18,27 @@ export const SPELLS: SpellInfo[] = [
     duration: { type: "Instant", amt: 0 },
   },
   {
+    name: "Animate Dead",
+    range: "Close",
+    class: "Wizard",
+    tier: 3,
+    desc: "You touch one humanoid’s remains, and it rises as a zombie or skeleton under your control. The remains must have at least three limbs and its head intact. The undead creature acts on your turn. After 1 day, the creature collapses into grave dust.",
+    duration: { type: "Day", amt: 0 },
+  },
+  {
     name: "Acid Arrow",
     range: "Far",
     class: "Wizard",
     tier: 2,
     desc: "You conjure a corrosive bolt that hits one foe, dealing 1d6 damage a round. The bolt remains in the target for as long as you focus.",
+    duration: { type: "Focus", amt: 0 },
+  },
+  {
+    name: "Antimagic Shell",
+    range: "Self",
+    class: "Wizard",
+    tier: 5,
+    desc: "An invisible, near-sized cube of null-magic appears centered on you. Within the cube, no spells can be cast. Magic items and spells have no effect in the zone, and no magic can enter. The cube moves with you. Spells such as dispel magic have no effect on it. Another antimagic shell does not affect this one.",
     duration: { type: "Focus", amt: 0 },
   },
   {
@@ -280,40 +296,3 @@ for (const s of SPELLS) {
   SPELL_COMPENDIUM[s.name.toLowerCase()] = s;
 }
 export default SPELL_COMPENDIUM;
-
-// const tempSpells: SpellInfo[] = [];
-//
-// oldSpells.forEach((s) => {
-//   const durationVal = s.system.duration.value;
-//
-//   const convert: { [key: string]: DurationType } = {
-//     days: "Day",
-//     instant: "Instant",
-//     rounds: "Round",
-//   };
-//
-//   function converttoRoll(s: string): Roll {
-//     const numDice = parseInt(s[0]);
-//     const diceType = s.substring(1) as DiceType;
-//     return { numDice, diceType };
-//   }
-//
-//   tempSpells.push({
-//     name: s.name,
-//     range: s.system.range as RangeType,
-//     class: s.system.class[0] as "Wizard" | "Priest",
-//     tier: s.system.tier as Tier,
-//     desc: s.system.description.replaceAll("<p>", "").replaceAll("</p>", ""),
-//     duration: {
-//       type:
-//         convert[s.system.duration.type] ??
-//         (s.system.duration.type as DurationType),
-//       roll: isNaN(Number(durationVal))
-//         ? converttoRoll(`${durationVal}`)
-//         : undefined,
-//       amt: !isNaN(Number(durationVal)) ? Number(durationVal) : undefined,
-//     },
-//   });
-// });
-//
-// console.log(JSON.stringify(tempSpells));

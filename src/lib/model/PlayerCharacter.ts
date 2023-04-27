@@ -446,8 +446,16 @@ export function calculateBonusAmount(
   pc: PlayerCharacter,
   b: ModifyBonus
 ): number {
-  if (b.bonusIncreaseRatePerLevel) {
-    return b.bonusAmount + Math.floor(pc.level * b.bonusIncreaseRatePerLevel);
+  let result = b.bonusAmount;
+
+  if (b.bonusTo !== "stat" && b.metadata?.type === "stat") {
+    result = Math.max(
+      result,
+      calculateModifierForPlayerStat(pc, b.metadata.stat)
+    );
   }
-  return b.bonusAmount;
+  const levelRateBonus = Math.floor(
+    pc.level * (b.bonusIncreaseRatePerLevel ?? 0)
+  );
+  return result + levelRateBonus;
 }
