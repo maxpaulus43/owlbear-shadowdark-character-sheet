@@ -53,7 +53,7 @@
       <div>{b.desc}</div>
     {:else if b.type === "modifyAmt"}
       <div class="font-bold">{displayableName}</div>
-      <div>{addSign(calculateBonusAmount($pc, b))} on {b.bonusTo}</div>
+      <div>{addSign(calculateBonusAmount($pc, b))} to {b.bonusTo}</div>
     {:else if b.type === "disadvantage" || bonus.type === "advantage"}
       <div class="font-bold">{displayableName}</div>
       <div>{b.type} on {b.bonusTo}s</div>
