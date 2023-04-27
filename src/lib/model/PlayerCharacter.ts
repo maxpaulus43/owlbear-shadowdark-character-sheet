@@ -503,7 +503,9 @@ export function canPlayerEquipGear(pc: PlayerCharacter, gear: Gear) {
     const equippedArmor = pc.gear
       .filter((a) => a.equipped)
       .map((a) => findAny(a.name))
-      .filter((a) => a.type === "Armor");
+      .filter(
+        (a) => a.type === "Armor" && !a.properties?.includes("OneHanded")
+      );
     return equippedArmor.length === 0; // must not be wearing armor
   }
   return false;
