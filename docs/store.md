@@ -7,6 +7,7 @@ icon: https://raw.githubusercontent.com/maxpaulus43/owlbear-shadowdark-character
 tags:
   - tool
   - combat
+  - automation
 manifest: https://sd-character-sheet.onrender.com/manifest.json 
 learn-more: https://github.com/maxpaulus43/owlbear-shadowdark-character-sheet
 ---
