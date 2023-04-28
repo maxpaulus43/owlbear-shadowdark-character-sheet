@@ -31,10 +31,8 @@ export function toInfo<T extends GearInfo>(g: Gear): T {
   return findAny(g.name) as T;
 }
 
-export function debounce<F extends (...args: any[]) => any>(
-  fn: F,
-  ms = 500
-): (...args: Parameters<F>) => Promise<ReturnType<F>> {
+// eslint-disable-next-line
+export function debounce<F extends (...args: any[]) => any>(fn: F, ms = 500) {
   let timer: NodeJS.Timeout;
 
   return (...args: Parameters<F>): Promise<ReturnType<F>> =>
