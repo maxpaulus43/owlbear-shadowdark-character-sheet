@@ -2,7 +2,7 @@
 
 ### Main
 
-![main.jpg](./screenshots/main.jpg)
+![main.jpg](./screenshots/hero.jpg)
 
 ### Gear
 
@@ -16,7 +16,9 @@
 
 ![talents.jpg](./screenshots/talents.jpg)
 
+### Mobile
 
+![](./screenshots/mobile.jpg)
 
 
 
