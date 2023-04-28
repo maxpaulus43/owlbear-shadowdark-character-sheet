@@ -152,6 +152,15 @@ export function calculateBonusForPlayerStat(
     .reduce((acc, b: ModifyBonus) => acc + calculateBonusAmount(pc, b), 0);
 }
 
+export function isPlayerHoldingShield(pc: PlayerCharacter): boolean {
+  return Boolean(
+    pc.gear
+      .filter((g) => g.equipped)
+      .map(toInfo<ArmorInfo>)
+      .find((g) => g.type === "Armor" && g.properties?.includes("OneHanded"))
+  );
+}
+
 export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
   let acModifier = 0;
   for (const b of pc.bonuses) {
