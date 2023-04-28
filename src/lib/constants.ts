@@ -4,6 +4,7 @@ export const SCHEMA_TYPE = "sd-char-sheet";
 export const ALIGNMENTS = ["Neutral", "Lawful", "Chaotic"] as const;
 
 export const DEITIES = [
+  "None",
   "Saint Terragnis",
   "Gede",
   "Madeera the Covenant",

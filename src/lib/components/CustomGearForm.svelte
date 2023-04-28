@@ -7,6 +7,7 @@
   let customGearCost: number = 0;
   let customGearCurrency: Currency = "sp";
   let customGearQuantity: number = 1;
+  let customPerSlot: number = 1;
   let showForm = false;
 
   $: freeCarry = customGearSlots > 0 ? 0 : 1;
@@ -18,7 +19,8 @@
       type: "Basic",
       canBeEquipped: false,
       desc: customGearName,
-      slots: { slotsUsed: customGearSlots, perSlot: 1, freeCarry },
+      slots: { slotsUsed: customGearSlots, perSlot: customPerSlot, freeCarry },
+      editable: true,
       cost: {
         gp: 0,
         sp: 0,
@@ -28,7 +30,7 @@
     });
     $pc.gear.push({
       name: customGearName,
-      quantity: 1,
+      quantity: customGearQuantity,
     });
     $pc = $pc;
   }
@@ -52,6 +54,14 @@
       inputmode="numeric"
       min="0"
       bind:value={customGearSlots}
+    />
+    <label for="perSlot">How Many of this item take up one slot?</label>
+    <input
+      id="perSlot"
+      type="number"
+      inputmode="numeric"
+      min="1"
+      bind:value={customPerSlot}
     />
     <label for="cost">Cost</label>
     <input

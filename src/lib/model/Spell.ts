@@ -18,5 +18,6 @@ export type SpellInfo = {
     roll?: Roll;
     amt?: number;
   };
+  editable?: boolean;
   desc: string;
 };

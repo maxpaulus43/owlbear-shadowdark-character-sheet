@@ -162,7 +162,7 @@ export function isPlayerHoldingShield(pc: PlayerCharacter): boolean {
 }
 
 export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
-  let acModifier = 0;
+  let acModifier = calculateModifierForPlayerStat(pc, "DEX");
   for (const b of pc.bonuses) {
     if (b.type === "modifyAmt" && b.bonusTo === "armorClass") {
       acModifier += calculateBonusAmount(pc, b);
@@ -220,7 +220,7 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
     }
   }
 
-  return pc.armorClass + acModifier;
+  return 10 + acModifier;
 }
 
 export function calculateTitleForPlayer(pc: PlayerCharacter): Title | "" {

@@ -18,6 +18,7 @@ export type GearInfo = {
   cost: Cost;
   desc?: string;
   playerBonuses?: Bonus[];
+  editable?: boolean;
 };
 
 export type Gear = {

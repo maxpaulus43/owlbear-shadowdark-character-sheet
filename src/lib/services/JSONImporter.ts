@@ -36,6 +36,18 @@ export function maintainBackwardsCompat(pc: PlayerCharacter) {
     pc["customLanguages"] = [];
   }
 
+  if (pc.customGear) {
+    pc.customGear.forEach((g) => {
+      g.editable = true;
+    });
+  }
+
+  if (pc.customSpells) {
+    pc.customSpells.forEach((s) => {
+      s.editable = true;
+    });
+  }
+
   // eslint-disable-next-line
   // @ts-ignore
   if (pc.class === "Level 0") pc.class = "";

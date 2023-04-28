@@ -82,6 +82,11 @@
     if (cp) cpStr = `${cp}cp`;
     return [gpStr, spStr, cpStr].join(" ");
   }
+
+  function deleteCustomGear(gear: GearInfo) {
+    $pc.gear = $pc.gear.filter((g) => g.name !== gear.name);
+    $pc.customGear = $pc.customGear.filter((g) => g.name !== gear.name);
+  }
 </script>
 
 <button
@@ -124,6 +129,13 @@
               <td>{getCostForGear(g)}</td>
               <td>{g.slots.freeCarry ? "Free" : g.slots.slotsUsed}</td>
               <td class="flex justify-end">
+                {#if g.editable}
+                  <button
+                    class="bg-black rounded-md text-white px-1 text-xs"
+                    on:click={() => deleteCustomGear(g)}
+                    ><i class="material-icons">delete</i></button
+                  >
+                {/if}
                 <button
                   on:click={() => addGear(g)}
                   class="px-3 hover:bg-gray-400"
