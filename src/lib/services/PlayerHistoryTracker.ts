@@ -1,10 +1,18 @@
 import { get, writable } from "svelte/store";
-import type { Writable } from "svelte/store";
+import type { Writable, Readable } from "svelte/store";
 import { debounce } from "../utils";
 
 const MAX_HISTORY_ENTRIES = 100;
 
-export function createUndoRedoStore<T>(store: Writable<T>) {
+export type UndoRedoStore<T> = Readable<T> &
+  Pick<Writable<T>, "set"> & {
+    canUndo: Writable<boolean>;
+    canRedo: Writable<boolean>;
+    undo: () => void;
+    redo: () => void;
+  };
+
+export function createUndoRedoStore<T>(store: Writable<T>): UndoRedoStore<T> {
   const history = [get(store)];
   let historyIndex = 0;
   const canUndo = writable(false);

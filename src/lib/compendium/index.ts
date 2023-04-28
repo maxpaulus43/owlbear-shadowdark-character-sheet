@@ -1,22 +1,22 @@
+import type { Unsubscriber } from "svelte/store";
 import type { ArmorInfo } from "../model/Armor";
 import type { GearInfo } from "../model/Gear";
+import type { PlayerCharacter } from "../model/PlayerCharacter";
 import type { SpellInfo } from "../model/Spell";
 import type { WeaponInfo } from "../model/Weapon";
+import type { UndoRedoStore } from "../services/PlayerHistoryTracker";
 import ARMOR_COMPENDIUM from "./armorCompendium";
 import GEAR_COMPENDIUM from "./basicGearCompendium";
 import MAGIC_ITEM_COMPENDIUM from "./magicItemCompendium";
 import SPELL_COMPENDIUM from "./spellCompendium";
 import WEAPON_COMPENDIUM from "./weaponCompendium";
-import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
 
 let customGear: GearInfo[] = [];
 let customSpells: SpellInfo[] = [];
 
-export function subscribeToCustomGearForPlayer() {
-  pc.subscribe((pc) => {
-    customGear = pc.customGear ?? [];
-    customSpells = pc.customSpells ?? [];
-  });
+export function setCustomGearForPlayer(pc: PlayerCharacter) {
+  customGear = pc.customGear ?? [];
+  customSpells = pc.customSpells ?? [];
 }
 
 export function findWeapon(name: string): WeaponInfo {

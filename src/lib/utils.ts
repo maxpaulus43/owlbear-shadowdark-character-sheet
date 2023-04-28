@@ -31,20 +31,20 @@ export function toInfo<T extends GearInfo>(g: Gear): T {
   return findAny(g.name) as T;
 }
 
-export function debounce<A = unknown, R = void>(
-  fn: (args: A) => R,
+export function debounce<F extends (...args: any[]) => any>(
+  fn: F,
   ms = 500
-): (args: A) => Promise<R> {
+): (...args: Parameters<F>) => Promise<ReturnType<F>> {
   let timer: NodeJS.Timeout;
 
-  return (args: A): Promise<R> =>
+  return (...args: Parameters<F>): Promise<ReturnType<F>> =>
     new Promise((resolve) => {
       if (timer) {
         clearTimeout(timer);
       }
 
       timer = setTimeout(() => {
-        resolve(fn(args));
+        resolve(fn(...args));
       }, ms);
     });
 }

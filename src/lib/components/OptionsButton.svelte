@@ -3,19 +3,34 @@
   import { clearLocalStorage } from "../services/LocalStorageSaver";
   import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
-  export let files: FileList;
+  import { CurrentSaveSlot, NUM_SLOTS } from "../services/SaveSlotTracker";
+  export let files: FileList | undefined;
   let showModal = false;
 </script>
 
 <button
   class="bg-black text-white rounded-md px-1 text-xs"
   on:click={() => (showModal = true)}
-  ><i class="material-icons translate-y-[1px]">settings</i></button
 >
+  <i class="material-icons translate-y-[1px]">settings</i>
+</button>
 
 <Modal bind:showModal>
   <h1 slot="header">Options</h1>
-  <div class="flex flex-col gap-1 min-w-[200px]">
+  <div class="flex flex-col gap-1 min-w-[200px]" id="options">
+    <div>
+      <h2>Choose Save Slot</h2>
+      <div class="flex gap-1 w-full justify-stretch">
+        {#each new Array(NUM_SLOTS) as _, i}
+          <button
+            class:green={$CurrentSaveSlot === i + 1}
+            on:click={() => {
+              $CurrentSaveSlot = i + 1;
+            }}>{i + 1}</button
+          >
+        {/each}
+      </div>
+    </div>
     <label for="jsonImport" class="btn">
       <div class="text-center">Import JSON</div>
       <input
@@ -27,13 +42,11 @@
       />
     </label>
     <button
-      class="btn"
       on:click={() => {
         savePlayerToFile($pc);
       }}>Export JSON</button
     >
     <button
-      class="btn"
       on:click={() => {
         clearLocalStorage();
       }}>Clear Storage (Proceed with caution)</button
@@ -47,7 +60,17 @@
 </Modal>
 
 <style lang="postcss">
+  button,
   .btn {
-    @apply bg-black text-white p-2 rounded-md hover:scale-105 transition active:opacity-50 text-center;
+    @apply bg-black text-white px-1 rounded-md hover:scale-105 transition active:opacity-50 text-center;
+  }
+
+  .green {
+    @apply bg-green-600;
+  }
+
+  #options button,
+  #options .btn {
+    @apply p-2;
   }
 </style>

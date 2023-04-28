@@ -1,17 +1,15 @@
 import type { PlayerCharacter } from "../model/PlayerCharacter";
-import {
-  defaultPC,
-  PlayerCharacterStore as pc,
-} from "../model/PlayerCharacter";
+import { defaultPC } from "../model/PlayerCharacter";
 import { debounce } from "../utils";
-import { maintainBackwardsCompat } from "./JSONImporter";
+import { NUM_SLOTS } from "./SaveSlotTracker";
 
-export function trackAndSavePlayerToLocalStorage() {
-  const saveToLocalStorage = debounce(savePlayerToLocalStorage, 2000);
+const saveToLocalStorage = debounce(savePlayerToLocalStorage, 2000);
 
-  pc.subscribe((pc) => {
-    saveToLocalStorage(pc);
-  });
+export function trackAndSavePlayerToLocalStorage(
+  pc: PlayerCharacter,
+  saveSlot: number
+) {
+  saveToLocalStorage(pc, saveSlot);
 }
 
 function isOBRAvailable(): boolean {
@@ -19,27 +17,46 @@ function isOBRAvailable(): boolean {
 }
 
 export async function clearLocalStorage() {
-  asyncLocalStorage.removeItem(`sd-character-sheet`);
+  for (let i = 0; i < NUM_SLOTS; i++) {
+    await asyncLocalStorage.removeItem(getStorageKey(i + 1));
+  }
 }
 
-export async function savePlayerToLocalStorage(pc: PlayerCharacter) {
+export async function savePlayerToLocalStorage(
+  pc: PlayerCharacter,
+  saveSlot: number
+) {
   if (isOBRAvailable()) {
     console.log("saving to OBR player");
   } else {
-    asyncLocalStorage.setItem(`sd-character-sheet`, JSON.stringify(pc));
+    asyncLocalStorage.setItem(getStorageKey(saveSlot), JSON.stringify(pc));
   }
 }
 
-export async function loadPlayerFromLocalStorage(): Promise<PlayerCharacter> {
+function getStorageKey(saveSlot: number) {
+  return `sd-character-sheet-slot-${saveSlot}`;
+}
+
+export async function loadPlayerFromLocalStorage(
+  saveSlot: number
+): Promise<PlayerCharacter> {
   if (isOBRAvailable()) {
     console.log("loading Player from OBR");
   } else {
-    const pcJson = await asyncLocalStorage.getItem(`sd-character-sheet`);
+    await maintainBackwardsCompat(saveSlot);
+    const pcJson = await asyncLocalStorage.getItem(getStorageKey(saveSlot));
     if (!pcJson) return defaultPC();
     const pc = JSON.parse(pcJson) as PlayerCharacter;
-    maintainBackwardsCompat(pc);
     return pc;
   }
+}
+
+async function maintainBackwardsCompat(saveSlot: number) {
+  const oldStorageKey = "sd-character-sheet";
+  const oldPcJson = await asyncLocalStorage.getItem(oldStorageKey);
+  if (!oldPcJson) return;
+  await asyncLocalStorage.setItem(getStorageKey(saveSlot), oldPcJson);
+  await asyncLocalStorage.removeItem(oldStorageKey);
 }
 
 const asyncLocalStorage = {
