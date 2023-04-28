@@ -27,8 +27,8 @@
   } from "./lib/services/LocalStorageSaver";
   import InfoButton from "./lib/components/InfoButton.svelte";
   import OptionsButton from "./lib/components/OptionsButton.svelte";
-  import { CurrentSaveSlot } from "./lib/services/SaveSlotTracker";
   import { setCustomGearForPlayer } from "./lib/compendium";
+  import { CurrentSaveSlot } from "./lib/services/SaveSlotTracker";
 
   $: (async () => {
     $pc = await loadPlayerFromLocalStorage($CurrentSaveSlot);
