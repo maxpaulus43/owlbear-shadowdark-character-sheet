@@ -1,6 +1,6 @@
 ---
 title: ShadowDark Character Sheet
-description: Track your shadow dark character straight from OwlBear
+description: Track your ShadowDark character straight from OwlBear
 author: Max Paulus
 image: https://raw.githubusercontent.com/maxpaulus43/owlbear-shadowdark-character-sheet/main/screenshots/hero.jpg
 icon: https://raw.githubusercontent.com/maxpaulus43/owlbear-shadowdark-character-sheet/main/public/icon.svg
