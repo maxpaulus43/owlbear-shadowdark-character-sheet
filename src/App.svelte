@@ -19,17 +19,16 @@
   import StatView from "./lib/components/StatView.svelte";
   import GearView from "./lib/components/GearView.svelte";
   import AttacksView from "./lib/components/AttacksView.svelte";
-  import savePlayerToFile from "./lib/services/FileSaver";
   import { importFromJson } from "./lib/services/JSONImporter";
   import HpView from "./lib/components/HPView.svelte";
   import { onMount } from "svelte";
   import {
-    clearLocalStorage,
     loadPlayerFromLocalStorage,
     trackAndSavePlayerToLocalStorage,
   } from "./lib/services/LocalStorageSaver";
   import InfoButton from "./lib/components/InfoButton.svelte";
   import { subscribeToCustomGearForPlayer } from "./lib/compendium";
+  import OptionsButton from "./lib/components/OptionsButton.svelte";
 
   onMount(async () => {
     $pc = await loadPlayerFromLocalStorage();
@@ -84,7 +83,7 @@
                 <h1 class="">Shadowdark</h1>
                 <InfoButton />
               </div>
-              <div class="-translate-y-2">
+              <div class="-translate-y-2 flex gap-1">
                 <button
                   on:click={() => pc.undo()}
                   class:opacity-50={!$canUndo}
@@ -101,34 +100,8 @@
                 >
                   <i class="material-icons translate-y-1 px-1">redo</i>
                 </button>
-                <button
-                  class="bg-black text-white rounded-md px-1 text-xs"
-                  on:click={() => {
-                    clearLocalStorage();
-                  }}>Clear Storage</button
-                >
+                <OptionsButton bind:files />
               </div>
-            </div>
-            <div class="flex flex-col gap-1">
-              <label
-                for="jsonImport"
-                class="bg-black text-white p-2 rounded-md text-xs hover:scale-105 transition active:opacity-50"
-              >
-                <div>Import JSON</div>
-                <input
-                  id="jsonImport"
-                  type="file"
-                  class="hidden"
-                  accept="application/json"
-                  bind:files
-                />
-              </label>
-              <button
-                class="bg-black text-white p-2 rounded-md text-xs hover:scale-105 transition active:opacity-50"
-                on:click={() => {
-                  savePlayerToFile($pc);
-                }}>Export JSON</button
-              >
             </div>
           </div>
         </div>

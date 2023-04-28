@@ -49,6 +49,7 @@ export function debounce<A = unknown, R = void>(
     });
 }
 
-export function assertUnreachable(x: never): never {
+// eslint-disable-next-line
+export function assertUnreachable(_x: never): never {
   throw new Error("Didn't expect to get here");
 }
