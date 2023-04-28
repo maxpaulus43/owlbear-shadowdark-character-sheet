@@ -1,10 +1,8 @@
-import type { Unsubscriber } from "svelte/store";
 import type { ArmorInfo } from "../model/Armor";
 import type { GearInfo } from "../model/Gear";
 import type { PlayerCharacter } from "../model/PlayerCharacter";
 import type { SpellInfo } from "../model/Spell";
 import type { WeaponInfo } from "../model/Weapon";
-import type { UndoRedoStore } from "../services/PlayerHistoryTracker";
 import ARMOR_COMPENDIUM from "./armorCompendium";
 import GEAR_COMPENDIUM from "./basicGearCompendium";
 import MAGIC_ITEM_COMPENDIUM from "./magicItemCompendium";

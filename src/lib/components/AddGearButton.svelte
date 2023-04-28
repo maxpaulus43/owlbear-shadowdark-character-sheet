@@ -91,7 +91,7 @@
 
 <button
   class="bg-black text-white px-3 rounded-md"
-  on:click={() => (showModal = true)}>Add Gear</button
+  on:click={() => (showModal = true)}>Gear</button
 >
 
 <Modal bind:showModal>
@@ -147,9 +147,6 @@
           {/each}
         </tbody>
       </table>
-    </div>
-    <div class="border shadow-md p-2">
-      <CustomGearForm />
     </div>
   </div>
 </Modal>

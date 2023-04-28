@@ -6,7 +6,8 @@
   } from "../model/PlayerCharacter";
   import type { SpellInfo } from "../model/Spell";
   import { addSign } from "../utils";
-  import AddNewSpellButton from "./AddNewSpellButton.svelte";
+  import CreateSpellView from "./CreateSpellView.svelte";
+  import LearnNewSpellButton from "./LearnNewSpellButton.svelte";
   import Modal from "./Modal.svelte";
   import RollButton from "./RollButton.svelte";
   import SpellView from "./SpellView.svelte";
@@ -46,7 +47,10 @@
   </ul>
 {/if}
 
-<AddNewSpellButton />
+<div class="flex gap-1">
+  <LearnNewSpellButton />
+  <CreateSpellView />
+</div>
 
 {#if showSpellInfoForSpell}
   <Modal bind:showModal>

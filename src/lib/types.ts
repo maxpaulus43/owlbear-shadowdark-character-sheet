@@ -14,6 +14,8 @@ export type TimeUnit =
   | "Month"
   | "Year";
 
+export type DurationSubType = "InGame" | "RealTime";
+
 export type DurationType = "Focus" | "Instant" | TimeUnit;
 
 export type Roll = {

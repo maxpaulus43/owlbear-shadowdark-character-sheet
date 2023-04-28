@@ -8,9 +8,9 @@
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import { alphabetically } from "../utils";
+  import CreateGearButton from "./CreateGearButton.svelte";
 
   const COIN_NAME = "Extra Coins";
-
   $: costlyGear = $pc.gear
     .filter((g) => findAny(g.name)?.slots.freeCarry === 0)
     .sort((a, b) => alphabetically(a.name, b.name));
@@ -74,6 +74,7 @@
   <h2>GEAR</h2>
   <span>({totalSlots} slots, {freeSlots} free)</span>
   <AddGearButton />
+  <CreateGearButton />
 </div>
 {#if freeSlots < 0}
   <div class="text-red-600">Over Encumbered</div>
