@@ -1,7 +1,10 @@
 <script lang="ts">
   import savePlayerToFile from "../services/FileSaver";
   import { clearLocalStorage } from "../services/LocalStorageSaver";
-  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
+  import {
+    defaultPC,
+    PlayerCharacterStore as pc,
+  } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
   import { CurrentSaveSlot, NUM_SLOTS } from "../services/SaveSlotTracker";
   export let files: FileList | undefined;
@@ -46,15 +49,21 @@
         savePlayerToFile($pc);
       }}>Export JSON</button
     >
-    <button
-      on:click={() => {
-        clearLocalStorage();
-      }}>Clear Storage (Proceed with caution)</button
-    >
     <a
       class="btn"
       href="https://github.com/maxpaulus43/owlbear-shadowdark-character-sheet/issues/new"
       target="_blank">Report Issue</a
+    >
+    <div>Advanced Options (Proceed with caution)</div>
+    <button
+      on:click={() => {
+        $pc = defaultPC();
+      }}>Clear Current Save Slot</button
+    >
+    <button
+      on:click={() => {
+        clearLocalStorage();
+      }}>Clear Storage (Proceed with caution)</button
     >
   </div>
 </Modal>
