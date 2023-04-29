@@ -33,6 +33,10 @@
     }
     case "spell": {
       displayableName = b.metadata.spell + ":";
+      break;
+    }
+    default: {
+      displayableName = "";
     }
   }
 
