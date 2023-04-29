@@ -19,7 +19,7 @@ export const BACKGROUNDS = [
   "Urchin",
   "Wanted",
   "Cult Initiate",
-  "Thieve's Guild",
+  "Thieves' Guild",
   "Banished",
   "Orphaned",
   "Wizard's Apprentice",
@@ -35,7 +35,7 @@ export const BACKGROUNDS = [
   "Minstrel",
   "Scholar",
   "Noble",
-  "Surgeon",
+  "Chirurgeon",
 ] as const;
 
 export const CLASSES = ["Fighter", "Priest", "Wizard", "Thief"] as const;
