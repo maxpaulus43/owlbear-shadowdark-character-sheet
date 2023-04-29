@@ -226,9 +226,9 @@
         </div>
         <div class="col-span-full cell">
           <h2>BACKGROUND</h2>
-          <select>
+          <select bind:value={$pc.background}>
             {#each BACKGROUNDS as background}
-              <option value={$pc.background}>
+              <option value={background}>
                 {background}
               </option>
             {/each}
