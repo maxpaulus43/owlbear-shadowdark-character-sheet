@@ -509,6 +509,13 @@ function isWearableArmor(g: GearInfo): boolean {
   return g.type === "Armor" && !g.properties?.includes("OneHanded");
 }
 
+export function canPlayerAffordGear(pc: PlayerCharacter, g: GearInfo) {
+  const { gp, sp, cp } = g.cost;
+  const convertedCost = gp * 100 + sp * 10 + cp;
+  const pcConverted = pc.gold * 100 + pc.silver * 10 + pc.copper;
+  return pcConverted >= convertedCost;
+}
+
 export function canPlayerEquipGear(pc: PlayerCharacter, gear: Gear) {
   if (gear.equipped) return false;
   const g = findAny(gear.name);

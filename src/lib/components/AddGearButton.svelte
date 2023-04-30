@@ -6,10 +6,10 @@
   import type { Gear, GearInfo } from "../model/Gear";
   import {
     calculateGearSlotsForPlayer,
+    canPlayerAffordGear,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import { alphabetically } from "../utils";
-  import CustomGearForm from "./CustomGearForm.svelte";
   import Modal from "./Modal.svelte";
 
   let showModal = false;
@@ -38,24 +38,23 @@
     );
   }
 
+  let showOnlyWhatICanAfford = false;
+  let showWeapon = true;
+  let showArmor = true;
+  let showBasic = true;
+
   let gearInput: string = "";
-  $: gearResults = Object.values(GEAR_COMPENDIUM).filter((g) =>
-    g.name.toLowerCase().includes(gearInput.toLowerCase())
-  );
-  $: armorResults = Object.values(ARMOR_COMPENDIUM).filter((a) =>
-    a.name.toLowerCase().includes(gearInput.toLowerCase())
-  );
-  $: weaponResults = Object.values(WEAPON_COMPENDIUM).filter((w) =>
-    w.name.toLowerCase().includes(gearInput.toLowerCase())
-  );
-  $: customResults =
-    $pc.customGear?.filter((g) =>
-      g.name.toLowerCase().includes(gearInput.toLowerCase())
-    ) ?? [];
-  $: allResults = gearResults
-    .concat(armorResults)
-    .concat(weaponResults)
-    .concat(customResults);
+  $: allResults = Object.values(GEAR_COMPENDIUM)
+    .concat(Object.values(ARMOR_COMPENDIUM))
+    .concat(Object.values(WEAPON_COMPENDIUM))
+    .concat($pc.customGear ?? [])
+    .filter((g) => {
+      if (!showWeapon && g.type === "Weapon") return false;
+      if (!showArmor && g.type === "Armor") return false;
+      if (!showBasic && g.type === "Basic") return false;
+      if (showOnlyWhatICanAfford && !canPlayerAffordGear($pc, g)) return false;
+      return g.name.toLowerCase().includes(gearInput.toLowerCase());
+    });
 
   function addGear(g: GearInfo) {
     const existingGear = $pc.gear.find(
@@ -112,6 +111,24 @@
           <i class="material-icons translate-y-1">cancel</i>
         </button>
       {/if}
+    </div>
+    <div class="flex gap-1 items-center">
+      <div class="font-bold">Type:</div>
+      <input id="showWeapon" type="checkbox" bind:checked={showWeapon} />
+      <label for="showWeapon">Weapon</label>
+      <input id="showArmor" type="checkbox" bind:checked={showArmor} />
+      <label for="showArmor">Armor</label>
+      <input id="showBasic" type="checkbox" bind:checked={showBasic} />
+      <label for="showBasic">Basic</label>
+    </div>
+    <div class="flex gap-1 items-center">
+      <input
+        class="w-4 h-4"
+        id="showAfforable"
+        type="checkbox"
+        bind:checked={showOnlyWhatICanAfford}
+      />
+      <label for="showAfforable">Show only what I can afford</label>
     </div>
     <div class="h-64 overflow-y-auto">
       <table class="w-full">
