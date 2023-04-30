@@ -22,7 +22,9 @@
   import { importFromJson } from "./lib/services/JSONImporter";
   import HpView from "./lib/components/HPView.svelte";
   import {
+    getSaveSlot,
     loadPlayerFromLocalStorage,
+    saveSaveSlot,
     trackAndSavePlayerToLocalStorage,
   } from "./lib/services/LocalStorageSaver";
   import InfoButton from "./lib/components/InfoButton.svelte";
@@ -30,6 +32,10 @@
   import { setCustomGearForPlayer } from "./lib/compendium";
   import { CurrentSaveSlot } from "./lib/services/SaveSlotTracker";
 
+  $: saveSaveSlot($CurrentSaveSlot);
+  $: (async () => {
+    $CurrentSaveSlot = await getSaveSlot();
+  })();
   $: (async () => {
     $pc = await loadPlayerFromLocalStorage($CurrentSaveSlot);
   })();

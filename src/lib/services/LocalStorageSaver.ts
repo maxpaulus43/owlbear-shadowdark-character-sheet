@@ -37,6 +37,15 @@ function getStorageKey(saveSlot: number) {
   return `sd-character-sheet-slot-${saveSlot}`;
 }
 
+export async function getSaveSlot(): Promise<number> {
+  return parseInt(
+    (await asyncLocalStorage.getItem("sd-character-sheet-chosen-slot")) ?? "1"
+  );
+}
+export async function saveSaveSlot(slot: number) {
+  asyncLocalStorage.setItem("sd-character-sheet-chosen-slot", `${slot}`);
+}
+
 export async function loadPlayerFromLocalStorage(
   saveSlot: number
 ): Promise<PlayerCharacter> {
