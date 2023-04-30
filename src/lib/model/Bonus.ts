@@ -1,4 +1,3 @@
-import type { NUM_SLOTS } from "../services/SaveSlotTracker";
 import type { DiceType, Merge } from "../types";
 import type { Stat } from "./PlayerCharacter";
 import type { WeaponType } from "./Weapon";
@@ -131,6 +130,7 @@ function byType(b: Bonus, t: Bonus["type"]): boolean {
 
 export function groupBonusesByType(bonuses: Bonus[]) {
   return {
+    diceType: bonuses.filter((b) => byType(b, "diceType")) as DiceTypeBonus[],
     generic: bonuses.filter((b) => byType(b, "generic")) as GenericBonus[],
     modifyAmt: bonuses.filter((b) => byType(b, "modifyAmt")) as ModifyBonus[],
     advantage: bonuses.filter((b) =>

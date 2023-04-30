@@ -69,10 +69,6 @@
     $pc = $pc;
   }
 
-  function getSlots(g: GearInfo) {
-    return g.slots.freeCarry ? 0 : g.slots.slotsUsed;
-  }
-
   function getCostForGear(g: GearInfo): string {
     const { gp, sp, cp } = g.cost;
     let gpStr: string, spStr: string, cpStr: string;

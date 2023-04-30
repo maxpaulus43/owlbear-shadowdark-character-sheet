@@ -8,7 +8,6 @@
   let customGearCurrency: Currency = "sp";
   let customGearQuantity: number = 1;
   let customPerSlot: number = 1;
-  let showForm = false;
 
   $: freeCarry = customGearSlots > 0 ? 0 : 1;
   $: canAdd = customGearName?.length > 0 && customGearQuantity > 0;
