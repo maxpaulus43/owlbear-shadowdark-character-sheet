@@ -216,6 +216,10 @@ function mapSDBonusToBonus(sdb: SDBonus): Bonus | Bonus[] {
       bonusTo: "spellcastRoll",
       type: "advantage",
       desc: `Advantage to cast spell: ${sdb.bonusTo}`,
+      metadata: {
+        type: "spell",
+        spell: sdb.bonusName,
+      },
       ...commonBonusData,
     };
   }
