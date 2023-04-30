@@ -58,9 +58,12 @@
     {:else if b.type === "modifyAmt"}
       <div class="font-bold">{displayableName}</div>
       <div>{addSign(calculateBonusAmount($pc, b))} to {b.bonusTo}</div>
-    {:else if b.type === "disadvantage" || bonus.type === "advantage"}
+    {:else if b.type === "disadvantage" || b.type === "advantage"}
       <div class="font-bold">{displayableName}</div>
       <div>{b.type} on {b.bonusTo}s</div>
+    {:else if b.type === "diceType"}
+      <div class="font-bold">{displayableName}</div>
+      <div>{b.diceType} on {b.bonusTo}</div>
     {/if}
     {#if showInfo}
       <button

@@ -1,22 +1,30 @@
-import type { Merge } from "../types";
+import type { NUM_SLOTS } from "../services/SaveSlotTracker";
+import type { DiceType, Merge } from "../types";
 import type { Stat } from "./PlayerCharacter";
 import type { WeaponType } from "./Weapon";
 
-export const BONUS_TOS = [
-  "hpRoll",
-  "attackRoll",
-  "spellcastRoll",
-  "damageRoll",
+export const NUMERICAL_BONUS_TOS = [
   "gearSlots",
-  "statRoll",
   "stat",
   "armorClass",
-  "initiativeRoll",
-  "talentRoll",
   "backstabDice",
   "hp",
 ] as const;
 
+export const ROLL_BONUS_TOS = [
+  "hpRoll",
+  "attackRoll",
+  "spellcastRoll",
+  "damageRoll",
+  "statRoll",
+  "initiativeRoll",
+  "talentRoll",
+] as const;
+
+export const BONUS_TOS = [...NUMERICAL_BONUS_TOS, ...ROLL_BONUS_TOS] as const;
+
+export type NumericalBonusTo = (typeof NUMERICAL_BONUS_TOS)[number];
+export type RollBonusTo = (typeof ROLL_BONUS_TOS)[number];
 export type BonusTo = (typeof BONUS_TOS)[number];
 
 export type BonusSourceCategory = "Ability" | "Talent";
@@ -73,18 +81,27 @@ export type ModifyBonus = Merge<
   }
 >;
 
+export type DiceTypeBonus = Merge<
+  GenericBonus,
+  {
+    type: "diceType";
+    bonusTo: RollBonusTo;
+    diceType: DiceType;
+  }
+>;
+
 export type AdvantageBonus = Merge<
   GenericBonus,
   {
     type: "advantage";
-    bonusTo: BonusTo;
+    bonusTo: RollBonusTo;
   }
 >;
 
 export type DisadvantageBonus = Merge<
   GenericBonus,
   {
-    bonusTo: BonusTo;
+    bonusTo: RollBonusTo;
     type: "disadvantage";
   }
 >;
@@ -92,6 +109,7 @@ export type DisadvantageBonus = Merge<
 export type Bonus =
   | GenericBonus
   | ModifyBonus
+  | DiceTypeBonus
   | AdvantageBonus
   | DisadvantageBonus;
 

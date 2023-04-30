@@ -1,5 +1,11 @@
 <script lang="ts">
-  import type { Bonus, BonusTo, BonusMetaData } from "../model/Bonus";
+  import type {
+    BonusTo,
+    BonusMetaData,
+    Bonus,
+    RollBonusTo,
+  } from "../model/Bonus";
+  import { ROLL_BONUS_TOS } from "../model/Bonus";
   import { addBonusToPlayer } from "../model/PlayerCharacter";
   import type { Stat } from "../model/PlayerCharacter";
   import type { WeaponType } from "../model/Weapon";
@@ -9,6 +15,8 @@
   import { BONUS_TOS } from "../model/Bonus";
   import { STATS, PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
+  import { DICE_TYPES } from "../types";
+  import type { DiceType } from "../types";
 
   let showModal = false;
 
@@ -18,6 +26,7 @@
   let bonusTo: BonusTo;
   let bonusAmount: number = 1;
   let mdType: BonusMetaData["type"] | "";
+  let diceType: DiceType = "d8";
   let selectedWeapon: string;
   let selectedArmor: string;
   let selectedSpell: string;
@@ -55,8 +64,15 @@
         b = { name, desc, type, bonusTo, bonusAmount };
         break;
       case "advantage":
-      case "disadvantage":
-        b = { name, desc, type, bonusTo };
+      case "disadvantage": {
+        let rbto = bonusTo as RollBonusTo;
+        b = { name, desc, type, bonusTo: rbto };
+        break;
+      }
+      case "diceType":
+        let rbto = bonusTo as RollBonusTo;
+        b = { name, desc, type, bonusTo: rbto, diceType };
+        break;
     }
     switch (mdType) {
       case "weapon":
@@ -101,8 +117,16 @@
       <option value="modifyAmt"> Numerical Modifier </option>
       <option value="advantage"> Advantage </option>
       <option value="disadvantage"> Disadvantage </option>
+      <option value="diceType"> Dice Type </option>
     </select>
-    {#if type !== "generic"}
+    {#if type === "diceType" || type === "advantage" || type === "disadvantage"}
+      <label for="bto">Bonus To:</label>
+      <select id="bto" bind:value={bonusTo}>
+        {#each ROLL_BONUS_TOS as bto}
+          <option>{bto}</option>
+        {/each}
+      </select>
+    {:else if type === "modifyAmt"}
       <label for="bto">Bonus To:</label>
       <select id="bto" bind:value={bonusTo}>
         {#each BONUS_TOS as bto}
@@ -118,6 +142,13 @@
         inputmode="numeric"
         bind:value={bonusAmount}
       />
+    {:else if type === "diceType"}
+      <label for="diceType">Dice Type</label>
+      <select id="diceType" bind:value={diceType}>
+        {#each DICE_TYPES as d}
+          <option>{d}</option>
+        {/each}
+      </select>
     {/if}
     <label for="metaDataType"
       >Does this bonus target a specific item, spell, or stat?</label

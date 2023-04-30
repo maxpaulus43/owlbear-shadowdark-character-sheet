@@ -1,4 +1,4 @@
-import type { Bonus } from "../model/Bonus";
+import type { Bonus, DiceTypeBonus } from "../model/Bonus";
 import type { Class } from "../model/PlayerCharacter";
 import type { Talent } from "../model/Talent";
 import { ARMORS } from "./armorCompendium";
@@ -353,6 +353,100 @@ export const CLASS_TALENTS: { [key in Class]: Talent[] } = {
     },
     {
       name: "Learn one additional wizard spell of any tier you know",
+      type: "generic",
+    },
+  ],
+  Ranger: [
+    {
+      type: "chooseBonus",
+      choices: WEAPONS.map(
+        (w) =>
+          ({
+            name: `d12 damage for ${w.name}`,
+            desc: `d12 damage for ${w.name}`,
+            type: "diceType",
+            bonusTo: "damageRoll",
+            diceType: "d12",
+            metadata: {
+              type: "weapon",
+              weapon: w.name,
+            },
+          } as DiceTypeBonus)
+      ),
+      name: "You deal d12 damage with one weapon you choose",
+    },
+    {
+      name: "+1 to attacks and damage with melee or ranged weapons",
+      type: "chooseBonus",
+      choices: ["Melee", "Ranged"].map(
+        (w) =>
+          [
+            {
+              name: `+1 to attack for ${w} weapons`,
+              desc: `+1 to attack for ${w} weapons`,
+              type: "modifyAmt",
+              bonusAmount: 1,
+              bonusTo: "attackRoll",
+              metadata: {
+                type: "weaponType",
+                weaponType: w,
+              },
+            },
+            {
+              name: `+1 to damage for ${w} weapons`,
+              desc: `+1 to damage for ${w} weapons`,
+              type: "modifyAmt",
+              bonusAmount: 1,
+              bonusTo: "damageRoll",
+              metadata: {
+                type: "weaponType",
+                weaponType: w,
+              },
+            },
+          ] as Bonus[]
+      ),
+    },
+    {
+      name: "+2 to Strength, Dexterity, or Intelligence stat",
+      type: "chooseBonus",
+      choices: [
+        {
+          name: "+2 to STR",
+          type: "modifyAmt",
+          desc: "+2 to",
+          bonusTo: "stat",
+          bonusAmount: 2,
+          metadata: {
+            type: "stat",
+            stat: "STR",
+          },
+        },
+        {
+          name: "+2 to DEX",
+          type: "modifyAmt",
+          desc: "+2 to DEX",
+          bonusTo: "stat",
+          bonusAmount: 2,
+          metadata: {
+            type: "stat",
+            stat: "DEX",
+          },
+        },
+        {
+          name: "+2 to INT",
+          type: "modifyAmt",
+          desc: "+2 to INT",
+          bonusTo: "stat",
+          bonusAmount: 2,
+          metadata: {
+            type: "stat",
+            stat: "INT",
+          },
+        },
+      ],
+    },
+    {
+      name: "Reduce the difficulty of your herbalism checks by one step",
       type: "generic",
     },
   ],

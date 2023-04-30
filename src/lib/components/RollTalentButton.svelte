@@ -27,8 +27,8 @@
   let showDone = false;
   let highlight = -1;
   function rollTalent() {
-    const result = rollDice("d6") + rollDice("d6");
-    // const result = 12;
+    // const result = rollDice("d6") + rollDice("d6");
+    const result = 12;
 
     canRoll = false;
 
@@ -56,7 +56,13 @@
 
     switch (highlightedTalent?.type) {
       case "generic":
-        // TODO generic talent?
+        updateAction = () => {
+          addBonusToPlayer($pc, {
+            name: highlightedTalent.name,
+            desc: highlightedTalent.name,
+            type: "generic",
+          });
+        };
         break;
       case "bonus":
         updateAction = () => {

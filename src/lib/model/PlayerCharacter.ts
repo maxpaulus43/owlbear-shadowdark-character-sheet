@@ -17,9 +17,11 @@ import {
   ensureLanguages,
 } from "../services/AncestryClassEnsurer";
 import { createUndoRedoStore } from "../services/PlayerHistoryTracker";
+import { compareDiceType } from "../types";
+import type { DiceType } from "../types";
 import { clamp, toInfo } from "../utils";
 import type { ArmorInfo } from "./Armor";
-import type { Bonus, ModifyBonus } from "./Bonus";
+import type { Bonus, DiceTypeBonus, ModifyBonus } from "./Bonus";
 import type { Gear, GearInfo } from "./Gear";
 import type { Spell, SpellInfo } from "./Spell";
 import type { Talent } from "./Talent";
@@ -135,6 +137,45 @@ export function calculateStatValueForPlayerStat(
 ): number {
   const baseStat = pc.stats[stat];
   return baseStat + calculateBonusForPlayerStat(pc, stat);
+}
+
+function doesBonusApplyToWeapon(b: Bonus, w: WeaponInfo): boolean {
+  const appliesToAllWeapons = !b.metadata;
+
+  const appliesToWeaponType =
+    b.metadata?.type === "weaponType" &&
+    w.weaponType.includes(b.metadata.weaponType);
+
+  const appliesToWeapon =
+    b.metadata?.type === "weapon" && b.metadata.weapon === w.name;
+
+  return appliesToAllWeapons || appliesToWeaponType || appliesToWeapon;
+}
+
+export function calculateDamageDiceTypeForPlayerWeapon(
+  pc: PlayerCharacter,
+  w: WeaponInfo,
+  handedness: "oneHanded" | "twoHanded"
+): DiceType {
+  let result = w.damage[handedness].diceType;
+
+  const diceTypeBonuses = pc.bonuses
+    .filter(
+      (b) =>
+        b.type === "diceType" &&
+        b.bonusTo === "damageRoll" &&
+        doesBonusApplyToWeapon(b, w)
+    )
+    .map((b: DiceTypeBonus) => b.diceType)
+    .sort(compareDiceType)
+    .reverse();
+
+  if (diceTypeBonuses[0]) {
+    // this will be the greatest diceType among all bonuses.
+    result = diceTypeBonuses[0];
+  }
+
+  return result;
 }
 
 export function calculateBonusForPlayerStat(
@@ -293,12 +334,7 @@ export function calculateDamageBonusForPlayerWeapon(
   const bonuses = pc.bonuses
     .filter((b) => b.type === "modifyAmt" && b.bonusTo === "damageRoll")
     .reduce((acc: number, b: ModifyBonus) => {
-      if (
-        !b.metadata ||
-        (b.metadata.type === "weapon" && b.metadata.weapon === w.name) ||
-        (b.metadata.type === "weaponType" &&
-          b.metadata.weaponType === w.weaponType) // TODO deal with MeleeRanged weapons
-      ) {
+      if (doesBonusApplyToWeapon(b, w)) {
         acc += calculateBonusAmount(pc, b);
       }
       return acc;
@@ -318,13 +354,7 @@ export function calculateDamageBonusForPlayerWeapon(
     // only apply bonuses to attackRoll
     .filter((b) => b.type === "modifyAmt" && b.bonusTo === "damageRoll")
     .reduce((acc: number, b: ModifyBonus) => {
-      if (
-        // this bonus might target a specific weapon/weaponType
-        !b.metadata ||
-        (b.metadata.type === "weapon" && b.metadata.weapon === w.name) ||
-        (b.metadata.type === "weaponType" &&
-          b.metadata.weaponType === w.weaponType)
-      ) {
+      if (doesBonusApplyToWeapon(b, w)) {
         acc += calculateBonusAmount(pc, b);
       }
       return acc;
@@ -352,12 +382,7 @@ export function calculateAttackBonusForPlayerWeapon(
   const bonuses = pc.bonuses
     .filter((b) => b.type === "modifyAmt" && b.bonusTo === "attackRoll")
     .reduce((acc: number, b: ModifyBonus) => {
-      if (
-        !b.metadata ||
-        (b.metadata.type === "weapon" && b.metadata.weapon === w.name) ||
-        (b.metadata.type === "weaponType" &&
-          b.metadata.weaponType === w.weaponType)
-      ) {
+      if (doesBonusApplyToWeapon(b, w)) {
         acc += calculateBonusAmount(pc, b);
       }
       return acc;
@@ -377,13 +402,7 @@ export function calculateAttackBonusForPlayerWeapon(
     // only apply bonuses to attackRoll
     .filter((b) => b.type === "modifyAmt" && b.bonusTo === "attackRoll")
     .reduce((acc: number, b: ModifyBonus) => {
-      if (
-        // this bonus might target a specific weapon/weaponType
-        !b.metadata ||
-        (b.metadata.type === "weapon" && b.metadata.weapon === w.name) ||
-        (b.metadata.type === "weaponType" &&
-          b.metadata.weaponType === w.weaponType)
-      ) {
+      if (doesBonusApplyToWeapon(b, w)) {
         acc += calculateBonusAmount(pc, b);
       }
       return acc;

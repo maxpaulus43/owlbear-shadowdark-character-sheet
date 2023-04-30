@@ -1,3 +1,5 @@
+import type { Class } from "./model/PlayerCharacter";
+
 export const SCHEMA_VERSION = "1.0.0";
 export const SCHEMA_TYPE = "sd-char-sheet";
 
@@ -38,9 +40,19 @@ export const BACKGROUNDS = [
   "Chirurgeon",
 ] as const;
 
-export const CLASSES = ["Fighter", "Priest", "Wizard", "Thief"] as const;
+export const CLASSES = [
+  "Fighter",
+  "Priest",
+  "Wizard",
+  "Thief",
+  "Ranger",
+] as const;
 
-export const TITLE_MAP = {
+export const TITLE_MAP: {
+  [key in Class]: {
+    [key in "Lawful" | "Neutral" | "Chaotic"]: readonly string[];
+  };
+} = {
   Fighter: {
     Lawful: ["Squire", "Cavalier", "Knight", "Thane", "Lord/Lady"],
     Chaotic: ["Knave", "Bandit", "Slayer", "Reaver", "Warlord"],
@@ -60,6 +72,12 @@ export const TITLE_MAP = {
     Lawful: ["Apprentice", "Conjurer", "Arcanist", "Mage", "Archmage"],
     Chaotic: ["Adept", "Channeler", "Witch/Warlock", "Diabolist", "Sorcerer"],
     Neutral: ["Shaman", "Seer", "Warden", "sage", "Druid"],
+  },
+  // TODO Ranger Titles
+  Ranger: {
+    Lawful: ["Squire", "Cavalier", "Knight", "Thane", "Lord/Lady"],
+    Chaotic: ["Knave", "Bandit", "Slayer", "Reaver", "Warlord"],
+    Neutral: ["Warrior", "Bararian", "Battlerager", "Warchief", "Chieftain"],
   },
 } as const;
 

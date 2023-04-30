@@ -3,11 +3,10 @@
   import {
     calculateAttackBonusForPlayerWeapon,
     calculateDamageBonusForPlayerWeapon,
-    calculateFreeHands,
+    calculateDamageDiceTypeForPlayerWeapon,
     isPlayerHoldingShield,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
-  import type { Roll } from "../types";
   import RollButton from "./RollButton.svelte";
 
   $: weapons = $pc.gear
@@ -16,10 +15,6 @@
     .filter(Boolean);
 
   $: canAttackTwoHanded = weapons.length == 1 && !isPlayerHoldingShield($pc);
-
-  function rollToString(roll: Roll): string {
-    return roll.numDice + roll.diceType;
-  }
 
   // TODO handle finesse weapons (roll either str or dex)
 </script>
@@ -42,21 +37,31 @@
       </td>
       <td class="flex gap-1">
         {#if w.damage.oneHanded}
+          {@const diceType = calculateDamageDiceTypeForPlayerWeapon(
+            $pc,
+            w,
+            "oneHanded"
+          )}
           <RollButton
-            diceType={w.damage.oneHanded.diceType}
+            {diceType}
             modifier={calculateDamageBonusForPlayerWeapon($pc, w)}
           >
             <div
               class="bg-black text-white p-1 px-2 rounded-md flex flex-col items-center text-xs"
             >
-              <span>{rollToString(w.damage.oneHanded)}</span>
+              <span>{`${w.damage.oneHanded.numDice}${diceType}`}</span>
               <i class="material-icons">back_hand</i>
             </div>
           </RollButton>
         {/if}
         {#if w.damage.twoHanded}
+          {@const diceType = calculateDamageDiceTypeForPlayerWeapon(
+            $pc,
+            w,
+            "twoHanded"
+          )}
           <RollButton
-            diceType={w.damage.twoHanded.diceType}
+            {diceType}
             modifier={calculateDamageBonusForPlayerWeapon($pc, w)}
             disabled={!canAttackTwoHanded}
           >
@@ -64,7 +69,7 @@
               class="bg-black text-white rounded-md p-1 px-2 flex flex-col items-center"
               class:opacity-50={!canAttackTwoHanded}
             >
-              <span>{rollToString(w.damage.twoHanded)}</span>
+              <span>{`${w.damage.twoHanded.numDice}${diceType}`}</span>
               <i class="material-icons"> sign_language </i>
             </div>
           </RollButton>
