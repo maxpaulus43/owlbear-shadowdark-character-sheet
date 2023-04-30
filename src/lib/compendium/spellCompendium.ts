@@ -159,7 +159,7 @@ export const SPELLS: SpellInfo[] = [
     class: "Wizard",
     tier: 3,
     desc: "You touch one humanoid’s remains, and it rises as a zombie or skeleton under your control. The remains must have at least three limbs and its head intact. The undead creature acts on your turn. After 1 day, the creature collapses into grave dust.",
-    duration: { type: "Day", amt: 0 },
+    duration: { type: "Day", amt: 1 },
   },
   {
     name: "Acid Arrow",
