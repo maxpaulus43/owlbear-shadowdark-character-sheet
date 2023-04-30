@@ -251,5 +251,24 @@ function addClassBonuses(bonuses: Bonus[], c: Class) {
       }
       break;
     }
+    case "Ranger": {
+      const name = "Herbalism";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name,
+            bonusSource: "Class",
+            desc: "Make an INT check to find some herbs",
+            type: "generic",
+          },
+          {
+            name: "Wayfinder",
+            bonusSource: "Class",
+            desc: "Advantage on checks associated with navigation, survivalism, tracking, sneaking, hiding, nature, animals",
+            type: "generic",
+          }
+        );
+      }
+    }
   }
 }
