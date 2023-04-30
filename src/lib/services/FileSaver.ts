@@ -7,7 +7,9 @@ export default async function savePlayerToFile(pc: PlayerCharacter) {
   pc["schemaVersion"] = SCHEMA_VERSION;
   pc["schemaType"] = SCHEMA_TYPE;
 
-  const blob = new Blob([JSON.stringify(pc)], { type: "application/json" });
+  const blob = new Blob([JSON.stringify(pc, null, 2)], {
+    type: "application/json",
+  });
 
   // Feature detection. The API needs to be supported
   // and the app not run in an iframe.
