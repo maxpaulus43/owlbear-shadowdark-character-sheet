@@ -26,7 +26,6 @@ import type { Gear, GearInfo } from "./Gear";
 import type { Spell, SpellInfo } from "./Spell";
 import type { Talent } from "./Talent";
 import type { WeaponInfo } from "./Weapon";
-import type PlayerApi from "@owlbear-rodeo/sdk/lib/api/PlayerApi";
 
 export const PlayerCharacterStore = createUndoRedoStore(
   writable<PlayerCharacter>(defaultPC())
@@ -50,6 +49,7 @@ export type PlayerCharacter = {
   name: string;
   ancestry: Ancestry;
   class?: Class | "";
+  hasCustomClass?: boolean;
   level: number;
   title: Title;
   alignment: Alignment;
@@ -333,11 +333,15 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
   return pc.armorClass + acModifier;
 }
 
-export function calculateTitleForPlayer(pc: PlayerCharacter): Title | "" {
-  if (pc.level === 0 || pc.class === "") return "";
-  return TITLE_MAP[pc.class][pc.alignment][
-    Math.max(0, Math.floor((pc.level - 1) / 2))
-  ];
+export function calculateTitleForPlayer(pc: PlayerCharacter): Title | null {
+  if (pc.level === 0 || pc.class === "") return null;
+  try {
+    return TITLE_MAP[pc.class][pc.alignment][
+      Math.max(0, Math.floor((pc.level - 1) / 2))
+    ];
+  } catch {
+    return null;
+  }
 }
 
 export function calculateSpellCastingModifierForPlayer(
@@ -345,10 +349,8 @@ export function calculateSpellCastingModifierForPlayer(
   spell: SpellInfo
 ): number {
   let result = 0;
-  const baseModifier = calculateModifierForPlayerStat(
-    pc,
-    pc.class === "Priest" ? "WIS" : "INT"
-  );
+  const stat = spell.stat ?? (pc.class === "Priest" ? "WIS" : "INT");
+  const baseModifier = calculateModifierForPlayerStat(pc, stat);
   result += baseModifier;
 
   // from bonuses
@@ -517,7 +519,10 @@ export function playerHasSpell(pc: PlayerCharacter, spell: SpellInfo) {
 }
 
 export function playerCanLearnSpell(pc: PlayerCharacter, spell: SpellInfo) {
-  return spell.class.toLowerCase().includes(pc.class.toLowerCase());
+  return (
+    pc.hasCustomClass ||
+    spell.class.toLowerCase().includes(pc.class.toLowerCase())
+  );
 }
 
 export function learnSpellForPlayer(pc: PlayerCharacter, spell: SpellInfo) {

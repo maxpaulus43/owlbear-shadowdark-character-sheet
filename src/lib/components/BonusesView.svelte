@@ -1,5 +1,6 @@
 <script lang="ts">
   import { findAny } from "../compendium";
+  import { CLASSES } from "../constants";
   import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import { alphabetically } from "../utils";
   import AddBonusButton from "./AddBonusButton.svelte";
@@ -53,7 +54,7 @@
 </ul>
 
 <div class="flex gap-1">
-  {#if $pc.level > 0 && $pc.class !== ""}
+  {#if $pc.level > 0 && $pc.class && !$pc.hasCustomClass && CLASSES.includes($pc.class)}
     <RollTalentButton />
   {/if}
   <AddBonusButton />

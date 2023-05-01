@@ -5,7 +5,8 @@
     DurationType,
     RangeType,
   } from "../types";
-  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
+  import { STATS, PlayerCharacterStore as pc } from "../model/PlayerCharacter";
+  import type { Stat } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
   import type { SpellClass, SpellInfo, SpellTier } from "../model/Spell";
 
@@ -24,12 +25,14 @@
   let spellRollDiceType: DiceType = "d8";
   let spellAmtType: "Roll" | "Static" = "Static";
   let spellAmt: number = 1;
+  let spellStat: Stat = "INT";
 
   function onCreateSpell() {
     const s: SpellInfo = {
       editable: true,
       name: spellName,
       class: spellClass,
+      stat: spellStat,
       tier: parseInt(spellTier) as SpellTier,
       range: spellRange,
       duration: {
@@ -47,7 +50,6 @@
       }
     }
 
-    console.log(s);
     $pc.spells.push({ name: s.name });
     $pc.customSpells.push(s);
     $pc = $pc;
@@ -84,6 +86,13 @@
       <option>3</option>
       <option>4</option>
       <option>5</option>
+    </select>
+
+    <label for="spellStat">Spell Stat</label>
+    <select bind:value={spellStat}>
+      {#each STATS as s}
+        <option>{s}</option>
+      {/each}
     </select>
 
     <label for="spellRange">Range</label>

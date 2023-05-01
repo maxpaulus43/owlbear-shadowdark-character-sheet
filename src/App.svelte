@@ -32,6 +32,7 @@
   import OptionsButton from "./lib/components/OptionsButton.svelte";
   import { setCustomGearForPlayer } from "./lib/compendium";
   import { CurrentSaveSlot } from "./lib/services/SaveSlotTracker";
+  import ClassView from "./lib/components/ClassView.svelte";
 
   $: saveSaveSlot($CurrentSaveSlot);
   $: (async () => {
@@ -62,11 +63,6 @@
     }
   }
 
-  function onClassChange(e: Event) {
-    const c: Class = (e.target as HTMLSelectElement).value as Class;
-    setClassForPlayer($pc, c);
-    $pc = $pc;
-  }
   function onAncestryChange(e: Event) {
     const a: Ancestry = (e.target as HTMLSelectElement).value as Ancestry;
     setAncestryForPlayer($pc, a);
@@ -174,23 +170,7 @@
           </select>
         </div>
         <div class="col-span-full cell">
-          <div class="flex">
-            <h2>CLASS</h2>
-            {#if !$pc.class}
-              <div>(Must Be At Least Level 1)</div>
-            {/if}
-          </div>
-          <select
-            value={$pc.class}
-            on:change={onClassChange}
-            disabled={$pc.level === 0}
-          >
-            {#each CLASSES as clazz}
-              <option value={clazz}>
-                {clazz}
-              </option>
-            {/each}
-          </select>
+          <ClassView />
         </div>
         <div class="cell">
           <h2>LEVEL</h2>
@@ -230,7 +210,15 @@
         </div>
         <div class="col-span-full cell">
           <h2>TITLE</h2>
-          <div>{title}</div>
+          {#if $pc.hasCustomClass}
+            <input
+              type="text"
+              value={title ?? $pc.title}
+              on:input={(e) => ($pc.title = e.target.value)}
+            />
+          {:else}
+            <div>{title}</div>
+          {/if}
         </div>
         <div class="col-span-full cell">
           <h2>ALIGNMENT</h2>

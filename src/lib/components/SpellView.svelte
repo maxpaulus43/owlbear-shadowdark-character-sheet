@@ -11,6 +11,12 @@
     <span class="font-bold text-lg">{s.name}</span>
     <span>(Tier {s.tier}, {s.class})</span>
   </div>
+  {#if s.stat}
+    <div>
+      <span class="font-bold">Stat:</span>
+      <span>{s.stat}</span>
+    </div>
+  {/if}
   <div>
     <span class="font-bold">Duration:</span>
     <span>

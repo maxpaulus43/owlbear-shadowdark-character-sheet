@@ -92,6 +92,7 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     name: json.name,
     ancestry: json.ancestry,
     class: theClass,
+    hasCustomClass: false,
     level: json.level,
     title: json.title,
     alignment: json.alignment,

@@ -45,13 +45,13 @@ export function ensureAncestryBonuses(pc: PlayerCharacter) {
 
 export function ensureClassBonuses(pc: PlayerCharacter) {
   clearClassBonuses(pc);
-  if (pc.class === "") return;
+  if (!pc.class || pc.hasCustomClass) return;
   addClassBonuses(pc.bonuses, pc.class);
 }
 
 export function ensureClassGear(pc: PlayerCharacter) {
   clearClassGear(pc);
-  if (pc.class === "") return;
+  if (!pc.class || pc.hasCustomClass) return;
   addClassGear(pc.gear, pc.class);
 }
 
@@ -71,8 +71,14 @@ function clearAncestryBonuses(pc: PlayerCharacter) {
 function clearClassBonuses(pc: PlayerCharacter) {
   pc.bonuses = pc.bonuses.filter(
     (b) =>
-      !["Thievery", "Backstab", "Learning Spells", "Hauler"].includes(b.name) &&
-      !b.name.includes("Thievery:")
+      ![
+        "Thievery",
+        "Backstab",
+        "Learning Spells",
+        "Hauler",
+        "Herbalism",
+        "Wayfinder",
+      ].includes(b.name) && !b.name.includes("Thievery:")
   );
 }
 
