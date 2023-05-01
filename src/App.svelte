@@ -64,6 +64,10 @@
     setAncestryForPlayer($pc, a);
     $pc = $pc;
   }
+
+  function onTitleInput(e: Event) {
+    $pc.title = (e.target as HTMLInputElement).value;
+  }
 </script>
 
 <div class="flex items-center justify-center bg-black">
@@ -194,7 +198,7 @@
             <input
               type="text"
               value={title ?? $pc.title}
-              on:input={(e) => ($pc.title = e.target.value)}
+              on:input={onTitleInput}
             />
           {:else}
             <div>{title}</div>
