@@ -4,6 +4,7 @@
     calculateTitleForPlayer,
     levelUpPlayer,
     PlayerCharacterStore as pc,
+    setACForPlayer,
     setAncestryForPlayer,
     setClassForPlayer,
   } from "./lib/model/PlayerCharacter";
@@ -71,6 +72,10 @@
     setAncestryForPlayer($pc, a);
     $pc = $pc;
   }
+  function onACInput(e: Event) {
+    const val = parseInt((e.target as HTMLInputElement).value);
+    setACForPlayer($pc, val);
+  }
 </script>
 
 <div class="flex items-center justify-center bg-black">
@@ -134,11 +139,18 @@
         </div>
         <div class="row-span-2 cell">
           <h2>AC</h2>
-          <div
-            class="flex justify-center items-center w-full h-full text-7xl pirata"
-          >
-            {ac}
-          </div>
+          <input
+            class="flex w-full h-full text-7xl pirata text-center"
+            type="number"
+            inputmode="numeric"
+            value={ac}
+            on:input={onACInput}
+          />
+          <!-- <div -->
+          <!--   class="flex justify-center items-center w-full h-full text-7xl pirata" -->
+          <!-- > -->
+          <!--   {ac} -->
+          <!-- </div> -->
         </div>
         <div class="col-span-full row-span-2 cell">
           <AttacksView />

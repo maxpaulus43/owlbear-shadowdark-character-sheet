@@ -105,7 +105,7 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     customTalents: [],
     maxHitPoints: json.maxHitPoints,
     hitPoints: json.maxHitPoints,
-    armorClass: json.armorClass,
+    armorClass: 10,
     gearSlotsTotal: json.gearSlotsTotal,
     gold: json.gold,
     silver: json.silver,

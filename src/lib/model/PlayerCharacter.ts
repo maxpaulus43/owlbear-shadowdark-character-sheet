@@ -26,6 +26,7 @@ import type { Gear, GearInfo } from "./Gear";
 import type { Spell, SpellInfo } from "./Spell";
 import type { Talent } from "./Talent";
 import type { WeaponInfo } from "./Weapon";
+import type PlayerApi from "@owlbear-rodeo/sdk/lib/api/PlayerApi";
 
 export const PlayerCharacterStore = createUndoRedoStore(
   writable<PlayerCharacter>(defaultPC())
@@ -131,6 +132,10 @@ export function setAncestryForPlayer(pc: PlayerCharacter, a: Ancestry) {
   ensureLanguages(pc);
 }
 
+export function setACForPlayer(pc: PlayerCharacter, n: number) {
+  pc.armorClass = n - calulateACBonusForPlayer(pc);
+}
+
 export function calculateStatValueForPlayerStat(
   pc: PlayerCharacter,
   stat: Stat
@@ -202,6 +207,67 @@ export function isPlayerHoldingShield(pc: PlayerCharacter): boolean {
   );
 }
 
+export function calulateACBonusForPlayer(pc: PlayerCharacter): number {
+  const dexMod = calculateModifierForPlayerStat(pc, "DEX");
+  let acModifier = dexMod;
+
+  for (const b of pc.bonuses) {
+    if (b.type === "modifyAmt" && b.bonusTo === "armorClass") {
+      acModifier += calculateBonusAmount(pc, b);
+    }
+  }
+
+  const gearBonuses = pc.gear
+    .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
+    .filter(({ isEquipped, g }) => {
+      return !g.canBeEquipped || isEquipped;
+    })
+    .map(({ g }) => g.playerBonuses)
+    .filter(Boolean)
+    .flat();
+
+  for (const b of gearBonuses) {
+    if (b.type === "modifyAmt" && b.bonusTo === "armorClass") {
+      acModifier += calculateBonusAmount(pc, b);
+    }
+  }
+
+  const shields = pc.gear
+    .filter((g) => g.equipped)
+    .map(toInfo<ArmorInfo>)
+    .filter((g) => g.type === "Armor" && g.properties?.includes("OneHanded"));
+
+  for (const s of shields) {
+    acModifier += s.ac.modifier;
+  }
+
+  const armor = pc.gear
+    .filter((g) => g.equipped)
+    .map(toInfo<ArmorInfo>)
+    .filter((g) => g.type === "Armor" && !g.properties?.includes("OneHanded"));
+
+  for (const a of armor) {
+    let statModifier = 0;
+    if (a.ac.stat && a.ac.stat !== "DEX") {
+      acModifier -= dexMod; // undo the dex mod from before
+      statModifier = calculateModifierForPlayerStat(pc, a.ac.stat);
+    }
+
+    acModifier += a.ac.modifier + statModifier;
+
+    acModifier += pc.bonuses
+      .filter(
+        (b) =>
+          b.type === "modifyAmt" &&
+          b.metadata?.type === "armor" &&
+          b.metadata.armor === a.name
+      )
+      .reduce((acc, b: ModifyBonus) => acc + b.bonusAmount, 0);
+  }
+
+  return acModifier;
+}
+
 export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
   const dexMod = calculateModifierForPlayerStat(pc, "DEX");
   let acModifier = dexMod;
@@ -260,11 +326,11 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
       .reduce((acc, b: ModifyBonus) => acc + b.bonusAmount, 0);
 
     if (a.ac.base > 0) {
-      return Math.max(a.ac.base, 10) + acModifier;
+      return Math.max(a.ac.base, pc.armorClass) + acModifier;
     }
   }
 
-  return 10 + acModifier;
+  return pc.armorClass + acModifier;
 }
 
 export function calculateTitleForPlayer(pc: PlayerCharacter): Title | "" {
