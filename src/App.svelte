@@ -1,19 +1,15 @@
 <script lang="ts">
   import {
-    calculateArmorClassForPlayer,
     calculateTitleForPlayer,
     levelUpPlayer,
     PlayerCharacterStore as pc,
-    setACForPlayer,
     setAncestryForPlayer,
-    setClassForPlayer,
   } from "./lib/model/PlayerCharacter";
-  import type { Class, Ancestry } from "./lib/model/PlayerCharacter";
+  import type { Ancestry } from "./lib/model/PlayerCharacter";
   import {
     ALIGNMENTS,
     ANCESTRIES,
     BACKGROUNDS,
-    CLASSES,
     DEITIES,
   } from "./lib/constants";
   import TalentsSpellsView from "./lib/components/TalentsSpellsView.svelte";
@@ -33,6 +29,7 @@
   import { setCustomGearForPlayer } from "./lib/compendium";
   import { CurrentSaveSlot } from "./lib/services/SaveSlotTracker";
   import ClassView from "./lib/components/ClassView.svelte";
+  import ArmorClassView from "./lib/components/ArmorClassView.svelte";
 
   $: saveSaveSlot($CurrentSaveSlot);
   $: (async () => {
@@ -44,7 +41,6 @@
   $: trackAndSavePlayerToLocalStorage($pc, $CurrentSaveSlot);
   $: setCustomGearForPlayer($pc);
 
-  $: ac = calculateArmorClassForPlayer($pc);
   $: title = calculateTitleForPlayer($pc);
   $: xpCap = $pc.level === 0 ? 10 : $pc.level * 10;
   $: canLevel = $pc.level < 10 && $pc.xp >= xpCap;
@@ -67,10 +63,6 @@
     const a: Ancestry = (e.target as HTMLSelectElement).value as Ancestry;
     setAncestryForPlayer($pc, a);
     $pc = $pc;
-  }
-  function onACInput(e: Event) {
-    const val = parseInt((e.target as HTMLInputElement).value);
-    setACForPlayer($pc, val);
   }
 </script>
 
@@ -134,19 +126,7 @@
           <HpView />
         </div>
         <div class="row-span-2 cell">
-          <h2>AC</h2>
-          <input
-            class="flex w-full h-full text-7xl pirata text-center"
-            type="number"
-            inputmode="numeric"
-            value={ac}
-            on:input={onACInput}
-          />
-          <!-- <div -->
-          <!--   class="flex justify-center items-center w-full h-full text-7xl pirata" -->
-          <!-- > -->
-          <!--   {ac} -->
-          <!-- </div> -->
+          <ArmorClassView />
         </div>
         <div class="col-span-full row-span-2 cell">
           <AttacksView />

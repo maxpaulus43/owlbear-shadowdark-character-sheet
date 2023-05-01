@@ -132,10 +132,6 @@ export function setAncestryForPlayer(pc: PlayerCharacter, a: Ancestry) {
   ensureLanguages(pc);
 }
 
-export function setACForPlayer(pc: PlayerCharacter, n: number) {
-  pc.armorClass = n - calulateACBonusForPlayer(pc);
-}
-
 export function calculateStatValueForPlayerStat(
   pc: PlayerCharacter,
   stat: Stat
@@ -207,74 +203,14 @@ export function isPlayerHoldingShield(pc: PlayerCharacter): boolean {
   );
 }
 
-export function calulateACBonusForPlayer(pc: PlayerCharacter): number {
-  const dexMod = calculateModifierForPlayerStat(pc, "DEX");
-  let acModifier = dexMod;
-
-  for (const b of pc.bonuses) {
-    if (b.type === "modifyAmt" && b.bonusTo === "armorClass") {
-      acModifier += calculateBonusAmount(pc, b);
-    }
-  }
-
-  const gearBonuses = pc.gear
-    .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
-    .filter(({ isEquipped, g }) => {
-      return !g.canBeEquipped || isEquipped;
-    })
-    .map(({ g }) => g.playerBonuses)
-    .filter(Boolean)
-    .flat();
-
-  for (const b of gearBonuses) {
-    if (b.type === "modifyAmt" && b.bonusTo === "armorClass") {
-      acModifier += calculateBonusAmount(pc, b);
-    }
-  }
-
-  const shields = pc.gear
-    .filter((g) => g.equipped)
-    .map(toInfo<ArmorInfo>)
-    .filter((g) => g.type === "Armor" && g.properties?.includes("OneHanded"));
-
-  for (const s of shields) {
-    acModifier += s.ac.modifier;
-  }
-
-  const armor = pc.gear
-    .filter((g) => g.equipped)
-    .map(toInfo<ArmorInfo>)
-    .filter((g) => g.type === "Armor" && !g.properties?.includes("OneHanded"));
-
-  for (const a of armor) {
-    let statModifier = 0;
-    if (a.ac.stat && a.ac.stat !== "DEX") {
-      acModifier -= dexMod; // undo the dex mod from before
-      statModifier = calculateModifierForPlayerStat(pc, a.ac.stat);
-    }
-
-    acModifier += a.ac.modifier + statModifier;
-
-    acModifier += pc.bonuses
-      .filter(
-        (b) =>
-          b.type === "modifyAmt" &&
-          b.metadata?.type === "armor" &&
-          b.metadata.armor === a.name
-      )
-      .reduce((acc, b: ModifyBonus) => acc + b.bonusAmount, 0);
-  }
-
-  return acModifier;
-}
-
 export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
-  const dexMod = calculateModifierForPlayerStat(pc, "DEX");
-  let acModifier = dexMod;
+  let baseAC = pc.armorClass;
+  let modsFromStat = calculateModifierForPlayerStat(pc, "DEX"); // default to DEX
 
+  let modsFromBonuses = 0;
   for (const b of pc.bonuses) {
     if (b.type === "modifyAmt" && b.bonusTo === "armorClass") {
-      acModifier += calculateBonusAmount(pc, b);
+      modsFromBonuses += calculateBonusAmount(pc, b);
     }
   }
 
@@ -287,19 +223,21 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
     .filter(Boolean)
     .flat();
 
+  let modsFromGearBonuses = 0;
   for (const b of gearBonuses) {
     if (b.type === "modifyAmt" && b.bonusTo === "armorClass") {
-      acModifier += calculateBonusAmount(pc, b);
+      modsFromGearBonuses += calculateBonusAmount(pc, b);
     }
   }
 
+  let modsFromShields = 0;
   const shields = pc.gear
     .filter((g) => g.equipped)
     .map(toInfo<ArmorInfo>)
     .filter((g) => g.type === "Armor" && g.properties?.includes("OneHanded"));
 
   for (const s of shields) {
-    acModifier += s.ac.modifier;
+    modsFromShields += s.ac.modifier;
   }
 
   const armor = pc.gear
@@ -307,16 +245,16 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
     .map(toInfo<ArmorInfo>)
     .filter((g) => g.type === "Armor" && !g.properties?.includes("OneHanded"));
 
+  let modsFromArmor = 0;
+  let shouldAddStat = true;
   for (const a of armor) {
-    let statModifier = 0;
     if (a.ac.stat && a.ac.stat !== "DEX") {
-      acModifier -= dexMod; // undo the dex mod from before
-      statModifier = calculateModifierForPlayerStat(pc, a.ac.stat);
+      modsFromStat = calculateModifierForPlayerStat(pc, a.ac.stat);
     }
 
-    acModifier += a.ac.modifier + statModifier;
+    modsFromArmor += a.ac.modifier;
 
-    acModifier += pc.bonuses
+    modsFromArmor += pc.bonuses
       .filter(
         (b) =>
           b.type === "modifyAmt" &&
@@ -326,11 +264,19 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
       .reduce((acc, b: ModifyBonus) => acc + b.bonusAmount, 0);
 
     if (a.ac.base > 0) {
-      return Math.max(a.ac.base, pc.armorClass) + acModifier;
+      shouldAddStat = Boolean(a.ac.stat);
+      baseAC = Math.max(a.ac.base, baseAC);
     }
   }
 
-  return pc.armorClass + acModifier;
+  return (
+    baseAC +
+    modsFromBonuses +
+    modsFromGearBonuses +
+    modsFromShields +
+    modsFromArmor +
+    (shouldAddStat ? modsFromStat : 0)
+  );
 }
 
 export function calculateTitleForPlayer(pc: PlayerCharacter): Title | null {
