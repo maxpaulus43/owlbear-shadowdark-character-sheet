@@ -25,6 +25,7 @@
   import { CurrentSaveSlot } from "./lib/services/SaveSlotTracker";
   import ClassView from "./lib/components/ClassView.svelte";
   import ArmorClassView from "./lib/components/ArmorClassView.svelte";
+  import NotesButton from "./lib/components/NotesButton.svelte";
 
   $: saveSaveSlot($CurrentSaveSlot);
   $: (async () => {
@@ -99,6 +100,7 @@
                   <i class="material-icons translate-y-1 px-1">redo</i>
                 </button>
                 <OptionsButton bind:files />
+                <NotesButton />
               </div>
             </div>
           </div>

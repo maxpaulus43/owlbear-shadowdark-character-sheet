@@ -58,6 +58,7 @@ export type PlayerCharacter = {
   deity: Deity;
   gear: Gear[];
   customGear: GearInfo[];
+  notes: string;
   stats: StatBlock;
   bonuses: Bonus[];
   customBonuses: Bonus[];
@@ -86,6 +87,7 @@ export function defaultPC(): PlayerCharacter {
     alignment: "Lawful",
     background: "Scout",
     deity: "Gede",
+    notes: "",
     gear: [],
     customGear: [],
     stats: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
