@@ -5,6 +5,7 @@
     DurationType,
     RangeType,
   } from "../types";
+  import { RANGE_TYPES, DICE_TYPES, TIME_UNITS } from "../types";
   import { STATS, PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import type { Stat } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
@@ -18,16 +19,18 @@
   $: isValid = Boolean(spellName && spellDesc);
 
   let spellTier: "1" | "2" | "3" | "4" | "5" = "1";
-  let spellDurationType: DurationType = "Instant";
+  let spellDurationT: "Instant" | "Focus" | "Time" = "Instant";
+  let spellDurationType: DurationType = "Round";
   let spellDurationSubType: DurationSubType = "InGame";
   let spellClass: SpellClass = "Wizard";
   let spellRange: RangeType = "Self";
-  let spellRollDiceType: DiceType = "d8";
-  let spellAmtType: "Roll" | "Static" = "Static";
+  let spellRollDiceType: DiceType | "" = "d8";
   let spellAmt: number = 1;
   let spellStat: Stat = "INT";
 
   function onCreateSpell() {
+    const durType =
+      spellDurationT === "Time" ? spellDurationType : spellDurationT;
     const s: SpellInfo = {
       editable: true,
       name: spellName,
@@ -36,19 +39,24 @@
       tier: parseInt(spellTier) as SpellTier,
       range: spellRange,
       duration: {
-        type: spellDurationType,
+        type: durType,
       },
       desc: spellDesc,
     };
 
-    if (!["Instant", "Focus"].includes(spellDurationType)) {
+    if (spellDurationT === "Time") {
       s.duration.subType = spellDurationSubType;
-      if (spellAmtType === "Roll") {
-        s.duration.roll = { diceType: spellRollDiceType, numDice: spellAmt };
+      if (spellRollDiceType.length > 0) {
+        s.duration.roll = {
+          diceType: spellRollDiceType as DiceType,
+          numDice: spellAmt,
+        };
       } else {
         s.duration.amt = spellAmt;
       }
     }
+
+    console.log(s);
 
     $pc.spells.push({ name: s.name });
     $pc.customSpells.push(s);
@@ -97,58 +105,84 @@
 
     <label for="spellRange">Range</label>
     <select bind:value={spellRange}>
-      <option>Self</option>
-      <option>Close</option>
-      <option>Near</option>
-      <option>Far</option>
+      {#each RANGE_TYPES as r}
+        <option>{r}</option>
+      {/each}
     </select>
 
-    <label for="spellDuration">Time Unit</label>
-    <select bind:value={spellDurationType}>
+    <label for="spellDuration">Duration</label>
+    <select bind:value={spellDurationT}>
       <option>Focus</option>
       <option>Instant</option>
-      <option>Second</option>
-      <option>Minute</option>
-      <option>Round</option>
-      <option>Hour</option>
-      <option>Day</option>
-      <option>Week</option>
-      <option>Month</option>
-      <option>Year</option>
+      <option>Time</option>
     </select>
 
-    {#if !["Instant", "Focus"].includes(spellDurationType)}
-      <label for="durSubType">In Game Time or Real Time?</label>
-      <select id="durSubType" bind:value={spellDurationSubType}>
-        <option>InGame</option>
-        <option>RealTime</option>
-      </select>
+    {#if spellDurationT === "Time"}
+      <label for="">How Much Time?</label>
+      <div class="flex gap-1">
+        <input
+          id="dice"
+          type="number"
+          min="1"
+          inputmode="numeric"
+          bind:value={spellAmt}
+          class="w-10 text-center"
+        />
+        <select bind:value={spellRollDiceType}>
+          <option />
+          {#each DICE_TYPES as d}
+            <option>{d}</option>
+          {/each}
+        </select>
+        <select bind:value={spellDurationType}>
+          {#each TIME_UNITS as t}
+            <option>{t}</option>
+          {/each}
+        </select>
+      </div>
 
-      <label for="durType">Duration Type</label>
-      <select id="durType" bind:value={spellAmtType}>
-        <option value="Static">Static number</option>
-        <option value="Roll">Roll some dice</option>
-      </select>
-
-      <label for="spellDurationAmount">How Many</label>
-      <input
-        id="spellDurationAmount"
-        type="number"
-        inputmode="numeric"
-        bind:value={spellAmt}
-      />
-
-      {#if spellAmtType === "Roll"}
-        <label for="diceType">Dice Type</label>
-        <select id="diceType">
-          <option>d4</option>
-          <option>d6</option>
-          <option>d8</option>
-          <option>d10</option>
-          <option>d12</option>
-          <option>d20</option>
+      {#if spellDurationType !== "Round"}
+        <label for="durSubType">In Game Time or Real Time?</label>
+        <select id="durSubType" bind:value={spellDurationSubType}>
+          <option>InGame</option>
+          <option>RealTime</option>
         </select>
       {/if}
+
+      <!-- <label for="durType">Duration Type</label> -->
+      <!-- <select id="durType" bind:value={spellAmtType}> -->
+      <!--   <option value="Static">Static number</option> -->
+      <!--   <option value="Roll">Roll some dice</option> -->
+      <!-- </select> -->
+
+      <!-- {#if spellAmtType === "Roll"} -->
+      <!--   <label for="dice">Dice</label> -->
+      <!---->
+      <!--   <div class="flex gap-1 items-center"> -->
+      <!--     <input -->
+      <!--       id="dice" -->
+      <!--       type="number" -->
+      <!--       min="1" -->
+      <!--       inputmode="numeric" -->
+      <!--       bind:value={spellAmt} -->
+      <!--       class="w-10 text-center" -->
+      <!--     /> -->
+      <!--     <select bind:value={spellRollDiceType}> -->
+      <!--       {#each DICE_TYPES as d} -->
+      <!--         <option>{d}</option> -->
+      <!--       {/each} -->
+      <!--     </select> -->
+      <!--   </div> -->
+      <!-- {:else} -->
+      <!--   <label for="spellDurationAmount">How Many</label> -->
+      <!--   <input -->
+      <!--     id="spellDurationAmount" -->
+      <!--     min="0" -->
+      <!--     type="number" -->
+      <!--     inputmode="numeric" -->
+      <!--     bind:value={spellAmt} -->
+      <!--   /> -->
+      <!-- {/if} -->
     {/if}
 
     <label for="spellDesc">Description</label>
@@ -162,3 +196,9 @@
     >
   </div>
 </Modal>
+
+<style lang="postcss">
+  input {
+    @apply transition-all;
+  }
+</style>

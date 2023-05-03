@@ -12,16 +12,18 @@ export function compareDiceType(a: DiceType, b: DiceType) {
 export const RANGE_TYPES = ["Self", "Close", "Near", "Far"] as const;
 export type RangeType = (typeof RANGE_TYPES)[number];
 
-export type TimeUnit =
-  | "Second"
-  | "Minute"
-  | "Round"
-  | "Hour"
-  | "Day"
-  | "Week"
-  | "Month"
-  | "Year";
+export const TIME_UNITS = [
+  "Second",
+  "Minute",
+  "Round",
+  "Hour",
+  "Day",
+  "Week",
+  "Month",
+  "Year",
+];
 
+export type TimeUnit = (typeof TIME_UNITS)[number];
 export type DurationSubType = "InGame" | "RealTime";
 
 export type DurationType = "Focus" | "Instant" | TimeUnit;
