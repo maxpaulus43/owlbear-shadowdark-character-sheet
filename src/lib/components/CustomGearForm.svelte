@@ -48,10 +48,13 @@
   let armorStat: Stat;
 
   $: freeCarry = gearSlots > 0 ? 0 : 1;
+
   $: weaponHasAtLeastDamage =
     gearType !== "Weapon" || hasOneHandedAttack || hasTwoHandedAttack;
+
   $: canAdd =
     gearName?.length > 0 && gearQuantity > 0 && weaponHasAtLeastDamage;
+
   $: if (hasOneHandedAttack && hasTwoHandedAttack) {
     if (!weaponProperties.includes("Versatile")) {
       weaponProperties = [...weaponProperties, "Versatile"];
@@ -64,6 +67,12 @@
     }
   }
 
+  $: if (!showAdvanced) {
+    gearType = "Basic";
+    canBeEquipped = false;
+    attackable = false;
+  }
+
   function reset() {
     gearName = undefined;
     gearSlots = 1;
@@ -71,9 +80,8 @@
     gearCurrency = "gp";
     gearQuantity = 1;
     quantityPerSlot = 1;
-    gearType = "Basic";
-    canBeEquipped = false;
-    attackable = false;
+
+    // advanced fields
     weaponProperties = [];
     weaponType = "Melee";
     weaponRanges = ["Close"];
@@ -87,6 +95,8 @@
     armorProperties = [];
     acModifier = 0;
     armorStat = undefined;
+
+    showAdvanced = false;
   }
 
   function createGearItem() {
