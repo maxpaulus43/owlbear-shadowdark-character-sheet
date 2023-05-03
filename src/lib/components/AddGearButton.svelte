@@ -53,6 +53,13 @@
 
   function deleteCustomGear(gear: GearInfo) {
     $pc.gear = $pc.gear.filter((g) => g.name !== gear.name);
+    $pc.bonuses = $pc.bonuses.filter((b) => {
+      if (b.metadata?.type === "weapon" && b.metadata.weapon === gear.name)
+        return false;
+      if (b.metadata?.type === "armor" && b.metadata.armor === gear.name)
+        return false;
+      return true;
+    });
     $pc.customGear = $pc.customGear.filter((g) => g.name !== gear.name);
   }
 </script>

@@ -10,6 +10,7 @@
   } from "../model/PlayerCharacter";
   import type { SpellInfo } from "../model/Spell";
   import SpellView from "./SpellView.svelte";
+  import SpellsView from "./SpellsView.svelte";
 
   let showModal = false;
   let spellInput: string = "";
@@ -61,6 +62,11 @@
   }
   function deleteCustomSpell(spell: SpellInfo) {
     $pc.spells = $pc.spells.filter((s) => s.name !== spell.name);
+    $pc.bonuses = $pc.bonuses.filter((b) => {
+      if (b.metadata?.type === "spell" && b.metadata.spell === spell.name)
+        return false;
+      return true;
+    });
     $pc.customSpells = $pc.customSpells.filter((s) => s.name !== spell.name);
   }
 </script>
