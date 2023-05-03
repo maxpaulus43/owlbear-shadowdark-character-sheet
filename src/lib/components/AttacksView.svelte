@@ -18,22 +18,22 @@
 <h2>ATTACKS</h2>
 <div class="overflow-y-auto">
   <table class="table-auto w-full">
-    <tr class="border-b">
+    <tr class="border-b border-gray-500">
       <th>Name</th>
       <th>Range</th>
-      <th>Hit/DC</th>
-      <th>Damage</th>
+      <th>DC</th>
+      <th>Dmg</th>
     </tr>
     {#each weapons as w}
-      <tr class="border-b">
-        <td>{w.name}</td>
+      <tr class="border-b border-gray-500">
+        <td class="pr-2">{w.name}</td>
         <td>{w.range}</td>
         <td>{addSign(calculateAttackBonusForPlayerWeapon($pc, w))}</td>
         <td>{damageStringForPlayerWeapon($pc, w)}</td>
       </tr>
     {/each}
     {#each customAttacks as c}
-      <tr class="border-b">
+      <tr class="border-b border-gray-500">
         <td colspan="4">{c.name}</td>
       </tr>
     {/each}
