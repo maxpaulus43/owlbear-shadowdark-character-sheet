@@ -8,7 +8,7 @@
   import { ROLL_BONUS_TOS } from "../model/Bonus";
   import { addBonusToPlayer } from "../model/PlayerCharacter";
   import type { Stat } from "../model/PlayerCharacter";
-  import type { WeaponType } from "../model/Weapon";
+  import type { WeaponInfo, WeaponType } from "../model/Weapon";
   import { ARMORS } from "../compendium/armorCompendium";
   import { SPELLS } from "../compendium/spellCompendium";
   import { WEAPONS } from "../compendium/weaponCompendium";
@@ -17,6 +17,21 @@
   import Modal from "./Modal.svelte";
   import { DICE_TYPES } from "../types";
   import type { DiceType } from "../types";
+  import type { ArmorInfo } from "../model/Armor";
+
+  $: allWeapons = WEAPONS.concat(
+    $pc.customGear
+      .filter((g) => g.type === "Weapon")
+      .map((g) => g as WeaponInfo) ?? []
+  );
+
+  $: allArmors = ARMORS.concat(
+    $pc.customGear
+      .filter((g) => g.type === "Armor")
+      .map((g) => g as ArmorInfo) ?? []
+  );
+
+  $: allSpells = SPELLS.concat($pc.customSpells ?? []);
 
   let showModal = false;
 
@@ -165,21 +180,21 @@
     {#if mdType === "weapon"}
       <label for="weapon">Which weapon?</label>
       <select id="weapon" bind:value={selectedWeapon}>
-        {#each WEAPONS as w}
+        {#each allWeapons as w}
           <option>{w.name}</option>
         {/each}
       </select>
     {:else if mdType === "armor"}
       <label for="armor">Which armor?</label>
       <select id="armor" bind:value={selectedArmor}>
-        {#each ARMORS as a}
+        {#each allArmors as a}
           <option>{a.name}</option>
         {/each}
       </select>
     {:else if mdType === "spell"}
       <label for="spell">Which spell?</label>
       <select id="spell" bind:value={selectedSpell}>
-        {#each SPELLS as s}
+        {#each allSpells as s}
           <option>{s.name}</option>
         {/each}
       </select>
