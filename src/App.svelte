@@ -216,24 +216,12 @@
         </div>
         <div class="col-span-full cell">
           <h2>BACKGROUND</h2>
-          <select bind:value={$pc.background}>
-            {#each BACKGROUNDS as background}
-              <option value={background}>
-                {background}
-              </option>
-            {/each}
-          </select>
+          <input type="text" bind:value={$pc.background} />
         </div>
 
         <div class="col-span-full cell">
           <h2>DEITY</h2>
-          <select bind:value={$pc.deity}>
-            {#each DEITIES as deity}
-              <option value={deity}>
-                {deity}
-              </option>
-            {/each}
-          </select>
+          <input bind:value={$pc.deity} />
         </div>
       </div>
       <div
