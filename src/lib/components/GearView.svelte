@@ -64,9 +64,11 @@
     $pc = $pc;
   }
 
-  function canInteractWithGear(gear: Gear): boolean {
-    if (gear.equipped) return true;
-    return gear.equipped || canPlayerEquipGear($pc, gear);
+  function canInteractWithGear(_gear: Gear): boolean {
+    return true;
+    // as nice as this is, it is ultimately limiting to the player's creativity
+    // if (gear.equipped) return true;
+    // return gear.equipped || canPlayerEquipGear($pc, gear);
   }
 </script>
 

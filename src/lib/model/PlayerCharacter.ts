@@ -19,9 +19,10 @@ import {
 import { createUndoRedoStore } from "../services/PlayerHistoryTracker";
 import { compareDiceType } from "../types";
 import type { DiceType } from "../types";
-import { clamp, toInfo } from "../utils";
+import { alphabetically, clamp, toInfo } from "../utils";
 import type { ArmorInfo } from "./Armor";
 import type { Bonus, DiceTypeBonus, ModifyBonus } from "./Bonus";
+import { slotsForGear } from "./Gear";
 import type { Gear, GearInfo } from "./Gear";
 import type { Spell, SpellInfo } from "./Spell";
 import type { Talent } from "./Talent";
@@ -450,6 +451,22 @@ export function calculateGearSlotsForPlayer(pc: PlayerCharacter) {
   return base + bonuses;
 }
 
+export function calculateFreeSlotsForPlayer(pc: PlayerCharacter): number {
+  const costlyGear = pc.gear
+    .filter((g) => findAny(g.name)?.slots?.freeCarry === 0)
+    .sort((a, b) => alphabetically(a.name, b.name));
+
+  const totalSlots = calculateGearSlotsForPlayer(pc);
+
+  const freeSlots =
+    totalSlots -
+    costlyGear.reduce((acc, curr) => {
+      return acc + slotsForGear(curr);
+    }, 0);
+
+  return freeSlots;
+}
+
 export function levelUpPlayer(pc: PlayerCharacter) {
   const xpCap = pc.level === 0 ? 10 : pc.level * 10;
 
@@ -559,7 +576,8 @@ export function canPlayerEquipGear(pc: PlayerCharacter, gear: Gear) {
     return freeHands >= 1;
   }
 
-  return false;
+  // custom equippable gear can always be equipped
+  return true;
 }
 
 export function calculateFreeHands(pc: PlayerCharacter): number {

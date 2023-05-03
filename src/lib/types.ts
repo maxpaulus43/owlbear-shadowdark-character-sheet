@@ -29,3 +29,7 @@ export type Roll = {
   diceType: DiceType;
   numDice: number;
 };
+
+export function rollToString(r: Roll): string {
+  return `${r.numDice}${r.diceType}`;
+}

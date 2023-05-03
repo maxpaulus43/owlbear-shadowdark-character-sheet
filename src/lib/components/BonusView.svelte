@@ -44,11 +44,6 @@
     deleteBonusForPlayer($pc, b);
     $pc = $pc;
   }
-
-  function editBonus(b: Bonus) {
-    // TODO edit bonus
-    $pc = $pc;
-  }
 </script>
 
 <div class="flex justify-between gap-3 items-center">

@@ -1,6 +1,9 @@
 <script lang="ts">
-  import type { Currency } from "../model/Gear";
+  import { createEventDispatcher } from "svelte";
+  import type { Currency, GearProperty } from "../model/Gear";
   import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
+
+  const dispatch = createEventDispatcher();
 
   let customGearName: string;
   let customGearSlots: number = 1;
@@ -8,15 +11,33 @@
   let customGearCurrency: Currency = "sp";
   let customGearQuantity: number = 1;
   let customPerSlot: number = 1;
+  let isAttack = false;
+  let canBeEquipped = false;
 
   $: freeCarry = customGearSlots > 0 ? 0 : 1;
   $: canAdd = customGearName?.length > 0 && customGearQuantity > 0;
 
+  function reset() {
+    customGearName = undefined;
+    customGearSlots = 1;
+    customGearCost = 0;
+    customGearCurrency = "sp";
+    customGearQuantity = 1;
+    customPerSlot = 1;
+    isAttack = false;
+    canBeEquipped = false;
+  }
+
   function createGearItem() {
+    const properties: GearProperty[] = [];
+
+    if (isAttack) properties.push("Attackable");
+
     $pc.customGear.push({
       name: customGearName,
       type: "Basic",
-      canBeEquipped: false,
+      canBeEquipped,
+      properties,
       desc: customGearName,
       slots: { slotsUsed: customGearSlots, perSlot: customPerSlot, freeCarry },
       editable: true,
@@ -32,6 +53,8 @@
       quantity: customGearQuantity,
     });
     $pc = $pc;
+    dispatch("finish");
+    reset();
   }
 </script>
 
@@ -76,6 +99,19 @@
     bind:value={customGearQuantity}
     min="0"
   />
+  <div class="flex gap-1">
+    <input id="canBeEquipped" type="checkbox" bind:checked={canBeEquipped} />
+    <label for="canBeEquipped">Can This item be equipped?</label>
+  </div>
+  {#if canBeEquipped}
+    <div class="flex gap-1">
+      <input id="isAttack" type="checkbox" bind:checked={isAttack} />
+      <label for="isAttack"
+        >Should this item appear in <span class="pirata text-lg">ATTACKS</span> when
+        equipped?</label
+      >
+    </div>
+  {/if}
   <button
     on:click={createGearItem}
     class="px-3 hover:bg-gray-400 bg-black text-white p-2"

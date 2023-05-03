@@ -1,42 +1,15 @@
 <script lang="ts">
   import GEAR_COMPENDIUM from "../compendium/basicGearCompendium";
-  import { findAny } from "../compendium";
   import ARMOR_COMPENDIUM from "../compendium/armorCompendium";
   import WEAPON_COMPENDIUM from "../compendium/weaponCompendium";
   import type { Gear, GearInfo } from "../model/Gear";
   import {
-    calculateGearSlotsForPlayer,
     canPlayerAffordGear,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
-  import { alphabetically } from "../utils";
   import Modal from "./Modal.svelte";
 
   let showModal = false;
-
-  $: costlyGear = $pc.gear
-    .filter((g) => findAny(g.name)?.slots?.freeCarry === 0)
-    .sort((a, b) => alphabetically(a.name, b.name));
-
-  $: totalSlots = calculateGearSlotsForPlayer($pc);
-
-  $: freeSlots =
-    totalSlots -
-    costlyGear.reduce((acc, curr) => {
-      return acc + slotsForGear(curr);
-    }, 0);
-
-  function slotsForGear(g: Gear): number {
-    const foundGear = findAny(g.name);
-    if (!foundGear) {
-      console.log("Cannot find gear: " + g.name);
-      return 0;
-    }
-    return (
-      Math.ceil(g.quantity / foundGear.slots.perSlot) *
-      foundGear.slots.slotsUsed
-    );
-  }
 
   let showOnlyWhatICanAfford = false;
   let showWeapon = true;

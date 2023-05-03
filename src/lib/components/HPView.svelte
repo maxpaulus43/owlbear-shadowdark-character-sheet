@@ -3,7 +3,6 @@
     calculateTotalHitPointsForPlayer,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
-  import RollButton from "./RollButton.svelte";
 
   function incrMaxHp() {
     $pc.maxHitPoints += 1;

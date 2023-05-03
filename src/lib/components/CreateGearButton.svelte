@@ -13,5 +13,9 @@
 
 <Modal bind:showModal>
   <h2 slot="header">Custom Gear</h2>
-  <CustomGearForm />
+  <CustomGearForm
+    on:finish={() => {
+      showModal = false;
+    }}
+  />
 </Modal>
