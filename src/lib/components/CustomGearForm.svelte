@@ -48,7 +48,10 @@
   let armorStat: Stat;
 
   $: freeCarry = gearSlots > 0 ? 0 : 1;
-  $: canAdd = gearName?.length > 0 && gearQuantity > 0;
+  $: weaponHasAtLeastDamage =
+    gearType !== "Weapon" || hasOneHandedAttack || hasTwoHandedAttack;
+  $: canAdd =
+    gearName?.length > 0 && gearQuantity > 0 && weaponHasAtLeastDamage;
   $: if (hasOneHandedAttack && hasTwoHandedAttack) {
     if (!weaponProperties.includes("Versatile")) {
       weaponProperties = [...weaponProperties, "Versatile"];
