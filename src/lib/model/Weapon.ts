@@ -7,12 +7,15 @@ import { addSign } from "../utils";
 
 export type WeaponType = "Melee" | "Ranged" | "MeleeRanged";
 
-export type WeaponProperty =
-  | "Finesse"
-  | "Loading"
-  | "Thrown"
-  | "Versatile"
-  | "Magic";
+export const WEAPON_PROPERTIES = [
+  "Finesse",
+  "Loading",
+  "Thrown",
+  "Versatile",
+  "Magic",
+] as const;
+
+export type WeaponProperty = (typeof WEAPON_PROPERTIES)[number];
 
 export type WeaponInfo = Merge<
   GearInfo,

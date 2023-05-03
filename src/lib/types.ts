@@ -9,7 +9,8 @@ export function compareDiceType(a: DiceType, b: DiceType) {
   );
 }
 
-export type RangeType = "Self" | "Close" | "Near" | "Far";
+export const RANGE_TYPES = ["Self", "Close", "Near", "Far"] as const;
+export type RangeType = (typeof RANGE_TYPES)[number];
 
 export type TimeUnit =
   | "Second"

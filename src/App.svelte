@@ -6,12 +6,7 @@
     setAncestryForPlayer,
   } from "./lib/model/PlayerCharacter";
   import type { Ancestry } from "./lib/model/PlayerCharacter";
-  import {
-    ALIGNMENTS,
-    ANCESTRIES,
-    BACKGROUNDS,
-    DEITIES,
-  } from "./lib/constants";
+  import { ALIGNMENTS, ANCESTRIES } from "./lib/constants";
   import TalentsSpellsView from "./lib/components/TalentsSpellsView.svelte";
   import StatView from "./lib/components/StatView.svelte";
   import GearView from "./lib/components/GearView.svelte";

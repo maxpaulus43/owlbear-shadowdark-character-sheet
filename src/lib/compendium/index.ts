@@ -18,7 +18,7 @@ export function setCustomGearForPlayer(pc: PlayerCharacter) {
 }
 
 export function findWeapon(name: string): WeaponInfo {
-  return WEAPON_COMPENDIUM[name.toLowerCase()];
+  return WEAPON_COMPENDIUM[name.toLowerCase()] ?? findCustomWeapon(name);
 }
 export function findArmor(name: string): ArmorInfo {
   return ARMOR_COMPENDIUM[name.toLowerCase()];
@@ -37,6 +37,12 @@ export function findSpell(name: string): SpellInfo {
 }
 export function findCustomGear(name: string): GearInfo {
   return customGear.find((g) => g.name.toLowerCase() === name.toLowerCase());
+}
+export function findCustomWeapon(name: string): WeaponInfo {
+  return customGear
+    .filter((g) => g.type === "Weapon")
+    .map((g) => g as WeaponInfo)
+    .find((w) => w.name.toLowerCase() === name.toLowerCase());
 }
 export function findAny(name: string): GearInfo {
   return (

@@ -4,7 +4,6 @@
   import type { Gear } from "../model/Gear";
   import {
     calculateGearSlotsForPlayer,
-    canPlayerEquipGear,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import { alphabetically } from "../utils";
@@ -143,11 +142,23 @@
           class="flex gap-1 items-center justify-between border-b border-gray-400"
         >
           <span>{i + 1 + ". "}{g.name} x {g.quantity}</span>
-          <button
-            on:click={() => deleteGear(g.name)}
-            class="px-1 pt-1 rounded-md bg-black text-white"
-            ><i class="material-icons">delete</i></button
-          >
+          <div class="flex gap-1 items-center">
+            {#if findAny(g.name).canBeEquipped}
+              <input
+                title="equipped"
+                type="checkbox"
+                class="w-6 h-6"
+                checked={g.equipped}
+                disabled={!canInteractWithGear(g)}
+                on:click={() => toggleEquipped(g)}
+              />
+            {/if}
+            <button
+              on:click={() => deleteGear(g.name)}
+              class="px-1 pt-1 rounded-md bg-black text-white"
+              ><i class="material-icons">delete</i></button
+            >
+          </div>
         </div>
       </li>
     {/each}
