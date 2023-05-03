@@ -157,7 +157,7 @@
 </script>
 
 <div class="flex flex-col gap-1">
-  <label for="name">Add Custom Gear</label>
+  <label for="name">Name<span class="text-red-700">*</span></label>
   <input id="name" type="text" bind:value={gearName} />
   <label for="slots">Slots</label>
   <input
@@ -189,13 +189,13 @@
       <option>{currency}</option>
     {/each}
   </select>
-  <label for="quantity">Quantity</label>
+  <label for="quantity">Quantity<span class="text-red-700">*</span></label>
   <input
     id="quantity"
     type="number"
     inputmode="numeric"
     bind:value={gearQuantity}
-    min="0"
+    min="1"
   />
   <div class="flex gap-1 items-center">
     <input id="showAdvanced" type="checkbox" bind:checked={showAdvanced} />
@@ -220,7 +220,7 @@
         <label for="canBeEquipped">Can this item be equipped?</label>
       </div>
       {#if canBeEquipped}
-        <div class="flex gap-1">
+        <div class="flex gap-1 items-center">
           <input id="attackable" type="checkbox" bind:checked={attackable} />
           <label for="attackable">
             Should this item appear in <span class="pirata text-lg"
@@ -253,7 +253,7 @@
         options={RANGE_TYPES}
       />
 
-      <label for="damage">Damage</label>
+      <label for="damage">Damage<span class="text-red-700">*</span></label>
 
       <div class="flex gap-1 items-center">
         <input type="checkbox" bind:checked={hasOneHandedAttack} />
