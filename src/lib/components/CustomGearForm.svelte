@@ -23,7 +23,7 @@
   let gearQuantity: number = 1;
   let quantityPerSlot: number = 1;
 
-  let showAdvanced = true;
+  let showAdvanced = false;
 
   // advanced fields
   let gearType: "Basic" | "Weapon" | "Armor" = "Basic";
