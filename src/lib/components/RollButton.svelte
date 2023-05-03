@@ -6,6 +6,7 @@
   import { notifiy } from "../services/Notifier";
 
   export let modifier: number = 0;
+  export let numDice: number = 1;
   export let diceType: DiceType = "d20"; // default to d20
   export let disabled = false;
 
@@ -27,27 +28,17 @@
   }
 
   function roll() {
-    const outcome = rollDice(diceType);
+    const outcome = rollDice(diceType, numDice);
     let critMsg = "";
-    // if (outcome === ValueForDiceType[diceType]) {
-    //   critMsg = "CRITICAL SUCCESS! ... ";
-    // } else if (outcome === 1) {
-    //   critMsg = "CRITICAL FAILURE! ... ";
-    // }
     const msg = `${critMsg}${outcome} + ${modifier} = ${outcome + modifier}`;
     notifiy(msg);
   }
 
   function rollWithAdvantage() {
-    const outcome1 = rollDice(diceType);
-    const outcome2 = rollDice(diceType);
+    const outcome1 = rollDice(diceType, numDice);
+    const outcome2 = rollDice(diceType, numDice);
     const higher = Math.max(outcome1, outcome2);
     let critMsg = "";
-    // if (higher === ValueForDiceType[diceType]) {
-    //   critMsg = "CRITICAL SUCCESS! ... ";
-    // } else if (higher === 1) {
-    //   critMsg = "CRITICAL FAILURE! ... ";
-    // }
     const msg = `${critMsg}${outcome1} vs. ${outcome2};\n ${higher} + ${modifier} = ${
       higher + modifier
     }`;
@@ -55,15 +46,10 @@
   }
 
   function rollWithDisadvantage() {
-    const outcome1 = rollDice(diceType);
-    const outcome2 = rollDice(diceType);
+    const outcome1 = rollDice(diceType, numDice);
+    const outcome2 = rollDice(diceType, numDice);
     const lower = Math.min(outcome1, outcome2);
     let critMsg = "";
-    // if (lower === ValueForDiceType[diceType]) {
-    //   critMsg = "CRITICAL SUCCESS! ... ";
-    // } else if (lower === 1) {
-    //   critMsg = "CRITICAL FAILURE! ... ";
-    // }
     const msg = `${critMsg}${outcome1} vs. ${outcome2};\n ${lower} + ${modifier} = ${
       lower + modifier
     }`;

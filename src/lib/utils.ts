@@ -7,8 +7,12 @@ export function clamp(n: number, min: number, max: number): number {
   return Math.max(Math.min(max, n), min);
 }
 
-export function rollDice(diceType: DiceType): number {
-  return Math.floor(Math.random() * ValueForDiceType[diceType]) + 1;
+export function rollDice(diceType: DiceType, numDice = 1): number {
+  let result = 0;
+  for (let i = 0; i < numDice; i++) {
+    result += Math.floor(Math.random() * ValueForDiceType[diceType]) + 1;
+  }
+  return result;
 }
 
 export function addSign(n: number): string {

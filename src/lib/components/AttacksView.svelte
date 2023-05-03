@@ -52,6 +52,7 @@
             )}
             <RollButton
               {diceType}
+              numDice={w.damage.oneHanded.numDice}
               modifier={calculateDamageBonusForPlayerWeapon($pc, w)}
             >
               <div
@@ -70,6 +71,7 @@
             )}
             <RollButton
               {diceType}
+              numDice={w.damage.twoHanded.numDice}
               modifier={calculateDamageBonusForPlayerWeapon($pc, w)}
               disabled={!canAttackTwoHanded}
             >
