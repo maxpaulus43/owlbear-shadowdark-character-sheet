@@ -13,28 +13,27 @@
   import AttacksView from "./lib/components/AttacksView.svelte";
   import { importFromJson } from "./lib/services/JSONImporter";
   import HpView from "./lib/components/HPView.svelte";
-  import {
-    getSaveSlot,
-    loadPlayerFromLocalStorage,
-    saveSaveSlot,
-    trackAndSavePlayerToLocalStorage,
-  } from "./lib/services/LocalStorageSaver";
   import InfoButton from "./lib/components/InfoButton.svelte";
   import OptionsButton from "./lib/components/OptionsButton.svelte";
   import { setCustomGearForPlayer } from "./lib/compendium";
-  import { CurrentSaveSlot } from "./lib/services/SaveSlotTracker";
   import ClassView from "./lib/components/ClassView.svelte";
   import ArmorClassView from "./lib/components/ArmorClassView.svelte";
   import NotesButton from "./lib/components/NotesButton.svelte";
+  import PlayersView from "./lib/components/PlayersView.svelte";
+  import { onMount } from "svelte";
+  import * as OBRHelper from "./lib/services/OBRHelper";
+  import * as LocalStorageSaver from "./lib/services/LocalStorageSaver";
+  import OBR from "@owlbear-rodeo/sdk";
 
-  $: saveSaveSlot($CurrentSaveSlot);
-  $: (async () => {
-    $CurrentSaveSlot = await getSaveSlot();
-  })();
-  $: (async () => {
-    $pc = await loadPlayerFromLocalStorage($CurrentSaveSlot);
-  })();
-  $: trackAndSavePlayerToLocalStorage($pc, $CurrentSaveSlot);
+  const { isGM } = OBRHelper;
+
+  onMount(() => {
+    if (OBR.isAvailable) {
+      OBRHelper.init();
+    } else {
+      LocalStorageSaver.init();
+    }
+  });
   $: setCustomGearForPlayer($pc);
 
   $: title = calculateTitleForPlayer($pc);
@@ -83,24 +82,27 @@
                 <InfoButton />
               </div>
               <div class="-translate-y-2 flex gap-1">
-                <button
-                  on:click={() => pc.undo()}
-                  class:opacity-50={!$canUndo}
-                  disabled={!$canUndo}
-                  class="bg-black text-white rounded-md"
-                >
-                  <i class="material-icons translate-y-1 px-1">undo</i>
-                </button>
-                <button
-                  on:click={() => pc.redo()}
-                  class:opacity-50={!$canRedo}
-                  disabled={!$canRedo}
-                  class="bg-black text-white rounded-md"
-                >
-                  <i class="material-icons translate-y-1 px-1">redo</i>
-                </button>
+                {#if !$isGM}
+                  <button
+                    on:click={() => pc.undo()}
+                    class:opacity-50={!$canUndo}
+                    disabled={!$canUndo}
+                    class="bg-black text-white rounded-md"
+                  >
+                    <i class="material-icons translate-y-1 px-1">undo</i>
+                  </button>
+                  <button
+                    on:click={() => pc.redo()}
+                    class:opacity-50={!$canRedo}
+                    disabled={!$canRedo}
+                    class="bg-black text-white rounded-md"
+                  >
+                    <i class="material-icons translate-y-1 px-1">redo</i>
+                  </button>
+                {/if}
                 <OptionsButton bind:files />
                 <NotesButton />
+                <PlayersView />
               </div>
             </div>
           </div>
@@ -235,10 +237,10 @@
   </main>
 </div>
 
-<style>
+<style lang="postcss">
   input,
   select {
-    width: 100%;
+    @apply w-full;
   }
 
   .cell {

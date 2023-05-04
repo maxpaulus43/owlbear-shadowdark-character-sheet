@@ -19,6 +19,7 @@ export function createUndoRedoStore<T>(store: Writable<T>): UndoRedoStore<T> {
   const canRedo = writable(false);
 
   const addHistoryEntry = debounce((newValue: T) => {
+    if (!newValue) return;
     historyIndex++;
     history[historyIndex] = JSON.parse(JSON.stringify(newValue));
     while (historyIndex < history.length - 1) {
