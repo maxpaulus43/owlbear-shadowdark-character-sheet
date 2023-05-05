@@ -26,6 +26,7 @@ Fully featured character sheet for the ShadowDark RPG system.
 * Automatically calculates stats (such as Title, ArmorClass, maxHP, stat modifiers, hit modifiers, damage modifiers).
 * Exposes roll buttons that will roll for you and apply any relevant modifiers (right click to roll with advantage/disadvantage).
 * Uses browser local storage to save characters automatically.
+* GM is able to load character sheets for all players in the room.
 
 ## Screenshots
 

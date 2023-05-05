@@ -1,7 +1,9 @@
+import { get } from "svelte/store";
+import { PlayerCharacterStore } from "../model/PlayerCharacter";
 import type { PlayerCharacter } from "../model/PlayerCharacter";
 import { defaultPC } from "../model/PlayerCharacter";
 import { debounce } from "../utils";
-import { NUM_SLOTS } from "./SaveSlotTracker";
+import { CurrentSaveSlot, NUM_SLOTS } from "./SaveSlotTracker";
 
 const saveToLocalStorage = debounce(savePlayerToLocalStorage, 2000);
 
@@ -12,25 +14,33 @@ export function trackAndSavePlayerToLocalStorage(
   saveToLocalStorage(pc, saveSlot);
 }
 
-function isOBRAvailable(): boolean {
-  return false; // TODO isOBRAvailable
-}
-
 export async function clearLocalStorage() {
   for (let i = 0; i < NUM_SLOTS; i++) {
     await asyncLocalStorage.removeItem(getStorageKey(i + 1));
   }
 }
 
+export async function init() {
+  CurrentSaveSlot.subscribe((slot) =>
+    saveToLocalStorage(get(PlayerCharacterStore), slot)
+  );
+  PlayerCharacterStore.subscribe((pc) =>
+    saveToLocalStorage(pc, get(CurrentSaveSlot))
+  );
+  CurrentSaveSlot.subscribe(async (slot) => {
+    PlayerCharacterStore.set(await loadPlayerFromLocalStorage(slot));
+  });
+
+  CurrentSaveSlot.set(await getSaveSlot());
+
+  CurrentSaveSlot.subscribe(saveSaveSlot);
+}
+
 export async function savePlayerToLocalStorage(
   pc: PlayerCharacter,
   saveSlot: number
 ) {
-  if (isOBRAvailable()) {
-    console.log("saving to OBR player");
-  } else {
-    asyncLocalStorage.setItem(getStorageKey(saveSlot), JSON.stringify(pc));
-  }
+  asyncLocalStorage.setItem(getStorageKey(saveSlot), JSON.stringify(pc));
 }
 
 function getStorageKey(saveSlot: number) {
@@ -49,15 +59,11 @@ export async function saveSaveSlot(slot: number) {
 export async function loadPlayerFromLocalStorage(
   saveSlot: number
 ): Promise<PlayerCharacter> {
-  if (isOBRAvailable()) {
-    console.log("loading Player from OBR");
-  } else {
-    await maintainBackwardsCompat(saveSlot);
-    const pcJson = await asyncLocalStorage.getItem(getStorageKey(saveSlot));
-    if (!pcJson) return defaultPC();
-    const pc = JSON.parse(pcJson) as PlayerCharacter;
-    return pc;
-  }
+  await maintainBackwardsCompat(saveSlot);
+  const pcJson = await asyncLocalStorage.getItem(getStorageKey(saveSlot));
+  if (!pcJson) return defaultPC();
+  const pc = JSON.parse(pcJson) as PlayerCharacter;
+  return pc;
 }
 
 async function maintainBackwardsCompat(saveSlot: number) {

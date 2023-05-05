@@ -7,6 +7,7 @@
   } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
   import { CurrentSaveSlot, NUM_SLOTS } from "../services/SaveSlotTracker";
+  import { isGM } from "../services/OBRHelper";
   export let files: FileList | undefined;
   let showModal = false;
 </script>
@@ -34,16 +35,18 @@
         {/each}
       </div>
     </div>
-    <label for="jsonImport" class="btn">
-      <div class="text-center">Import JSON</div>
-      <input
-        id="jsonImport"
-        type="file"
-        class="hidden"
-        accept="application/json"
-        bind:files
-      />
-    </label>
+    {#if !$isGM}
+      <label for="jsonImport" class="btn">
+        <div class="text-center">Import JSON</div>
+        <input
+          id="jsonImport"
+          type="file"
+          class="hidden"
+          accept="application/json"
+          bind:files
+        />
+      </label>
+    {/if}
     <button
       on:click={() => {
         savePlayerToFile($pc);
@@ -54,17 +57,19 @@
       href="https://github.com/maxpaulus43/owlbear-shadowdark-character-sheet/issues/new"
       target="_blank">Report Issue</a
     >
-    <div>Advanced Options (Proceed with caution)</div>
-    <button
-      on:click={() => {
-        $pc = defaultPC();
-      }}>Clear Current Save Slot</button
-    >
-    <button
-      on:click={() => {
-        clearLocalStorage();
-      }}>Clear Storage (Proceed with caution)</button
-    >
+    {#if !$isGM}
+      <div>Advanced Options (Proceed with caution)</div>
+      <button
+        on:click={() => {
+          $pc = defaultPC();
+        }}>Clear Current Save Slot</button
+      >
+      <button
+        on:click={() => {
+          clearLocalStorage();
+        }}>Clear Storage (Proceed with caution)</button
+      >
+    {/if}
   </div>
 </Modal>
 
