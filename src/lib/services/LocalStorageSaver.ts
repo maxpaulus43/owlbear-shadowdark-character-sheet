@@ -21,19 +21,16 @@ export async function clearLocalStorage() {
 }
 
 export async function init() {
-  CurrentSaveSlot.subscribe((slot) =>
-    saveToLocalStorage(get(PlayerCharacterStore), slot)
-  );
-  PlayerCharacterStore.subscribe((pc) =>
-    saveToLocalStorage(pc, get(CurrentSaveSlot))
-  );
-  CurrentSaveSlot.subscribe(async (slot) => {
-    PlayerCharacterStore.set(await loadPlayerFromLocalStorage(slot));
-  });
-
   CurrentSaveSlot.set(await getSaveSlot());
-
-  CurrentSaveSlot.subscribe(saveSaveSlot);
+  CurrentSaveSlot.subscribe(async (slot) => {
+    saveSaveSlot(slot);
+    const pc = await loadPlayerFromLocalStorage(slot);
+    PlayerCharacterStore.set(pc);
+  });
+  PlayerCharacterStore.subscribe((pc) => {
+    const slot = get(CurrentSaveSlot);
+    saveToLocalStorage(pc, slot);
+  });
 }
 
 export async function savePlayerToLocalStorage(
@@ -76,18 +73,31 @@ async function maintainBackwardsCompat(saveSlot: number) {
 
 const asyncLocalStorage = {
   setItem: async function (key: string, value: string) {
-    return Promise.resolve().then(function () {
-      window.localStorage.setItem(key, value);
-    });
+    return Promise.resolve()
+      .then(function () {
+        window.localStorage.setItem(key, value);
+      })
+      .catch((err) => {
+        // local storage not available
+      });
   },
   getItem: async function (key: string) {
-    return Promise.resolve().then(function () {
-      return window.localStorage.getItem(key);
-    });
+    return Promise.resolve()
+      .then(function () {
+        return window.localStorage.getItem(key);
+      })
+      .catch((err) => {
+        // local storage not available
+        return undefined;
+      });
   },
   removeItem: async function (key: string) {
-    return Promise.resolve().then(function () {
-      return window.localStorage.removeItem(key);
-    });
+    return Promise.resolve()
+      .then(function () {
+        return window.localStorage.removeItem(key);
+      })
+      .catch((err) => {
+        // local storage not available
+      });
   },
 };

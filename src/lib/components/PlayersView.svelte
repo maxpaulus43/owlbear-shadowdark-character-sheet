@@ -2,10 +2,12 @@
   import type { Player } from "@owlbear-rodeo/sdk";
   import { isGM, PartyStore, TrackedPlayer } from "../services/OBRHelper";
   import Modal from "./Modal.svelte";
+  import { CurrentSaveSlot } from "../services/SaveSlotTracker";
 
   let showModal = false;
 
   function onLoadPlayer(p: Player) {
+    $CurrentSaveSlot = 1;
     $TrackedPlayer = p.id;
   }
 </script>
