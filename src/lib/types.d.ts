@@ -56,7 +56,7 @@ export type SpellTier = 1 | 2 | 3 | 4 | 5;
 export type Spell = {
   name: string;
 };
-export type SpellClass = Extract<Class, "Wizard" | "Priest"> | "PriestWizard";
+export type SpellClass = Extract<Class, "Wizard" | "Priest"> | "PriestWizard" | "Other";
 export type SpellInfo = {
   name: string;
   class: SpellClass;

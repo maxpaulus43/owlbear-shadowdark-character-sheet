@@ -87,6 +87,7 @@
       <option>Priest</option>
       <option>Wizard</option>
       <option value="PriestWizard">Priest or Wizard</option>
+      <option>Other</option>
     </select>
 
     <label for="spellTier">Tier</label>

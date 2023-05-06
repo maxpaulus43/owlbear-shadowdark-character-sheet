@@ -23,6 +23,7 @@
 
   let showPriest = true;
   let showWizard = true;
+  let showOther = true;
 
   let showSelf = true;
   let showClose = true;
@@ -39,6 +40,7 @@
       if (!showTier5 && s.tier === 5) return false;
       if (!showPriest && s.class === "Priest") return false;
       if (!showWizard && s.class === "Wizard") return false;
+      if (!showOther && s.class === "Other") return false;
       if (!showSelf && s.range === "Self") return false;
       if (!showClose && s.range === "Close") return false;
       if (!showNear && s.range === "Near") return false;
@@ -92,6 +94,8 @@
       <label for="showPriest">Priest</label>
       <input id="showWizard" type="checkbox" bind:checked={showWizard} />
       <label for="showWizard">Wizard</label>
+      <input id="showOther" type="checkbox" bind:checked={showOther} />
+      <label for="showWizard">Other</label>
     </div>
     <div class="flex gap-1 items-center">
       <div class="font-bold">Range:</div>
