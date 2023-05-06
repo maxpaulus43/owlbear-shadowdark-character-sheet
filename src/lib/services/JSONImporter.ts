@@ -4,6 +4,7 @@ import type { Bonus, SDBonus } from "../model/Bonus";
 import type { Gear } from "../model/Gear";
 import type { PlayerCharacter } from "../model/PlayerCharacter";
 import type { SpellInfo } from "../model/Spell";
+import type { WeaponType } from "../model/Weapon";
 import {
   ensureAncestryBonuses,
   ensureClassBonuses,
@@ -94,6 +95,7 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
     class: theClass,
     hasCustomClass: false,
     level: json.level,
+    notes: "",
     title: json.title,
     alignment: json.alignment,
     background: json.background,
@@ -221,6 +223,47 @@ function mapSDBonusToBonus(sdb: SDBonus): Bonus | Bonus[] {
         type: "spell",
         spell: sdb.bonusName,
       },
+      ...commonBonusData,
+    };
+  } else if (sdb.name === "SetWeaponTypeDamage") {
+    const [weapon] = sdb.bonusTo.split(":");
+    return {
+      type: "diceType",
+      bonusTo: "damageRoll",
+      desc: `Use a d12 for damage rolls for ${weapon}s`,
+      diceType: "d12",
+      metadata: {
+        type: "weapon",
+        weapon,
+      },
+      ...commonBonusData,
+    };
+  } else if (sdb.name === "Plus1ToHitAndDamage") {
+    const weaponType: WeaponType = sdb.bonusTo.toLowerCase().includes("ranged")
+      ? "Ranged"
+      : "Melee";
+    return [
+      {
+        bonusTo: "attackRoll",
+        type: "modifyAmt",
+        desc: `${weaponType}: +1 to attack rolls`,
+        bonusAmount: 1,
+        metadata: { type: "weaponType", weaponType },
+        ...commonBonusData,
+      },
+      {
+        bonusTo: "damageRoll",
+        type: "modifyAmt",
+        desc: `${weaponType}: +1 to damage rolls`,
+        bonusAmount: 1,
+        metadata: { type: "weaponType", weaponType },
+        ...commonBonusData,
+      },
+    ];
+  } else if (sdb.name === "ReduceHerbalismDC") {
+    return {
+      type: "generic",
+      desc: "Reduce the difficulty of your herbalism checks by one step",
       ...commonBonusData,
     };
   }
