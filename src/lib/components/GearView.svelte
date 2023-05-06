@@ -1,13 +1,13 @@
 <script lang="ts">
   import AddGearButton from "./AddGearButton.svelte";
   import { findAny } from "../compendium";
-  import type { Gear } from "../model/Gear";
   import {
     calculateGearSlotsForPlayer,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import { alphabetically } from "../utils";
   import CreateGearButton from "./CreateGearButton.svelte";
+  import type { Gear } from "../types";
 
   const COIN_NAME = "Extra Coins";
   $: costlyGear = $pc.gear

@@ -1,4 +1,4 @@
-import type { ArmorInfo } from "../model/Armor";
+import type { ArmorInfo } from "../types";
 
 export const ARMORS: ArmorInfo[] = [
   {

@@ -8,9 +8,8 @@
     playerHasSpell,
     unlearnSpellForPlayer,
   } from "../model/PlayerCharacter";
-  import type { SpellInfo } from "../model/Spell";
   import SpellView from "./SpellView.svelte";
-  import SpellsView from "./SpellsView.svelte";
+  import type { SpellInfo } from "../types";
 
   let showModal = false;
   let spellInput: string = "";

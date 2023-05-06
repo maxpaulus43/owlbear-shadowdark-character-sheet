@@ -1,10 +1,10 @@
 <script lang="ts">
-  import type { Bonus } from "../model/Bonus";
   import {
     calculateBonusAmount,
     deleteBonusForPlayer,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
+  import type { Bonus } from "../types";
   import { addSign } from "../utils";
   import Modal from "./Modal.svelte";
 

@@ -1,35 +1,10 @@
-import type { Merge, RangeType, Roll } from "../types";
-import { rollToString } from "../types";
-import type { GearInfo } from "./Gear";
+import type { PlayerCharacter, Roll, WeaponInfo } from "../types";
 import { calculateDamageBonusForPlayerWeapon } from "./PlayerCharacter";
-import type { PlayerCharacter } from "./PlayerCharacter";
 import { addSign } from "../utils";
 
-export type WeaponType = "Melee" | "Ranged" | "MeleeRanged";
-
-export const WEAPON_PROPERTIES = [
-  "Finesse",
-  "Loading",
-  "Thrown",
-  "Versatile",
-  "Magic",
-] as const;
-
-export type WeaponProperty = (typeof WEAPON_PROPERTIES)[number];
-
-export type WeaponInfo = Merge<
-  GearInfo,
-  {
-    type: "Weapon";
-    properties?: WeaponProperty[];
-    damage: {
-      oneHanded?: Roll;
-      twoHanded?: Roll;
-    };
-    range: RangeType | RangeType[];
-    weaponType: WeaponType;
-  }
->;
+function rollToString(r: Roll): string {
+  return `${r.numDice}${r.diceType}`;
+}
 
 export function damageStringForPlayerWeapon(
   pc: PlayerCharacter,

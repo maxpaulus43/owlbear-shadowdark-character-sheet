@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { SpellInfo } from "../model/Spell";
+  import type { SpellInfo } from "../types";
 
   export let s: SpellInfo;
   $: duration = s.duration.amt > 0 ? s.duration.amt : "";

@@ -1,5 +1,5 @@
 import { SCHEMA_TYPE, SCHEMA_VERSION } from "../constants";
-import type { PlayerCharacter } from "../model/PlayerCharacter";
+import type { PlayerCharacter } from "../types";
 
 export default async function savePlayerToFile(pc: PlayerCharacter) {
   const suggestedName = pc.name;

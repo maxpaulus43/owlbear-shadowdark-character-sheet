@@ -1,15 +1,6 @@
 import { writable } from "svelte/store";
 import { findAny } from "../compendium";
-import {
-  ALIGNMENTS,
-  ANCESTRIES,
-  BACKGROUNDS,
-  CLASSES,
-  DEITIES,
-  LANGUAGES,
-  TITLES,
-  TITLE_MAP,
-} from "../constants";
+import { TITLE_MAP } from "../constants";
 import {
   ensureAncestryBonuses,
   ensureClassBonuses,
@@ -17,65 +8,28 @@ import {
   ensureLanguages,
 } from "../services/AncestryClassEnsurer";
 import { createUndoRedoStore } from "../services/PlayerHistoryTracker";
-import { compareDiceType } from "../types";
-import type { DiceType } from "../types";
-import { alphabetically, clamp, toInfo } from "../utils";
-import type { ArmorInfo } from "./Armor";
-import type { Bonus, DiceTypeBonus, ModifyBonus } from "./Bonus";
+import type {
+  Ancestry,
+  ArmorInfo,
+  Bonus,
+  Class,
+  DiceType,
+  DiceTypeBonus,
+  Gear,
+  GearInfo,
+  ModifyBonus,
+  PlayerCharacter,
+  SpellInfo,
+  Stat,
+  Title,
+  WeaponInfo,
+} from "../types";
+import { alphabetically, clamp, compareDiceType, toInfo } from "../utils";
 import { slotsForGear } from "./Gear";
-import type { Gear, GearInfo } from "./Gear";
-import type { Spell, SpellInfo } from "./Spell";
-import type { Talent } from "./Talent";
-import type { WeaponInfo } from "./Weapon";
 
 export const PlayerCharacterStore = createUndoRedoStore(
   writable<PlayerCharacter>(defaultPC())
 );
-
-export type Alignment = (typeof ALIGNMENTS)[number];
-export type Deity = (typeof DEITIES)[number];
-export type Background = (typeof BACKGROUNDS)[number];
-export type Class = (typeof CLASSES)[number];
-export type Title = (typeof TITLES)[number];
-export type Ancestry = (typeof ANCESTRIES)[number];
-export type Language = (typeof LANGUAGES)[number];
-
-export const STATS = ["STR", "DEX", "CON", "INT", "WIS", "CHA"] as const;
-export type Stat = (typeof STATS)[number];
-export type StatBlock = {
-  [key in Stat]: number;
-};
-
-export type PlayerCharacter = {
-  name: string;
-  ancestry: Ancestry;
-  class?: Class | "";
-  hasCustomClass?: boolean;
-  level: number;
-  title: Title;
-  alignment: Alignment;
-  background: Background;
-  deity: Deity;
-  gear: Gear[];
-  customGear: GearInfo[];
-  notes: string;
-  stats: StatBlock;
-  bonuses: Bonus[];
-  customBonuses: Bonus[];
-  customTalents: Talent[];
-  maxHitPoints: number;
-  armorClass: number;
-  gearSlotsTotal: number;
-  gold: number;
-  silver: number;
-  copper: number;
-  languages: string[];
-  customLanguages: string[];
-  xp: number;
-  spells: Spell[];
-  customSpells: SpellInfo[];
-  hitPoints: number;
-};
 
 export function defaultPC(): PlayerCharacter {
   return {

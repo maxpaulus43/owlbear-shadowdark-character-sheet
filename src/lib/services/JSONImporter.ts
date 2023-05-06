@@ -1,10 +1,13 @@
 import { findAny, findSpell } from "../compendium";
 import { SCHEMA_TYPE } from "../constants";
-import type { Bonus, SDBonus } from "../model/Bonus";
-import type { Gear } from "../model/Gear";
-import type { PlayerCharacter } from "../model/PlayerCharacter";
-import type { SpellInfo } from "../model/Spell";
-import type { WeaponType } from "../model/Weapon";
+import type {
+  PlayerCharacter,
+  SpellInfo,
+  Gear,
+  Bonus,
+  SDBonus,
+  WeaponType,
+} from "../types";
 import {
   ensureAncestryBonuses,
   ensureClassBonuses,

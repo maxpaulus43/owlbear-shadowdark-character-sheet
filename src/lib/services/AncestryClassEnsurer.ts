@@ -1,11 +1,5 @@
 import type { LANGUAGES } from "../constants";
-import type { Bonus } from "../model/Bonus";
-import type { Gear } from "../model/Gear";
-import type {
-  Ancestry,
-  Class,
-  PlayerCharacter,
-} from "../model/PlayerCharacter";
+import type { PlayerCharacter, Gear, Class, Bonus, Ancestry } from "../types";
 
 export function ensureLanguages(pc: PlayerCharacter) {
   const languages: (typeof LANGUAGES)[number][] = ["Common"];

@@ -1,6 +1,4 @@
-import type { Bonus, DiceTypeBonus } from "../model/Bonus";
-import type { Class } from "../model/PlayerCharacter";
-import type { Talent } from "../model/Talent";
+import type { Bonus, Class, DiceTypeBonus, Talent } from "../types";
 import { ARMORS } from "./armorCompendium";
 import { SPELLS } from "./spellCompendium";
 import { WEAPONS } from "./weaponCompendium";

@@ -1,7 +1,6 @@
 import { findAny } from "./compendium";
-import { ValueForDiceType } from "./constants";
-import type { Gear, GearInfo } from "./model/Gear";
-import type { DiceType } from "./types";
+import { DICE_TYPES, ValueForDiceType } from "./constants";
+import type { DiceType, Gear, GearInfo } from "./types";
 
 export function clamp(n: number, min: number, max: number): number {
   return Math.max(Math.min(max, n), min);
@@ -54,4 +53,10 @@ export function debounce<F extends (...args: any[]) => any>(fn: F, ms = 500) {
 // eslint-disable-next-line
 export function assertUnreachable(_x: never): never {
   throw new Error("Didn't expect to get here");
+}
+
+export function compareDiceType(a: DiceType, b: DiceType) {
+  return (
+    DICE_TYPES.findIndex((d) => d === a) - DICE_TYPES.findIndex((d) => d === b)
+  );
 }

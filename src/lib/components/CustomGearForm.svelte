@@ -1,17 +1,26 @@
 <script lang="ts">
-  import type { DiceType, RangeType } from "../types";
-  import { DICE_TYPES } from "../types";
-  import type { Currency, GearInfo } from "../model/Gear";
   import { createEventDispatcher } from "svelte";
-  import { STATS, PlayerCharacterStore as pc } from "../model/PlayerCharacter";
-  import type { Stat } from "../model/PlayerCharacter";
+  import {
+    WEAPON_PROPERTIES,
+    RANGE_TYPES,
+    DICE_TYPES,
+    SHIELD_PROPERTIES,
+    STATS,
+  } from "../constants";
+  import type {
+    Currency,
+    WeaponProperty,
+    WeaponType,
+    RangeType,
+    DiceType,
+    ShieldProperty,
+    Stat,
+    GearInfo,
+    WeaponInfo,
+    ArmorInfo,
+  } from "../types";
+  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import MultiSelect from "./MultiSelect.svelte";
-  import { WEAPON_PROPERTIES } from "../model/Weapon";
-  import type { WeaponProperty, WeaponType, WeaponInfo } from "../model/Weapon";
-  import { SHIELD_PROPERTIES } from "../model/Armor";
-  import type { ArmorInfo } from "../model/Armor";
-  import type { ShieldProperty } from "../model/Armor";
-  import { RANGE_TYPES } from "../types";
 
   const dispatch = createEventDispatcher();
 

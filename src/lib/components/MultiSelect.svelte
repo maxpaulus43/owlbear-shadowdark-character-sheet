@@ -4,13 +4,6 @@
   export let minSelected = 0;
   export let options = [] as readonly string[];
 
-  // onMount(() => {
-  //   let diff = minSelected - values.length;
-  //   while (diff > 0) {
-  //     diff--;
-  //   }
-  // });
-
   function toggleOption(o: string) {
     const idx = values.findIndex((v) => v === o);
 

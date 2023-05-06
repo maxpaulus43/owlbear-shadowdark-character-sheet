@@ -4,7 +4,8 @@
     calculateSpellCastingModifierForPlayer,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
-  import type { SpellInfo } from "../model/Spell";
+  import type { SpellInfo } from "../types";
+
   import { addSign } from "../utils";
   import CreateSpellView from "./CreateSpellView.svelte";
   import LearnNewSpellButton from "./LearnNewSpellButton.svelte";

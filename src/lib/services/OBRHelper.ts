@@ -1,7 +1,6 @@
 import OBR from "@owlbear-rodeo/sdk";
 import type { Player } from "@owlbear-rodeo/sdk";
 import { defaultPC } from "../model/PlayerCharacter";
-import type { PlayerCharacter } from "../model/PlayerCharacter";
 import { PlayerCharacterStore } from "../model/PlayerCharacter";
 import { debounce } from "../utils";
 import { writable, get } from "svelte/store";
@@ -12,6 +11,7 @@ import {
   saveSaveSlot,
 } from "./LocalStorageSaver";
 import { CurrentSaveSlot } from "./SaveSlotTracker";
+import type { PlayerCharacter } from "../types";
 
 const PLUGIN_ID = "com.maxpaulus.sd-character-sheet";
 

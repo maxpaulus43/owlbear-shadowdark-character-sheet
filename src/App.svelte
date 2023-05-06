@@ -5,7 +5,6 @@
     PlayerCharacterStore as pc,
     setAncestryForPlayer,
   } from "./lib/model/PlayerCharacter";
-  import type { Ancestry } from "./lib/model/PlayerCharacter";
   import { ALIGNMENTS, ANCESTRIES } from "./lib/constants";
   import TalentsSpellsView from "./lib/components/TalentsSpellsView.svelte";
   import StatView from "./lib/components/StatView.svelte";
@@ -24,6 +23,7 @@
   import * as OBRHelper from "./lib/services/OBRHelper";
   import * as LocalStorageSaver from "./lib/services/LocalStorageSaver";
   import OBR from "@owlbear-rodeo/sdk";
+  import type { Ancestry } from "./lib/types";
 
   const { isGM } = OBRHelper;
 

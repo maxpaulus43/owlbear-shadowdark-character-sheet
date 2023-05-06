@@ -4,11 +4,11 @@
     PlayerCharacterStore as pc,
     setClassForPlayer,
   } from "../model/PlayerCharacter";
-  import type { Class } from "../model/PlayerCharacter";
   import {
     ensureClassBonuses,
     ensureClassGear,
   } from "../services/AncestryClassEnsurer";
+  import type { Class } from "../types";
 
   $: atLeastLevelOne = $pc.level >= 1;
 

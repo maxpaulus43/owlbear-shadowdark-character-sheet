@@ -2,12 +2,12 @@
   import GEAR_COMPENDIUM from "../compendium/basicGearCompendium";
   import ARMOR_COMPENDIUM from "../compendium/armorCompendium";
   import WEAPON_COMPENDIUM from "../compendium/weaponCompendium";
-  import type { Gear, GearInfo } from "../model/Gear";
   import {
     canPlayerAffordGear,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
+  import type { Gear, GearInfo } from "../types";
 
   let showModal = false;
 

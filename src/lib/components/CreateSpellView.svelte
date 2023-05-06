@@ -1,15 +1,17 @@
 <script lang="ts">
+  import { STATS, RANGE_TYPES, DICE_TYPES, TIME_UNITS } from "../constants";
   import type {
     DiceType,
     DurationSubType,
     DurationType,
     RangeType,
+    SpellClass,
+    SpellInfo,
+    SpellTier,
+    Stat,
   } from "../types";
-  import { RANGE_TYPES, DICE_TYPES, TIME_UNITS } from "../types";
-  import { STATS, PlayerCharacterStore as pc } from "../model/PlayerCharacter";
-  import type { Stat } from "../model/PlayerCharacter";
+  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
-  import type { SpellClass, SpellInfo, SpellTier } from "../model/Spell";
 
   let showModal = false;
 

@@ -1,4 +1,4 @@
-import type { GearInfo } from "../model/Gear";
+import type { GearInfo } from "../types";
 
 const MAGIC_ITEMS: GearInfo[] = [
   {

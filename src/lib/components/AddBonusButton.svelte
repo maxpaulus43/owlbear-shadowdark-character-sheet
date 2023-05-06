@@ -1,23 +1,22 @@
 <script lang="ts">
-  import type {
-    BonusTo,
-    BonusMetaData,
-    Bonus,
-    RollBonusTo,
-  } from "../model/Bonus";
-  import { ROLL_BONUS_TOS } from "../model/Bonus";
-  import { addBonusToPlayer } from "../model/PlayerCharacter";
-  import type { Stat } from "../model/PlayerCharacter";
-  import type { WeaponInfo, WeaponType } from "../model/Weapon";
   import { ARMORS } from "../compendium/armorCompendium";
   import { SPELLS } from "../compendium/spellCompendium";
   import { WEAPONS } from "../compendium/weaponCompendium";
-  import { BONUS_TOS } from "../model/Bonus";
-  import { STATS, PlayerCharacterStore as pc } from "../model/PlayerCharacter";
+  import { ROLL_BONUS_TOS, BONUS_TOS, DICE_TYPES, STATS } from "../constants";
+  import { addBonusToPlayer } from "../model/PlayerCharacter";
+  import type {
+    WeaponInfo,
+    ArmorInfo,
+    Bonus,
+    BonusTo,
+    BonusMetaData,
+    DiceType,
+    Stat,
+    WeaponType,
+    RollBonusTo,
+  } from "../types";
+  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
-  import { DICE_TYPES } from "../types";
-  import type { DiceType } from "../types";
-  import type { ArmorInfo } from "../model/Armor";
 
   $: allWeapons = WEAPONS.concat(
     $pc.customGear

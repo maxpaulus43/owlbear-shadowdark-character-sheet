@@ -3,7 +3,7 @@
     calculateModifierForPlayerStat,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
-  import type { Stat } from "../model/PlayerCharacter";
+  import type { Stat } from "../types";
   import { clamp, addSign } from "../utils";
   import Modal from "./Modal.svelte";
 

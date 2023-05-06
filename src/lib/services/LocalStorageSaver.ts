@@ -1,9 +1,9 @@
 import { get } from "svelte/store";
 import { PlayerCharacterStore } from "../model/PlayerCharacter";
-import type { PlayerCharacter } from "../model/PlayerCharacter";
 import { defaultPC } from "../model/PlayerCharacter";
 import { debounce } from "../utils";
 import { CurrentSaveSlot, NUM_SLOTS } from "./SaveSlotTracker";
+import type { PlayerCharacter } from "../types";
 
 const saveToLocalStorage = debounce(savePlayerToLocalStorage, 2000);
 

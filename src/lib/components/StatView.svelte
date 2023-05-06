@@ -7,7 +7,7 @@
     calculateModifierForPlayerStat,
     calculateStatValueForPlayerStat,
   } from "../model/PlayerCharacter";
-  import type { Stat } from "../model/PlayerCharacter";
+  import type { Stat } from "../types";
 
   export let forStat: Stat;
   const pc = PlayerCharacterStore;

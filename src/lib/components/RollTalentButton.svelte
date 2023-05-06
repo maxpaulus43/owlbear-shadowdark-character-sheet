@@ -1,14 +1,13 @@
 <script lang="ts">
   import Modal from "./Modal.svelte";
   import {
-    STATS,
     addBonusToPlayer,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
-  import type { Stat } from "../model/PlayerCharacter";
   import { CLASS_TALENTS } from "../compendium/talentCompendium";
-  import type { Bonus, ModifyBonus, SpellBonusMetaData } from "../model/Bonus";
   import { rollDice } from "../utils";
+  import { STATS } from "../constants";
+  import type { Bonus, ModifyBonus, SpellBonusMetaData, Stat } from "../types";
 
   let showModal = false;
 
