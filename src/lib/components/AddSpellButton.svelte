@@ -2,6 +2,7 @@
   import Modal from "./Modal.svelte";
   import SPELL_COMPENDIUM from "../compendium/spellCompendium";
   import {
+  deleteCustomPlayerSpell,
     learnSpellForPlayer,
     PlayerCharacterStore as pc,
     playerCanLearnSpell,
@@ -51,22 +52,10 @@
       );
     });
 
-  function learnSpell(s: SpellInfo) {
-    learnSpellForPlayer($pc, s);
-    $pc = $pc;
-  }
+
   function unLearnSpell(s: SpellInfo) {
     unlearnSpellForPlayer($pc, s);
     $pc = $pc;
-  }
-  function deleteCustomSpell(spell: SpellInfo) {
-    $pc.spells = $pc.spells.filter((s) => s.name !== spell.name);
-    $pc.bonuses = $pc.bonuses.filter((b) => {
-      if (b.metadata?.type === "spell" && b.metadata.spell === spell.name)
-        return false;
-      return true;
-    });
-    $pc.customSpells = $pc.customSpells.filter((s) => s.name !== spell.name);
   }
 </script>
 
@@ -121,33 +110,6 @@
           <li>
             <div class="shadow-md border border-gray-200 mb-3 p-2">
               <SpellView {s} />
-              <div class="flex gap-1">
-                {#if playerHasSpell($pc, s)}
-                  <button
-                    class="bg-gray-600 text-white w-full p-3"
-                    on:click={() => unLearnSpell(s)}>Unlearn</button
-                  >
-                {:else if playerCanLearnSpell($pc, s)}
-                  <button
-                    class="bg-black text-white w-full p-3"
-                    on:click={() => learnSpell(s)}>Learn</button
-                  >
-                {:else}
-                  <button
-                    class="bg-gray-600 text-white w-full p-3"
-                    on:click={() => learnSpell(s)}
-                    disabled>Cannot Learn</button
-                  >
-                {/if}
-                {#if s.editable}
-                  <button
-                    class="bg-black text-white p-3"
-                    on:click={() => deleteCustomSpell(s)}
-                  >
-                    <i class="material-icons translate-y-1">delete</i>
-                  </button>
-                {/if}
-              </div>
             </div>
           </li>
         {/each}

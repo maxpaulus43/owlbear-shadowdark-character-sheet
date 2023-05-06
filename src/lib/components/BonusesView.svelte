@@ -3,9 +3,9 @@
   import { CLASSES } from "../constants";
   import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import { alphabetically } from "../utils";
-  import AddBonusButton from "./AddBonusButton.svelte";
+  import AddBonusButton from "./CreateBonusButton.svelte";
   import BonusView from "./BonusView.svelte";
-  import RollTalentButton from "./RollTalentButton.svelte";
+  import RollTalentButton from "./AddTalentButton.svelte";
 
   $: equippableGearWithBonuses = $pc.gear
     .filter((g) => g.equipped)

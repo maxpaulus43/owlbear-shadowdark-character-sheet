@@ -491,6 +491,16 @@ export function calculateBonusAmount(
   return result + levelRateBonus;
 }
 
+export function deleteCustomPlayerSpell(pc: PlayerCharacter, spell: SpellInfo) {
+  pc.spells = pc.spells.filter((s) => s.name !== spell.name);
+  pc.bonuses = pc.bonuses.filter((b) => {
+    if (b.metadata?.type === "spell" && b.metadata.spell === spell.name)
+      return false;
+    return true;
+  });
+  pc.customSpells = pc.customSpells.filter((s) => s.name !== spell.name);
+}
+
 function isArmorShield(g: GearInfo): boolean {
   return g.type === "Armor" && g.properties?.includes("OneHanded");
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import AddGearButton from "./AddGearButton.svelte";
+  import AddGearButton from "./AddGear.svelte";
   import { findAny } from "../compendium";
   import {
     calculateGearSlotsForPlayer,

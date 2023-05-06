@@ -7,8 +7,8 @@
   import type { SpellInfo } from "../types";
 
   import { addSign } from "../utils";
-  import CreateSpellView from "./CreateSpellView.svelte";
-  import LearnNewSpellButton from "./LearnNewSpellButton.svelte";
+  import CreateSpellView from "./CreateSpellButton.svelte";
+  import LearnNewSpellButton from "./AddSpellButton.svelte";
   import Modal from "./Modal.svelte";
   import RollButton from "./RollButton.svelte";
   import SpellView from "./SpellView.svelte";
@@ -56,6 +56,6 @@
 {#if showSpellInfoForSpell}
   <Modal bind:showModal>
     <h2 slot="header">{showSpellInfoForSpell.name}</h2>
-    <SpellView s={showSpellInfoForSpell} />
+    <SpellView s={showSpellInfoForSpell} on:close={() => (showModal = false)} />
   </Modal>
 {/if}
