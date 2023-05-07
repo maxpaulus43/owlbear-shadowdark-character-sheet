@@ -84,15 +84,15 @@
 <div class="flex gap-1">
   <div class="flex items-center">
     <div>GP:</div>
-    <input type="number" bind:value={$pc.gold} class="w-16" />
+    <input type="number" inputmode="numeric" bind:value={$pc.gold} class="w-16" />
   </div>
   <div class="flex items-center">
     <div>SP:</div>
-    <input type="number" bind:value={$pc.silver} class="w-16" />
+    <input type="number" inputmode="numeric" bind:value={$pc.silver} class="w-16" />
   </div>
   <div class="flex items-center">
     <div>CP:</div>
-    <input type="number" bind:value={$pc.copper} class="w-16" />
+    <input type="number" inputmode="numeric" bind:value={$pc.copper} class="w-16" />
   </div>
 </div>
 
