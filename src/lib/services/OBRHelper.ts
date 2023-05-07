@@ -12,6 +12,7 @@ import {
 } from "./LocalStorageSaver";
 import { CurrentSaveSlot } from "./SaveSlotTracker";
 import type { PlayerCharacter } from "../types";
+import { NOTIFICATION_KEY } from "./Notifier";
 
 const PLUGIN_ID = "com.maxpaulus.sd-character-sheet";
 
@@ -21,25 +22,41 @@ type PlayerMetaData = {
   [key in `slot-${1 | 2 | 3 | 4 | 5}`]?: PlayerCharacter;
 };
 
-function pluginId(s: string) {
+export function pluginId(s: string) {
   return `${PLUGIN_ID}/${s}`;
 }
 
 export const isGM = writable(false);
-export const isOBRAvailable = writable(false);
 export const PartyStore = writable<Player[]>([]);
 export const TrackedPlayer = writable<string>();
 
 export async function init() {
   OBR.onReady(async () => {
-    isOBRAvailable.set(true);
-
     isGM.set((await OBR.player.getRole()) === "GM");
+
+    subscribeToRoomNotifications();
 
     if (get(isGM)) {
       initGM();
     } else {
       initPlayer();
+    }
+  });
+}
+
+function subscribeToRoomNotifications() {
+  OBR.room.onMetadataChange((md) => {
+    const notif = md[NOTIFICATION_KEY] as string;
+
+    if (notif) {
+      OBR.notification
+        .show(notif)
+        .then(() => {
+          OBR.room.setMetadata({
+            [NOTIFICATION_KEY]: undefined,
+          });
+        })
+        .catch(() => alert(notif));
     }
   });
 }
