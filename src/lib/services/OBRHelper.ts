@@ -45,16 +45,27 @@ export async function init() {
 }
 
 function subscribeToRoomNotifications() {
+  let timeout: ReturnType<typeof setTimeout>;
   OBR.room.onMetadataChange((md) => {
     const notif = md[NOTIFICATION_KEY] as string;
+    const popoverId = pluginId("popover");
 
     if (notif) {
-      OBR.notification
-        .show(notif)
+      OBR.popover
+        .open({
+          id: popoverId,
+          url: `/popover.html?msg=${encodeURIComponent(notif)}`,
+          height: 100,
+          width: 400,
+        })
         .then(() => {
           OBR.room.setMetadata({
             [NOTIFICATION_KEY]: undefined,
           });
+          clearTimeout(timeout);
+          timeout = setTimeout(() => {
+            OBR.popover.close(popoverId);
+          }, 2000);
         })
         .catch(() => alert(notif));
     }
