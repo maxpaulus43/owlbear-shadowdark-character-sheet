@@ -31,9 +31,7 @@
       min="1"
       max="20"
       class="w-1/2"
-    />
-    <RollButton {modifier} />
-    <ModifierView {forStat} />
+    />&nbsp;/&nbsp;<RollButton {modifier} />
   </div>
 </div>
 

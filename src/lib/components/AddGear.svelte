@@ -15,6 +15,7 @@
   let showWeapon = true;
   let showArmor = true;
   let showBasic = true;
+  let inputEl: HTMLInputElement;
 
   let gearInput: string = "";
   $: allResults = Object.values(GEAR_COMPENDIUM)
@@ -66,7 +67,12 @@
 
 <button
   class="bg-black text-white px-3 rounded-md"
-  on:click={() => (showModal = true)}>Gear</button
+  on:click={() => {
+    setTimeout(() => {
+      inputEl.focus();
+    });
+    showModal = true;
+  }}>Gear</button
 >
 
 <Modal bind:showModal>
@@ -76,6 +82,7 @@
       <input
         class="w-full"
         type="text"
+        bind:this={inputEl}
         bind:value={gearInput}
         placeholder="search e.g. Torch"
       />

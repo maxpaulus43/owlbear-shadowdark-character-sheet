@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { DiceType } from "../types";
-  import { rollDice } from "../utils";
+  import { addSign, rollDice } from "../utils";
   import Menu from "./Menu/Menu.svelte";
   import MenuOption from "./Menu/MenuOption.svelte";
   import { notifiy } from "../services/Notifier";
@@ -14,9 +14,9 @@
   let pos = { x: 0, y: 0 };
   let touchTimer: ReturnType<typeof setTimeout>;
 
-  function touchStart(e) {
+  function touchStart(e: TouchEvent) {
     touchTimer = setTimeout(() => {
-      onRightClick(e);
+      onRightClick(e as any);
       touchTimer = null;
     }, 500);
   }
@@ -56,7 +56,14 @@
     notifiy(msg);
   }
 
-  async function onRightClick(e) {
+  function rollSecretly() {
+    const outcome = rollDice(diceType, numDice);
+    let critMsg = "";
+    const msg = `${critMsg}${outcome} + ${modifier} = ${outcome + modifier}`;
+    notifiy(msg, { secret: true });
+  }
+
+  async function onRightClick(e: MouseEvent) {
     if (!disabled) {
       if (showMenu) {
         showMenu = false;
@@ -82,12 +89,20 @@
     on:touchstart={touchStart}
     on:touchend={touchEnd}
     class="bg-black text-white pt-1 px-1 rounded-md"
-    ><slot><i class="material-icons">casino</i></slot>
+  >
+    <slot
+      ><div class="rounded-md bg-black text-white p-1">
+        {addSign(modifier)}
+      </div></slot
+    >
   </button>
 
   {#if showMenu}
     <Menu {...pos} on:click={closeMenu} on:clickoutside={closeMenu}>
       <MenuOption on:click={roll} text="Roll" />
+      <MenuOption on:click={rollSecretly}>
+        <div class="text-black">Roll Secretly</div>
+      </MenuOption>
       <MenuOption on:click={rollWithAdvantage}>
         <div class="text-green-700">Roll With Advantage</div>
       </MenuOption>

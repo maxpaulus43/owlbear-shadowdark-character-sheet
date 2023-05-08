@@ -37,11 +37,7 @@
         <td>{w.name}</td>
         <td>{w.range}</td>
         <td>
-          <RollButton modifier={calculateAttackBonusForPlayerWeapon($pc, w)}>
-            <div class="p-3">
-              {attackBonus}
-            </div>
-          </RollButton>
+          <RollButton modifier={calculateAttackBonusForPlayerWeapon($pc, w)} />
         </td>
         <td class="flex gap-1">
           {#if w.damage.oneHanded}

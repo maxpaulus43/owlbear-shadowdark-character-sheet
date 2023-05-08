@@ -1,18 +1,11 @@
 <script lang="ts">
   import Modal from "./Modal.svelte";
   import SPELL_COMPENDIUM from "../compendium/spellCompendium";
-  import {
-  deleteCustomPlayerSpell,
-    learnSpellForPlayer,
-    PlayerCharacterStore as pc,
-    playerCanLearnSpell,
-    playerHasSpell,
-    unlearnSpellForPlayer,
-  } from "../model/PlayerCharacter";
+  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import SpellView from "./SpellView.svelte";
-  import type { SpellInfo } from "../types";
 
   let showModal = false;
+  let inputEl: HTMLInputElement;
   let spellInput: string = "";
 
   let showTier1 = true;
@@ -53,17 +46,16 @@
         s.duration.type.toLowerCase().includes(term)
       );
     });
-
-
-  function unLearnSpell(s: SpellInfo) {
-    unlearnSpellForPlayer($pc, s);
-    $pc = $pc;
-  }
 </script>
 
 <button
   class="bg-black text-white p-2 w-full"
-  on:click={() => (showModal = true)}>Spells</button
+  on:click={() => {
+    setTimeout(() => {
+      inputEl.focus();
+    });
+    showModal = true;
+  }}>Spells</button
 >
 
 <Modal bind:showModal>
@@ -72,6 +64,7 @@
     <input
       class="w-full"
       type="text"
+      bind:this={inputEl}
       bind:value={spellInput}
       placeholder="search e.g. Burning Hands"
     />

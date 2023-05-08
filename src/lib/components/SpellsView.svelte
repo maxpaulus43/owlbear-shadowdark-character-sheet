@@ -40,7 +40,6 @@
           </div>
           <div class="flex">
             <RollButton modifier={mod} />
-            <span>({addSign(mod)})</span>
           </div>
         </div>
       </li>
