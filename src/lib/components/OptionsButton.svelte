@@ -25,7 +25,8 @@
     <div>
       {#if $isGM}
         <div>
-          Note: You are the GM. GM's cannot<br /> save player data to local storage.
+          Note: You are the GM. GM's cannot<br />save player data to local
+          storage.
         </div>
       {/if}
       <h2>Choose Save Slot</h2>
