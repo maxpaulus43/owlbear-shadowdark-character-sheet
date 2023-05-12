@@ -8,21 +8,22 @@ export type NotifyOptions = {
 };
 
 export async function notifiy(msg: string, options: NotifyOptions = {}) {
-  if (OBR.isAvailable) {
-    if (options.secret) {
-      notifySecretly(msg);
-    } else {
-      const myName = await OBR.player.getName();
-      OBR.room.setMetadata({
-        [NOTIFICATION_KEY]: `${myName} rolled: ${msg}`,
-      });
-    }
-  } else {
+  if (!OBR.isAvailable) {
     alert(msg);
+    return;
+  }
+
+  if (options.secret) {
+    notifySecretly(msg);
+  } else {
+    const myName = await OBR.player.getName();
+    OBR.room.setMetadata({
+      [NOTIFICATION_KEY]: `${myName} rolled: ${msg}`,
+    });
   }
 }
 
-function notifySecretly(msg: string) {
+export function notifySecretly(msg: string) {
   const popoverId = pluginId("popover");
   OBR.popover
     .open({

@@ -25,7 +25,7 @@
     <div>
       <h2>Choose Save Slot</h2>
       <div class="flex gap-1 w-full justify-stretch">
-        {#each new Array(NUM_SLOTS) as _, i}
+        {#each { length: NUM_SLOTS } as _, i}
           <button
             class:green={$CurrentSaveSlot === i + 1}
             on:click={() => {
@@ -35,18 +35,16 @@
         {/each}
       </div>
     </div>
-    {#if !$isGM}
-      <label for="jsonImport" class="btn">
-        <div class="text-center">Import JSON</div>
-        <input
-          id="jsonImport"
-          type="file"
-          class="hidden"
-          accept="application/json"
-          bind:files
-        />
-      </label>
-    {/if}
+    <label for="jsonImport" class="btn">
+      <div class="text-center">Import JSON</div>
+      <input
+        id="jsonImport"
+        type="file"
+        class="hidden"
+        accept="application/json"
+        bind:files
+      />
+    </label>
     <button
       on:click={() => {
         savePlayerToFile($pc);

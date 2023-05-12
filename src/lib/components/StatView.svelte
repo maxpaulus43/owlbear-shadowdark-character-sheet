@@ -1,6 +1,5 @@
 <script lang="ts">
   import RollButton from "./RollButton.svelte";
-  import ModifierView from "./ModifierView.svelte";
   import {
     PlayerCharacterStore,
     calculateBonusForPlayerStat,

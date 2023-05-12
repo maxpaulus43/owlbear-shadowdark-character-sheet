@@ -33,6 +33,9 @@
       {@const attackBonus = addSign(
         calculateAttackBonusForPlayerWeapon($pc, w)
       )}
+      {@const damageBonus = addSign(
+        calculateDamageBonusForPlayerWeapon($pc, w)
+      )}
       <tr class="border-b">
         <td>{w.name}</td>
         <td>{w.range}</td>
@@ -54,7 +57,9 @@
               <div
                 class="bg-black text-white p-1 px-2 rounded-md flex flex-col items-center text-xs"
               >
-                <span>{`${w.damage.oneHanded.numDice}${diceType}`}</span>
+                <span
+                  >{`${w.damage.oneHanded.numDice}${diceType}${damageBonus}`}</span
+                >
                 <i class="material-icons">back_hand</i>
               </div>
             </RollButton>
@@ -75,7 +80,9 @@
                 class="bg-black text-white rounded-md p-1 px-2 flex flex-col items-center"
                 class:opacity-50={!canAttackTwoHanded}
               >
-                <span>{`${w.damage.twoHanded.numDice}${diceType}`}</span>
+                <span
+                  >{`${w.damage.twoHanded.numDice}${diceType}${damageBonus}`}</span
+                >
                 <i class="material-icons"> sign_language </i>
               </div>
             </RollButton>
