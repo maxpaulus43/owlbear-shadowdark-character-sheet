@@ -23,6 +23,11 @@
   <h1 slot="header">Options</h1>
   <div class="flex flex-col gap-1 min-w-[200px]" id="options">
     <div>
+      {#if $isGM}
+        <div>
+          Note: You are the GM. GM's cannot<br /> save player data to local storage.
+        </div>
+      {/if}
       <h2>Choose Save Slot</h2>
       <div class="flex gap-1 w-full justify-stretch">
         {#each { length: NUM_SLOTS } as _, i}
