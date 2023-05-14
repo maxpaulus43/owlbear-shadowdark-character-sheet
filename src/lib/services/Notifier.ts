@@ -35,7 +35,7 @@ export function notifySecretly(msg: string) {
     .then(() => {
       setTimeout(() => {
         OBR.popover.close(popoverId);
-      }, 2000);
+      }, 5000);
     })
     .catch(() => alert(msg));
 }
