@@ -65,7 +65,7 @@ function subscribeToRoomNotifications() {
           clearTimeout(timeout);
           timeout = setTimeout(() => {
             OBR.popover.close(popoverId);
-          }, 2000);
+          }, 5000);
         })
         .catch(() => alert(notif));
     }
