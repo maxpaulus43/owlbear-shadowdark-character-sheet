@@ -7,7 +7,6 @@ import type {
 } from "../types";
 import ARMOR_COMPENDIUM from "./armorCompendium";
 import GEAR_COMPENDIUM from "./basicGearCompendium";
-import MAGIC_ITEM_COMPENDIUM from "./magicItemCompendium";
 import SPELL_COMPENDIUM from "./spellCompendium";
 import WEAPON_COMPENDIUM from "./weaponCompendium";
 
@@ -26,10 +25,7 @@ export function findArmor(name: string): ArmorInfo {
   return ARMOR_COMPENDIUM[name.toLowerCase()];
 }
 export function findGear(name: string): GearInfo {
-  return (
-    GEAR_COMPENDIUM[name.toLowerCase()] ||
-    MAGIC_ITEM_COMPENDIUM[name.toLowerCase()]
-  );
+  return GEAR_COMPENDIUM[name.toLowerCase()];
 }
 export function findCustomSpell(name: string): SpellInfo {
   return customSpells.find((s) => s.name.toLowerCase() === name.toLowerCase());
