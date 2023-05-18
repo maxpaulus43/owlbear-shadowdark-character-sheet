@@ -475,7 +475,7 @@ export const SPELLS: SpellInfo[] = [
   },
   {
     name: "Lighting Bolt",
-    tier: 2,
+    tier: 3,
     class: "Wizard",
     duration: { type: "Instant", amt: 0 },
     range: "Far",
