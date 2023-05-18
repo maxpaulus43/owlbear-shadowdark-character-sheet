@@ -77,12 +77,16 @@ function clearClassBonuses(pc: PlayerCharacter) {
 }
 
 function clearClassGear(pc: PlayerCharacter) {
-  pc.gear = pc.gear.filter((g) => !["Thieving Tools"].includes(g.name));
+  pc.gear = pc.gear.filter(
+    (g) => !["Thieving Tools", "Holy Symbol"].includes(g.name)
+  );
 }
 
 function addClassGear(gear: Gear[], c: Class) {
   if (c === "Thief" && !gear.find((g) => g.name === "Thieving Tools")) {
     gear.push({ name: "Thieving Tools", quantity: 1 });
+  } else if (c === "Priest" && !gear.find((g) => g.name === "Holy Symbol")) {
+    gear.push({ name: "Holy Symbol", quantity: 1 });
   }
 }
 

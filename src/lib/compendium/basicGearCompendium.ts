@@ -169,6 +169,13 @@ const GEAR: GearInfo[] = [
     type: "Basic",
     slots: { perSlot: 1, slotsUsed: 0, freeCarry: 1 },
   },
+  {
+    name: "Holy Symbol",
+    cost: { gp: 0, sp: 0, cp: 0 },
+    canBeEquipped: false,
+    type: "Basic",
+    slots: { perSlot: 1, slotsUsed: 0, freeCarry: 1 },
+  },
 ];
 
 const GEAR_COMPENDIUM: { [name: string]: GearInfo } = {};
