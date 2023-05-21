@@ -30,12 +30,8 @@
     </tr>
 
     {#each weapons as w}
-      {@const attackBonus = addSign(
-        calculateAttackBonusForPlayerWeapon($pc, w)
-      )}
-      {@const damageBonus = addSign(
-        calculateDamageBonusForPlayerWeapon($pc, w)
-      )}
+      {@const dmg = calculateDamageBonusForPlayerWeapon($pc, w)}
+      {@const damageBonus = dmg !== 0 ? addSign(dmg) : ""}
       <tr class="border-b">
         <td>{w.name}</td>
         <td>{w.range}</td>

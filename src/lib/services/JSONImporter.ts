@@ -40,6 +40,11 @@ export function maintainBackwardsCompat(pc: PlayerCharacter) {
     pc["customLanguages"] = [];
   }
 
+  const cKitIdx = pc.gear?.findIndex((g) => g.name === "Crawling Kit");
+  if (cKitIdx && cKitIdx > -1) {
+    pc.gear.splice(cKitIdx, 1);
+  }
+
   if (pc.customGear) {
     pc.customGear.forEach((g) => {
       g.editable = true;

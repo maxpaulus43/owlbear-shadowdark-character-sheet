@@ -100,13 +100,6 @@ const GEAR: GearInfo[] = [
     slots: { perSlot: 1, slotsUsed: 1, freeCarry: 0 },
   },
   {
-    name: "Crawling Kit",
-    cost: { gp: 7, sp: 0, cp: 0 },
-    canBeEquipped: false,
-    type: "Basic",
-    slots: { perSlot: 1, slotsUsed: 7, freeCarry: 0 },
-  },
-  {
     name: "Grappling Hook",
     cost: { gp: 1, sp: 0, cp: 0 },
     canBeEquipped: false,

@@ -174,7 +174,7 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
   const gearBonuses = pc.gear
     .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
     .filter(({ isEquipped, g }) => {
-      return !g.canBeEquipped || isEquipped;
+      return g && (!g.canBeEquipped || isEquipped);
     })
     .map(({ g }) => g.playerBonuses)
     .filter(Boolean)
@@ -275,7 +275,7 @@ export function calculateSpellCastingModifierForPlayer(
   const gearBonuses = pc.gear
     .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
     .filter(({ isEquipped, g }) => {
-      return !g.canBeEquipped || isEquipped;
+      return g && (!g.canBeEquipped || isEquipped);
     })
     .map(({ g }) => g.playerBonuses)
     .filter(Boolean)
@@ -317,7 +317,7 @@ export function calculateDamageBonusForPlayerWeapon(
     // only want to apply equippable bonuses or bonuses that don't require equipping
     .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
     .filter(({ isEquipped, g }) => {
-      return !g.canBeEquipped || isEquipped;
+      return g && (!g.canBeEquipped || isEquipped);
     })
     .map(({ g }) => g.playerBonuses)
     .filter(Boolean)
@@ -365,7 +365,7 @@ export function calculateAttackBonusForPlayerWeapon(
     // only want to apply equippable bonuses or bonuses that don't require equipping
     .map((g) => ({ isEquipped: g.equipped, g: findAny(g.name) }))
     .filter(({ isEquipped, g }) => {
-      return !g.canBeEquipped || isEquipped;
+      return g && (!g.canBeEquipped || isEquipped);
     })
     .map(({ g }) => g.playerBonuses)
     .filter(Boolean)
