@@ -73,8 +73,6 @@ function subscribeToRoomNotifications() {
 }
 
 async function initGM() {
-  console.log("init GM");
-
   OBR.party.onChange((party) => {
     PartyStore.set(party);
   });
@@ -109,8 +107,6 @@ async function initGM() {
 }
 
 async function initPlayer() {
-  console.log("init Player");
-
   CurrentSaveSlot.set(await getSaveSlot());
 
   PlayerMetaDataStore.set({
