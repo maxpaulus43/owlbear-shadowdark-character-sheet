@@ -72,6 +72,11 @@
       Third-Party License and is not affiliated with The Arcane Library, LLC.
       Shadowdark RPG © 2023 The Arcane Library, LLC.
     </div>
+    <hr />
+    <div>
+      Disclaimer: I have explicit permission from The Arcane Library to reprint
+      character creation material (such as talent tables) in this tool.
+    </div>
 
     <a
       href="https://www.buymeacoffee.com/tKsqTr4ABl"
