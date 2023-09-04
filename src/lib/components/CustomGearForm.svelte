@@ -105,6 +105,7 @@
     armorProperties = [];
     acModifier = 0;
     armorStat = undefined;
+    magicWeaponModifier = 0;
 
     showAdvanced = false;
   }
