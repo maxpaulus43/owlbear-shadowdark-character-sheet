@@ -77,6 +77,14 @@
     }
   }
 
+  $: if (
+    armorProperties.includes("Shield") &&
+    !armorProperties.includes("OneHanded") &&
+    !armorProperties.includes("TwoHanded")
+  ) {
+    armorProperties.push("OneHanded");
+  }
+
   $: if (!showAdvanced) {
     gearType = "Basic";
     canBeEquipped = false;
