@@ -43,6 +43,7 @@
   let weaponProperties: WeaponProperty[] = [];
   let weaponType: WeaponType = "Melee";
   let weaponRanges: RangeType[] = ["Close"];
+  let magicWeaponModifier: number = 0;
   let hasOneHandedAttack: boolean = true;
   let oneHandedNumDice: number = 1;
   let oneHandedDiceType: DiceType = "d6";
@@ -116,6 +117,7 @@
       desc: gearName,
       slots: { slotsUsed: gearSlots, perSlot: quantityPerSlot, freeCarry },
       editable: true,
+      playerBonuses: [],
       cost: {
         gp: 0,
         sp: 0,
@@ -148,7 +150,34 @@
             diceType: twoHandedDiceType,
           };
         }
-
+        if (weaponProperties.includes("Magic") && magicWeaponModifier > 0) {
+          w.playerBonuses.push({
+            name: w.name + `: +${magicWeaponModifier} to atk`,
+            desc: `+${magicWeaponModifier} to attack rolls when ${w.name} is equipped`,
+            type: "modifyAmt",
+            bonusAmount: magicWeaponModifier,
+            bonusTo: "attackRoll",
+            bonusSource: "Gear",
+            editable: true,
+            metadata: {
+              type: "weapon",
+              weapon: w.name,
+            },
+          });
+          w.playerBonuses.push({
+            name: w.name + `: +${magicWeaponModifier} to dmg`,
+            desc: `+${magicWeaponModifier} to damage rolls when ${w.name} is equipped`,
+            type: "modifyAmt",
+            bonusAmount: magicWeaponModifier,
+            bonusTo: "damageRoll",
+            bonusSource: "Gear",
+            editable: true,
+            metadata: {
+              type: "weapon",
+              weapon: w.name,
+            },
+          });
+        }
         break;
       }
       case "Armor": {
@@ -254,7 +283,7 @@
       <select name="" id="" bind:value={weaponType}>
         <option>Melee</option>
         <option>Ranged</option>
-        <option>MeleeRanged</option>
+        <option value="MeleeRanged">Melee or Ranged</option>
       </select>
 
       <label for="weaponProperties">Weapon Properties</label>
@@ -263,6 +292,20 @@
         bind:values={weaponProperties}
         options={WEAPON_PROPERTIES}
       />
+
+      {#if weaponProperties.includes("Magic")}
+        <div class="flex flex-row gap-1 items-center">
+          <label for="magicWeaponModifier">Magic weapon modifier: +</label>
+          <input
+            id="magicWeaponModifier"
+            type="number"
+            min="0"
+            inputmode="numeric"
+            bind:value={magicWeaponModifier}
+            class="w-10 text-center"
+          />
+        </div>
+      {/if}
 
       <label for="range">Range</label>
       <MultiSelect
