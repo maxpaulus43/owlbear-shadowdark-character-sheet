@@ -10,7 +10,7 @@ import {
   savePlayerToLocalStorage,
   saveSaveSlot,
 } from "./LocalStorageSaver";
-import { CurrentSaveSlot } from "./SaveSlotTracker";
+import { CurrentSaveSlot, NUM_SLOTS } from "./SaveSlotTracker";
 import type { PlayerCharacter } from "../types";
 import { NOTIFICATION_KEY } from "./Notifier";
 
@@ -109,13 +109,13 @@ async function initGM() {
 async function initPlayer() {
   CurrentSaveSlot.set(await getSaveSlot());
 
-  PlayerMetaDataStore.set({
-    "slot-1": (await loadPlayerFromLocalStorage(1)) ?? defaultPC(),
-    "slot-2": (await loadPlayerFromLocalStorage(2)) ?? defaultPC(),
-    "slot-3": (await loadPlayerFromLocalStorage(3)) ?? defaultPC(),
-    "slot-4": (await loadPlayerFromLocalStorage(4)) ?? defaultPC(),
-    "slot-5": (await loadPlayerFromLocalStorage(5)) ?? defaultPC(),
-  });
+  const playerMd: { [key: string]: PlayerCharacter } = {};
+  for (let i = 1; i <= NUM_SLOTS; i++) {
+    playerMd[`slot-${i}`] =
+      (await loadPlayerFromLocalStorage(i)) ?? defaultPC();
+  }
+
+  PlayerMetaDataStore.set(playerMd);
 
   PlayerCharacterStore.subscribe(
     debounce((pc) => {
