@@ -83,7 +83,7 @@ export function setClassForPlayer(pc: PlayerCharacter, c: Class) {
   ensureClassGear(pc);
 }
 
-export function setAncestryForPlayer(pc: PlayerCharacter, a: Ancestry) {
+export function setAncestryForPlayer(pc: PlayerCharacter, a: Ancestry | "") {
   pc.ancestry = a;
   ensureAncestryBonuses(pc);
   ensureLanguages(pc);

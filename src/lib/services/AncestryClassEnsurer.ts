@@ -90,7 +90,7 @@ function addClassGear(gear: Gear[], c: Class) {
   }
 }
 
-function addAncestryBonuses(bonuses: Bonus[], a: Ancestry) {
+function addAncestryBonuses(bonuses: Bonus[], a: Ancestry | "") {
   switch (a) {
     case "Elf":
       break;
@@ -164,6 +164,9 @@ function addAncestryBonuses(bonuses: Bonus[], a: Ancestry) {
           }
         );
       }
+      break;
+    }
+    default: {
       break;
     }
   }

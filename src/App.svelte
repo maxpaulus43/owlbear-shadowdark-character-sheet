@@ -3,9 +3,8 @@
     calculateTitleForPlayer,
     levelUpPlayer,
     PlayerCharacterStore as pc,
-    setAncestryForPlayer,
   } from "./lib/model/PlayerCharacter";
-  import { ALIGNMENTS, ANCESTRIES } from "./lib/constants";
+  import { ALIGNMENTS } from "./lib/constants";
   import TalentsSpellsView from "./lib/components/TalentsSpellsView.svelte";
   import StatView from "./lib/components/StatView.svelte";
   import GearView from "./lib/components/GearView.svelte";
@@ -23,7 +22,7 @@
   import * as OBRHelper from "./lib/services/OBRHelper";
   import * as LocalStorageSaver from "./lib/services/LocalStorageSaver";
   import OBR from "@owlbear-rodeo/sdk";
-  import type { Ancestry } from "./lib/types";
+  import AncestryView from "./lib/components/AncestryView.svelte";
 
   const { isGM } = OBRHelper;
 
@@ -52,12 +51,6 @@
       files = undefined;
       break;
     }
-  }
-
-  function onAncestryChange(e: Event) {
-    const a: Ancestry = (e.target as HTMLSelectElement).value as Ancestry;
-    setAncestryForPlayer($pc, a);
-    $pc = $pc;
   }
 
   function onTitleInput(e: Event) {
@@ -143,14 +136,7 @@
           <input type="text" bind:value={$pc.name} />
         </div>
         <div class="col-span-full cell">
-          <h2>ANCESTRY</h2>
-          <select value={$pc.ancestry} on:change={onAncestryChange}>
-            {#each ANCESTRIES as ancestry}
-              <option value={ancestry}>
-                {ancestry}
-              </option>
-            {/each}
-          </select>
+          <AncestryView />
         </div>
         <div class="col-span-full cell">
           <ClassView />

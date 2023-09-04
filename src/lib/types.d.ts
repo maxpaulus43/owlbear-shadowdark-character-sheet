@@ -16,7 +16,7 @@ import {
   ROLL_BONUS_TOS,
   SHIELD_PROPERTIES,
   GEAR_TYPES,
-  NUMERICAL_BONUS_TOS
+  NUMERICAL_BONUS_TOS,
 } from "./constants";
 
 export type Merge<T, R> = Omit<T, keyof R> & R;
@@ -30,7 +30,6 @@ export type Roll = {
   diceType: DiceType;
   numDice: number;
 };
-
 
 ///// Talent
 export type GenericTalent = {
@@ -58,7 +57,10 @@ export type SpellTier = 1 | 2 | 3 | 4 | 5;
 export type Spell = {
   name: string;
 };
-export type SpellClass = Extract<Class, "Wizard" | "Priest"> | "PriestWizard" | "Other";
+export type SpellClass =
+  | Extract<Class, "Wizard" | "Priest">
+  | "PriestWizard"
+  | "Other";
 export type SpellInfo = {
   name: string;
   class: SpellClass;
@@ -89,7 +91,8 @@ export type StatBlock = {
 };
 export type PlayerCharacter = {
   name: string;
-  ancestry: Ancestry;
+  ancestry: Ancestry | "";
+  hasCustomAncestry?: boolean;
   class?: Class | "";
   hasCustomClass?: boolean;
   level: number;
@@ -117,7 +120,6 @@ export type PlayerCharacter = {
   customSpells: SpellInfo[];
   hitPoints: number;
 };
-
 
 /////// Bonus
 export type NumericalBonusTo = (typeof NUMERICAL_BONUS_TOS)[number];
@@ -196,7 +198,6 @@ export type Bonus =
   | DiceTypeBonus
   | AdvantageBonus
   | DisadvantageBonus;
-
 
 ///// ShadowDarklings
 export type SDBonus = {
