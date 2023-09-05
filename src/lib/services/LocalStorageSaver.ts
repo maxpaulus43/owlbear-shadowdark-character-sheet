@@ -1,11 +1,18 @@
-import { get } from "svelte/store";
+import { get, writable } from "svelte/store";
 import { PlayerCharacterStore } from "../model/PlayerCharacter";
 import { defaultPC } from "../model/PlayerCharacter";
 import { debounce } from "../utils";
 import { CurrentSaveSlot, NUM_SLOTS } from "./SaveSlotTracker";
 import type { PlayerCharacter } from "../types";
 
-const saveToLocalStorage = debounce(savePlayerToLocalStorage, 2000);
+export const isSaveInProgress = writable(false);
+
+const saveToLocalStorage = debounce(
+  savePlayerToLocalStorage,
+  2000,
+  () => isSaveInProgress.set(true),
+  () => isSaveInProgress.set(false)
+);
 
 export function trackAndSavePlayerToLocalStorage(
   pc: PlayerCharacter,
@@ -40,6 +47,7 @@ export async function savePlayerToLocalStorage(
   pc: PlayerCharacter,
   saveSlot: number
 ) {
+  console.log("player saved");
   asyncLocalStorage.setItem(getStorageKey(saveSlot), JSON.stringify(pc));
 }
 

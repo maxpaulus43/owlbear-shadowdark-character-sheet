@@ -23,6 +23,7 @@
   import * as LocalStorageSaver from "./lib/services/LocalStorageSaver";
   import OBR from "@owlbear-rodeo/sdk";
   import AncestryView from "./lib/components/AncestryView.svelte";
+  import { isSaveInProgress } from "./lib/services/LocalStorageSaver";
 
   const { isGM } = OBRHelper;
 
@@ -74,6 +75,14 @@
                 <h1 class="">Shadowdark</h1>
                 <InfoButton />
               </div>
+              {#if $isSaveInProgress}
+                <div
+                  title="save in progress..."
+                  class="absolute top-0 left-0 opacity-20 bg-black text-white p-1 rounded-md flex items-center"
+                >
+                  <i class="material-icons">save</i>...
+                </div>
+              {/if}
               <div class="-translate-y-2 flex gap-1">
                 {#if !$isGM}
                   <button

@@ -35,19 +35,27 @@ export function toInfo<T extends GearInfo>(g: Gear): T {
 }
 
 // eslint-disable-next-line
-export function debounce<F extends (...args: any[]) => any>(fn: F, ms = 500) {
+export function debounce<F extends (...args: any[]) => any>(
+  fn: F,
+  ms = 500,
+  onStartWaiting?: () => void,
+  onFinish?: () => void
+) {
   let timer: NodeJS.Timeout;
 
-  return (...args: Parameters<F>): Promise<ReturnType<F>> =>
-    new Promise((resolve) => {
+  return (...args: Parameters<F>): Promise<ReturnType<F>> => {
+    onStartWaiting?.();
+    return new Promise((resolve) => {
       if (timer) {
         clearTimeout(timer);
       }
 
       timer = setTimeout(() => {
         resolve(fn(...args));
+        onFinish?.();
       }, ms);
     });
+  };
 }
 
 // eslint-disable-next-line
