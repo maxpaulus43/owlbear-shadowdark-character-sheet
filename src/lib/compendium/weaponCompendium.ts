@@ -113,7 +113,7 @@ export const WEAPONS: WeaponInfo[] = [
     range: ["Close"],
     weaponType: "Melee",
     damage: {
-      twoHanded: { diceType: "d8", numDice: 1 },
+      twoHanded: { diceType: "d12", numDice: 1 },
     },
   },
   {
