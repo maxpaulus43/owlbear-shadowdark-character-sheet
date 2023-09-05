@@ -26,7 +26,7 @@
       checked={$pc.hasCustomAncestry}
       on:input={onToggleCustomAncestry}
     />
-    <label for="customClass">Custom</label>
+    <label for="customAncestry">Custom</label>
   </div>
 </div>
 {#if $pc.hasCustomAncestry}

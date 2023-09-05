@@ -141,8 +141,10 @@
         class="flex-[2] min-w-[257px] h-[700px] grid grid-rows-8 grid-cols-2 gap-2"
       >
         <div class="col-span-full cell">
-          <h2>NAME</h2>
-          <input type="text" bind:value={$pc.name} />
+          <label>
+            <h2>NAME</h2>
+            <input type="text" bind:value={$pc.name} />
+          </label>
         </div>
         <div class="col-span-full cell">
           <AncestryView />
@@ -151,20 +153,24 @@
           <ClassView />
         </div>
         <div class="cell">
-          <h2>LEVEL</h2>
-          <input
-            type="number"
-            inputmode="numeric"
-            bind:value={$pc.level}
-            max="10"
-            min="1"
-          />
+          <label>
+            <h2>LEVEL</h2>
+            <input
+              type="number"
+              inputmode="numeric"
+              bind:value={$pc.level}
+              max="10"
+              min="1"
+            />
+          </label>
         </div>
         <div class="cell">
           <h2>XP</h2>
+          <label for="xp" />
           <div class="sheet-stat flex gap-1">
             {#if $pc.level < 10}
               <input
+                id="xp"
                 type="number"
                 inputmode="numeric"
                 min="0"

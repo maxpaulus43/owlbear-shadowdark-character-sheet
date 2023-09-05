@@ -20,18 +20,21 @@
 </script>
 
 <div class="flex flex-col">
-  <h2>{forStat}</h2>
-  <div class="sheet-stat flex gap-1">
-    <input
-      type="number"
-      inputmode="numeric"
-      value={statValue}
-      on:input={onInput}
-      min="1"
-      max="20"
-      class="w-1/2"
-    />&nbsp;/&nbsp;<RollButton {modifier} />
-  </div>
+  <label>
+    <h2>{forStat}</h2>
+    <div class="sheet-stat flex gap-1">
+      <input
+        id={`${forStat}-input}`}
+        type="number"
+        inputmode="numeric"
+        value={statValue}
+        on:input={onInput}
+        min="1"
+        max="20"
+        class="w-1/2"
+      />&nbsp;/&nbsp;<RollButton {modifier} />
+    </div>
+  </label>
 </div>
 
 <style>

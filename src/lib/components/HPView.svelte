@@ -19,7 +19,9 @@
 </script>
 
 <h2>HP</h2>
+<label for="hitpoints" />
 <input
+  id="hitpoints"
   type="number"
   inputmode="numeric"
   class="pirata text-5xl text-center"

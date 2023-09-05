@@ -15,10 +15,11 @@
   <div class="flex flex-col">
     <div>
       This is an unofficial fan made tool to track your shadow dark character!
-      Buy shadow dark <a
+      <a
         target="_blank"
-        href="https://www.thearcanelibrary.com/pages/shadowdark">here</a
-      >
+        href="https://www.thearcanelibrary.com/pages/shadowdark"
+        >Buy shadow dark
+      </a>
     </div>
 
     <h2>Import</h2>
@@ -47,10 +48,12 @@
     <h2>Issues</h2>
     <div>
       This project is free and open source! Feel free to make a pull request or
-      create an issue <a
+      <a
         href="https://github.com/maxpaulus43/owlbear-shadowdark-character-sheet"
-        target="_blank">here</a
+        target="_blank"
       >
+        create an issue
+      </a>
     </div>
 
     <h2>Acknowledgements</h2>
