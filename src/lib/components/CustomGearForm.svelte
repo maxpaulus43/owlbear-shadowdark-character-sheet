@@ -167,7 +167,7 @@
             bonusAmount: magicWeaponModifier,
             bonusTo: "attackRoll",
             bonusSource: "Gear",
-            editable: true,
+            editable: false,
             metadata: {
               type: "weapon",
               weapon: w.name,
@@ -180,7 +180,7 @@
             bonusAmount: magicWeaponModifier,
             bonusTo: "damageRoll",
             bonusSource: "Gear",
-            editable: true,
+            editable: false,
             metadata: {
               type: "weapon",
               weapon: w.name,
