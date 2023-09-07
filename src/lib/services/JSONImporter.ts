@@ -1,5 +1,5 @@
 import { findAny, findSpell } from "../compendium";
-import { SCHEMA_TYPE } from "../constants";
+import { ANCESTRIES, CLASSES, SCHEMA_TYPE } from "../constants";
 import type {
   PlayerCharacter,
   SpellInfo,
@@ -100,8 +100,9 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
   const pc: PlayerCharacter = {
     name: json.name,
     ancestry: json.ancestry,
+    hasCustomAncestry: !ANCESTRIES.includes(json.ancestry),
     class: theClass,
-    hasCustomClass: false,
+    hasCustomClass: !CLASSES.includes(theClass),
     level: json.level,
     notes: "",
     title: json.title,
