@@ -4,7 +4,6 @@
     calculateAttackBonusForPlayerWeapon,
     calculateDamageBonusForPlayerWeapon,
     calculateDamageDiceTypeForPlayerWeapon,
-    isPlayerHoldingShield,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import { addSign } from "../utils";
@@ -12,7 +11,9 @@
 
   $: equippedGear = $pc.gear.filter((g) => g.equipped);
   $: weapons = equippedGear.map((g) => findWeapon(g.name)).filter(Boolean);
-  $: canAttackTwoHanded = weapons.length == 1 && !isPlayerHoldingShield($pc);
+  // this is nice, but limiting to the players creativity
+  // $: canAttackTwoHanded = weapons.length == 1 && !isPlayerHoldingShield($pc);
+
   $: customAttacks = equippedGear
     .map((g) => findCustomGear(g.name))
     .filter(Boolean)
@@ -70,11 +71,9 @@
               {diceType}
               numDice={w.damage.twoHanded.numDice}
               modifier={calculateDamageBonusForPlayerWeapon($pc, w)}
-              disabled={!canAttackTwoHanded}
             >
               <div
                 class="bg-black text-white rounded-md p-1 px-2 flex flex-col items-center"
-                class:opacity-50={!canAttackTwoHanded}
               >
                 <span
                   >{`${w.damage.twoHanded.numDice}${diceType}${damageBonus}`}</span
