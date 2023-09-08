@@ -1,7 +1,12 @@
 import type { Class } from "./types";
 
 export const GEAR_TYPES = ["Basic", "Armor", "Weapon"] as const;
-export const SHIELD_PROPERTIES = ["Shield", "OneHanded", "TwoHanded"] as const;
+export const SHIELD_PROPERTIES = [
+  "Shield",
+  "OneHanded",
+  "TwoHanded",
+  "Magic",
+] as const;
 export const RANGE_TYPES = ["Self", "Close", "Near", "Far"] as const;
 export const DICE_TYPES = ["d4", "d6", "d8", "d10", "d12", "d20"] as const;
 export const SCHEMA_VERSION = "1.0.0";
