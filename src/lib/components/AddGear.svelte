@@ -8,8 +8,11 @@
   } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
   import type { Gear, GearInfo } from "../types";
+  import CustomGearForm from "./CustomGearForm.svelte";
 
   let showModal = false;
+  let showCustomGearEditModal = false;
+  let gear: GearInfo = undefined;
 
   let showOnlyWhatICanAfford = false;
   let showWeapon = true;
@@ -128,12 +131,19 @@
               <td class="pl-3">{g.name}</td>
               <td>{getCostForGear(g)}</td>
               <td>{g.slots.freeCarry ? "Free" : g.slots.slotsUsed}</td>
-              <td class="flex justify-end">
+              <td class="flex justify-end gap-1">
                 {#if g.editable}
                   <button
                     class="bg-black rounded-md text-white px-1 text-xs"
                     on:click={() => deleteCustomGear(g)}
                     ><i class="material-icons">delete</i></button
+                  >
+                  <button
+                    class="bg-black rounded-md text-white px-1 text-xs"
+                    on:click={() => {
+                      gear = g;
+                      showCustomGearEditModal = true;
+                    }}><i class="material-icons">edit</i></button
                   >
                 {/if}
                 <button
@@ -150,3 +160,16 @@
     </div>
   </div>
 </Modal>
+
+{#if showCustomGearEditModal && gear}
+  <Modal bind:showModal={showCustomGearEditModal}>
+    <h2 slot="header">Custom Gear</h2>
+    <CustomGearForm
+      {gear}
+      on:finish={() => {
+        showCustomGearEditModal = false;
+        gear = undefined;
+      }}
+    />
+  </Modal>
+{/if}

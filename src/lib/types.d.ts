@@ -265,6 +265,7 @@ export type ArmorInfo = Merge<
   GearInfo,
   {
     type: "Armor";
+    properties: ShieldProperty[];
     ac: ArmorAC;
   }
 >;

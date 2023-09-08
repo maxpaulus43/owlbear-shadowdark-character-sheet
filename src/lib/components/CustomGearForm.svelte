@@ -9,57 +9,75 @@
   } from "../constants";
   import type {
     Currency,
-    WeaponProperty,
-    WeaponType,
-    RangeType,
-    DiceType,
-    ShieldProperty,
-    Stat,
     GearInfo,
     WeaponInfo,
     ArmorInfo,
+    RangeType,
+    ModifyBonus,
   } from "../types";
   import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import MultiSelect from "./MultiSelect.svelte";
 
   const dispatch = createEventDispatcher();
 
-  export let gear: GearInfo;
+  export let gear: GearInfo = undefined;
+  const currGear = $pc.gear.find((g) => g.name === gear?.name);
+
+  function getMagicWeaponModifierFromGear(g?: GearInfo): number {
+    if (!g) return 0;
+    let b = (g as WeaponInfo)?.playerBonuses?.find(
+      (b) => b.type === "modifyAmt" && b.bonusTo === "attackRoll"
+    ) as ModifyBonus | undefined;
+    return b?.bonusAmount ?? 0;
+  }
+
+  function getRangeTypeFromGear(g?: GearInfo): RangeType[] {
+    if (!g) return ["Close"];
+    const r = (g as WeaponInfo).range;
+    if (Array.isArray(r)) {
+      return r;
+    } else {
+      return [r];
+    }
+  }
 
   const defaultViewModel = {
     // basic fields
-    name: undefined as string,
+    name: gear?.name ?? undefined,
     slots: gear?.slots?.slotsUsed ?? 1,
-    cost: 0,
+    cost: gear?.cost?.gp ?? 0,
     currency: "gp" as Currency,
-    quantity: 1,
-    quantityPerSlot: 1,
+    quantity: currGear?.quantity ?? 1,
+    quantityPerSlot: gear?.slots?.perSlot ?? 1,
 
-    showAdvanced: false,
+    showAdvanced: gear?.type !== undefined && gear?.type !== "Basic",
 
     // advanced fields
-    gearType: "Basic" as "Basic" | "Weapon" | "Armor",
-    canBeEquipped: false,
-    attackable: false,
+    gearType: gear?.type ?? "Basic",
+    canBeEquipped: gear?.canBeEquipped ?? false,
+    attackable: gear?.properties?.includes("Attackable") ?? false,
 
     // weapon fields
-    weaponProperties: [] as WeaponProperty[],
-    magicWeaponModifier: 0,
-    weaponType: "Melee" as WeaponType,
-    weaponRanges: ["Close"] as RangeType[],
-    hasOneHandedAttack: true,
-    oneHandedNumDice: 1,
-    oneHandedDiceType: "d6" as DiceType,
-    hasTwoHandedAttack: false,
-    twoHandedNumDice: 1,
-    twoHandedDiceType: "d8" as DiceType,
+    weaponProperties: (gear as WeaponInfo)?.properties ?? [],
+    magicWeaponModifier: getMagicWeaponModifierFromGear(gear),
+    weaponType: (gear as WeaponInfo)?.weaponType ?? "Melee",
+    weaponRanges: getRangeTypeFromGear(gear), // TODO
+    hasOneHandedAttack: gear
+      ? Boolean((gear as WeaponInfo)?.damage?.oneHanded)
+      : true,
+    oneHandedNumDice: (gear as WeaponInfo)?.damage?.oneHanded?.numDice ?? 1,
+    oneHandedDiceType:
+      (gear as WeaponInfo)?.damage?.oneHanded?.diceType ?? "d6",
+    hasTwoHandedAttack: Boolean((gear as WeaponInfo)?.damage?.twoHanded),
+    twoHandedNumDice: (gear as WeaponInfo)?.damage?.twoHanded?.numDice ?? 1,
+    twoHandedDiceType:
+      (gear as WeaponInfo)?.damage?.twoHanded?.diceType ?? "d8",
 
     // armor fields
-    baseAC: 10,
-    armorProperties: [] as ShieldProperty[],
-    magicArmorModifier: 0,
-    acModifier: 0,
-    armorStat: undefined as Stat,
+    baseAC: (gear as ArmorInfo)?.ac?.base ?? 10,
+    armorProperties: (gear as ArmorInfo)?.properties ?? [],
+    acModifier: (gear as ArmorInfo)?.ac?.modifier ?? 0,
+    armorStat: (gear as ArmorInfo)?.ac?.stat,
   };
 
   let vm = JSON.parse(
@@ -132,8 +150,7 @@
         let w = g as WeaponInfo;
         w.properties = vm.weaponProperties;
         w.weaponType = vm.weaponType;
-        w.range =
-          vm.weaponRanges.length === 1 ? vm.weaponRanges[0] : vm.weaponRanges;
+        w.range = vm.weaponRanges;
         w.canBeEquipped = true;
         w.damage = {};
         if (vm.hasOneHandedAttack) {
@@ -190,30 +207,29 @@
           modifier: vm.acModifier,
           stat: vm.armorStat,
         };
-        if (vm.armorProperties.includes("Magic") && vm.magicArmorModifier > 0) {
-          a.playerBonuses.push({
-            name: a.name + `: +${vm.magicArmorModifier} to AC`,
-            desc: `+${vm.magicWeaponModifier} to armor clas when ${a.name} is equipped`,
-            type: "modifyAmt",
-            bonusAmount: vm.magicWeaponModifier,
-            bonusTo: "armorClass",
-            bonusSource: "Gear",
-            editable: false,
-            metadata: {
-              type: "armor",
-              armor: a.name,
-            },
-          });
-        }
         break;
       }
     }
 
-    $pc.customGear.push(g);
-    $pc.gear.push({
-      name: g.name,
-      quantity: vm.quantity,
-    });
+    if (gear) {
+      for (let k in gear) {
+        if (gear.hasOwnProperty(k)) {
+          delete gear[k];
+        }
+      }
+      if (g.type !== "Basic") {
+        g.properties = g.properties?.filter((p) => p !== "Attackable");
+      }
+      Object.assign(gear, g);
+      currGear.name = g.name;
+      currGear.quantity = vm.quantity;
+    } else {
+      $pc.customGear.push(g);
+      $pc.gear.push({
+        name: g.name,
+        quantity: vm.quantity,
+      });
+    }
     $pc = $pc;
     dispatch("finish");
     reset();
@@ -416,7 +432,11 @@
     class:opacity-50={!canAdd}
     disabled={!canAdd}
   >
-    ADD
+    {#if gear}
+      UPDATE
+    {:else}
+      ADD
+    {/if}
   </button>
 </div>
 
