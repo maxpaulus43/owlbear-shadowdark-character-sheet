@@ -18,6 +18,7 @@
   let showWeapon = true;
   let showArmor = true;
   let showBasic = true;
+  let showCustom = false;
   let inputEl: HTMLInputElement;
 
   let gearInput: string = "";
@@ -26,6 +27,8 @@
     .concat(Object.values(WEAPON_COMPENDIUM))
     .concat($pc.customGear ?? [])
     .filter((g) => {
+      if (showCustom && !$pc.customGear.find((cg) => cg.name === g.name))
+        return false;
       if (!showWeapon && g.type === "Weapon") return false;
       if (!showArmor && g.type === "Armor") return false;
       if (!showBasic && g.type === "Basic") return false;
@@ -98,23 +101,22 @@
         </button>
       {/if}
     </div>
-    <div class="flex gap-1 items-center">
-      <div class="font-bold">Type:</div>
+    <div class="flex gap-1 items-center flex-wrap">
+      <div class="font-bold">Filter:</div>
       <input id="showWeapon" type="checkbox" bind:checked={showWeapon} />
       <label for="showWeapon">Weapon</label>
       <input id="showArmor" type="checkbox" bind:checked={showArmor} />
       <label for="showArmor">Armor</label>
       <input id="showBasic" type="checkbox" bind:checked={showBasic} />
       <label for="showBasic">Basic</label>
-    </div>
-    <div class="flex gap-1 items-center">
+      <input id="showCustom" type="checkbox" bind:checked={showCustom} />
+      <label for="showCustom">Custom</label>
       <input
-        class="w-4 h-4"
-        id="showAfforable"
+        id="showAffordable"
         type="checkbox"
         bind:checked={showOnlyWhatICanAfford}
       />
-      <label for="showAfforable">Show only what I can afford</label>
+      <label for="showAffordable">Affordable</label>
     </div>
     <div class="h-64 overflow-y-auto">
       <table class="w-full">
