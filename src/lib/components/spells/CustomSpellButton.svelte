@@ -15,6 +15,7 @@
 
 {#if showForm}
   <Modal bind:showModal>
+    <h1 slot="header">Custom Spell</h1>
     <CustomSpellForm on:finish={() => (showForm = false)} />
   </Modal>
 {/if}

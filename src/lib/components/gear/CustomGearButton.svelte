@@ -15,7 +15,7 @@
 
 {#if showForm}
   <Modal bind:showModal>
-    <h2 slot="header">Custom Gear</h2>
+    <h1 slot="header">Custom Gear</h1>
     <CustomGearForm
       on:finish={() => {
         showForm = false;

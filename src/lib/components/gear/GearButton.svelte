@@ -13,6 +13,6 @@
 
 <!-- Always Keep this rendered because we want to preserve the state of the shop's filters etc... -->
 <Modal bind:showModal={showShop}>
-  <h1 slot="header" class="min-w-[300px]">Gear Shop</h1>
+  <h1 slot="header" class="min-w-[300px]">Gear</h1>
   <GearShopView />
 </Modal>
