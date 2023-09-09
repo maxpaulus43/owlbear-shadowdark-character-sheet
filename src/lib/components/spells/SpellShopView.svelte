@@ -1,6 +1,7 @@
 <script lang="ts">
   import SPELL_COMPENDIUM from "../../compendium/spellCompendium";
   import { pc } from "../../model/PlayerCharacter";
+  import TextInput from "../TextInput.svelte";
   import SpellView from "./SpellView.svelte";
 
   let spellInput: string = "";
@@ -51,11 +52,10 @@
 </script>
 
 <div class="flex flex-col gap-1">
-  <input
-    class="w-full"
-    type="text"
+  <TextInput
     bind:value={spellInput}
     placeholder="search e.g. Burning Hands"
+    class="w-full"
   />
   <button class="blk-btn" on:click={() => (showFilters = !showFilters)}
     >{showFilters ? "Hide" : "Show"} Filters</button

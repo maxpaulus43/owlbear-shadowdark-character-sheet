@@ -7,6 +7,7 @@
   import { pc } from "../../model/PlayerCharacter";
   import Modal from "../Modal.svelte";
   import CustomGearForm from "./CustomGearForm.svelte";
+  import TextInput from "../TextInput.svelte";
 
   let gear: GearInfo = undefined;
   let showCustomGearEditModal = false;
@@ -68,22 +69,11 @@
 </script>
 
 <div class="border-b flex flex-col gap-1 h-max">
-  <div class="w-full flex gap-1">
-    <input
-      class="w-full"
-      type="text"
-      bind:value={gearInput}
-      placeholder="search e.g. Torch"
-    />
-    {#if gearInput.length > 0}
-      <button
-        on:click={() => (gearInput = "")}
-        class="bg-black text-white rounded-md px-1"
-      >
-        <i class="material-icons translate-y-1">cancel</i>
-      </button>
-    {/if}
-  </div>
+  <TextInput
+    bind:value={gearInput}
+    placeholder="search e.g. Torch"
+    class="w-full"
+  />
   <div class="flex gap-1 items-center flex-wrap">
     <div class="font-bold">Filter:</div>
     <input id="showWeapon" type="checkbox" bind:checked={showWeapon} />
