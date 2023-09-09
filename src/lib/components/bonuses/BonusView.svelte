@@ -2,11 +2,11 @@
   import {
     calculateBonusAmount,
     deleteBonusForPlayer,
-    PlayerCharacterStore as pc,
-  } from "../model/PlayerCharacter";
-  import type { Bonus } from "../types";
-  import { addSign } from "../utils";
-  import Modal from "./Modal.svelte";
+    pc,
+  } from "../../model/PlayerCharacter";
+  import type { Bonus } from "../../types";
+  import { addSign } from "../../utils";
+  import Modal from "../Modal.svelte";
 
   export let bonus: Bonus;
   export let showInfo = true;
@@ -72,12 +72,6 @@
   </div>
   {#if b.editable}
     <div class="flex gap-1">
-      <!-- <button -->
-      <!--   class="pt-1 px-1 rounded-md bg-black text-white" -->
-      <!--   on:click={() => editBonus(b)} -->
-      <!-- > -->
-      <!--   <i class="material-icons">edit</i> -->
-      <!-- </button> -->
       <button
         class="pt-1 px-1 rounded-md bg-black text-white"
         on:click={() => deleteBonus(b)}

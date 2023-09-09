@@ -3,13 +3,13 @@
   import {
     deleteCustomPlayerSpell,
     learnSpellForPlayer,
-    PlayerCharacterStore as pc,
+    pc,
     playerCanLearnSpell,
     playerHasSpell,
     unlearnSpellForPlayer,
-  } from "../model/PlayerCharacter";
-  import type { SpellInfo } from "../types";
-  import Modal from "./Modal.svelte";
+  } from "../../model/PlayerCharacter";
+  import type { SpellInfo } from "../../types";
+  import Modal from "../Modal.svelte";
   import CustomSpellForm from "./CustomSpellForm.svelte";
 
   export let s: SpellInfo;

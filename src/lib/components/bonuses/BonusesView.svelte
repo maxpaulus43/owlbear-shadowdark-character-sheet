@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { findAny } from "../compendium";
-  import { CLASSES } from "../constants";
-  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
-  import { alphabetically } from "../utils";
-  import AddBonusButton from "./CreateBonusButton.svelte";
+  import { findAny } from "../../compendium";
+  import { CLASSES } from "../../constants";
+  import { pc } from "../../model/PlayerCharacter";
+  import { alphabetically } from "../../utils";
+  import RollNewTalentButton from "../talents/RollNewTalentButton.svelte";
   import BonusView from "./BonusView.svelte";
-  import RollTalentButton from "./AddTalentButton.svelte";
+  import CustomBonusButton from "./CustomBonusButton.svelte";
 
   $: equippableGearWithBonuses = $pc.gear
     .filter((g) => g.equipped)
@@ -55,7 +55,7 @@
 
 <div class="flex gap-1">
   {#if $pc.level > 0 && $pc.class && !$pc.hasCustomClass && CLASSES.includes($pc.class)}
-    <RollTalentButton />
+    <RollNewTalentButton />
   {/if}
-  <AddBonusButton />
+  <CustomBonusButton />
 </div>

@@ -1,5 +1,7 @@
 <script lang="ts">
-  export let showModal: boolean;
+  export let showModal: boolean = true;
+
+  // $: console.log("Modal Show: " + showModal);
 
   let dialog: HTMLDialogElement;
 

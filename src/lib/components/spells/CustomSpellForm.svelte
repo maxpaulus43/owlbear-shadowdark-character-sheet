@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { STATS, RANGE_TYPES, DICE_TYPES, TIME_UNITS } from "../constants";
-  import type { DiceType, SpellInfo, SpellTier } from "../types";
-  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
+  import { STATS, RANGE_TYPES, DICE_TYPES, TIME_UNITS } from "../../constants";
+  import type { DiceType, SpellInfo, SpellTier } from "../../types";
+  import { pc } from "../../model/PlayerCharacter";
   import { createEventDispatcher } from "svelte";
 
   const dispatch = createEventDispatcher();
@@ -63,8 +63,6 @@
     }
 
     $pc = $pc;
-    spellName = undefined;
-    spellDesc = undefined;
     dispatch("finish");
   }
 </script>

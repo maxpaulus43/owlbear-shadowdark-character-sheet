@@ -5,9 +5,9 @@
     PlayerCharacterStore as pc,
   } from "./lib/model/PlayerCharacter";
   import { ALIGNMENTS } from "./lib/constants";
-  import TalentsSpellsView from "./lib/components/TalentsSpellsView.svelte";
+  import TalentsSpellsView from "./lib/components/talents/TalentsSpellsView.svelte";
   import StatView from "./lib/components/StatView.svelte";
-  import GearView from "./lib/components/GearView.svelte";
+  import GearView from "./lib/components/gear/GearView.svelte";
   import AttacksView from "./lib/components/AttacksView.svelte";
   import { importFromJson } from "./lib/services/JSONImporter";
   import HpView from "./lib/components/HPView.svelte";

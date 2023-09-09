@@ -1,13 +1,10 @@
 <script lang="ts">
-  import AddGearButton from "./AddGear.svelte";
-  import { findAny } from "../compendium";
-  import {
-    calculateGearSlotsForPlayer,
-    PlayerCharacterStore as pc,
-  } from "../model/PlayerCharacter";
-  import { alphabetically } from "../utils";
-  import CreateGearButton from "./CreateGearButton.svelte";
-  import type { Gear } from "../types";
+  import CustomGearButton from "./CustomGearButton.svelte";
+  import GearButton from "./GearButton.svelte";
+  import { findAny } from "../../compendium";
+  import { calculateGearSlotsForPlayer, pc } from "../../model/PlayerCharacter";
+  import { alphabetically } from "../../utils";
+  import type { Gear } from "../../types";
 
   const COIN_NAME = "Extra Coins";
   $: costlyGear = $pc.gear
@@ -74,8 +71,8 @@
 <div class="flex gap-1 p-1">
   <h2>GEAR</h2>
   <span>({totalSlots} slots, {freeSlots} free)</span>
-  <AddGearButton />
-  <CreateGearButton />
+  <GearButton />
+  <CustomGearButton />
 </div>
 {#if freeSlots < 0}
   <div class="text-red-600">Over Encumbered</div>

@@ -30,6 +30,7 @@ import { slotsForGear } from "./Gear";
 export const PlayerCharacterStore = createUndoRedoStore(
   writable<PlayerCharacter>(defaultPC())
 );
+export const pc = PlayerCharacterStore;
 
 export function defaultPC(): PlayerCharacter {
   return {

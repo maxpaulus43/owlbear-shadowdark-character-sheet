@@ -6,7 +6,7 @@
     DICE_TYPES,
     SHIELD_PROPERTIES,
     STATS,
-  } from "../constants";
+  } from "../../constants";
   import type {
     Currency,
     GearInfo,
@@ -14,9 +14,9 @@
     ArmorInfo,
     RangeType,
     ModifyBonus,
-  } from "../types";
-  import { PlayerCharacterStore as pc } from "../model/PlayerCharacter";
-  import MultiSelect from "./MultiSelect.svelte";
+  } from "../../types";
+  import { pc } from "../../model/PlayerCharacter";
+  import MultiSelect from "../MultiSelect.svelte";
 
   const dispatch = createEventDispatcher();
 
@@ -112,12 +112,6 @@
     vm.gearType = "Basic";
     vm.canBeEquipped = false;
     vm.attackable = false;
-  }
-
-  function reset() {
-    vm = JSON.parse(
-      JSON.stringify(defaultViewModel)
-    ) as typeof defaultViewModel;
   }
 
   function createGearItem() {
@@ -234,7 +228,6 @@
     }
     $pc = $pc;
     dispatch("finish");
-    reset();
   }
 </script>
 
