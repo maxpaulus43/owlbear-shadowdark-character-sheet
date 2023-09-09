@@ -23,3 +23,7 @@ input, select, textarea {
 button, .btn {
     @apply rounded-md hover:opacity-80 transition text-center;
 }
+
+.blk-btn {
+  @apply bg-black text-white p-1;
+}
