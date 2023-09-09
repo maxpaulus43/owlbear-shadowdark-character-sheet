@@ -15,7 +15,7 @@
 
 {#if showForm}
   <Modal bind:showModal>
-    <h2 slot="header">Add Bonus</h2>
+    <h1 slot="header">Custom Bonus</h1>
     <CustomBonusForm
       on:finish={() => {
         showForm = false;
