@@ -5,16 +5,14 @@
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import type { SpellInfo } from "../types";
-
-  import { addSign } from "../utils";
-  import CreateSpellView from "./CreateSpellButton.svelte";
   import LearnNewSpellButton from "./AddSpellButton.svelte";
   import Modal from "./Modal.svelte";
   import RollButton from "./RollButton.svelte";
   import SpellView from "./SpellView.svelte";
+  import CustomSpellForm from "./CustomSpellForm.svelte";
 
-  let showSpellInfoForSpell: SpellInfo;
-  let showModal = false;
+  let selectedSpell: SpellInfo;
+  let showSpellFormModal = false;
 
   $: spells = $pc.spells.map((s) => findSpell(s.name));
   $: hasSpells = spells?.length > 0;
@@ -31,8 +29,7 @@
             <div>{spell.name}</div>
             <button
               on:click={() => {
-                showSpellInfoForSpell = spell;
-                showModal = true;
+                selectedSpell = spell;
               }}
             >
               <i class="material-icons">info</i>
@@ -49,12 +46,27 @@
 
 <div class="flex gap-1">
   <LearnNewSpellButton />
-  <CreateSpellView />
+  <button
+    class="bg-black text-white w-full"
+    on:click={() => {
+      showSpellFormModal = true;
+    }}>Custom Spell</button
+  >
 </div>
 
-{#if showSpellInfoForSpell}
-  <Modal bind:showModal>
-    <h2 slot="header">{showSpellInfoForSpell.name}</h2>
-    <SpellView s={showSpellInfoForSpell} on:close={() => (showModal = false)} />
+{#if selectedSpell}
+  <Modal showModal={Boolean(selectedSpell)}>
+    <h2 slot="header">{selectedSpell.name}</h2>
+    <SpellView
+      s={selectedSpell}
+      on:close={() => {
+        selectedSpell = undefined;
+      }}
+    />
   </Modal>
 {/if}
+
+<Modal bind:showModal={showSpellFormModal}>
+  <h2 slot="header">New Custom Spell</h2>
+  <CustomSpellForm on:finish={() => (showSpellFormModal = false)} />
+</Modal>

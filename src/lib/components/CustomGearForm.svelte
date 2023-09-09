@@ -221,8 +221,10 @@
         g.properties = g.properties?.filter((p) => p !== "Attackable");
       }
       Object.assign(gear, g);
-      currGear.name = g.name;
-      currGear.quantity = vm.quantity;
+      if (currGear) {
+        currGear.name = g.name;
+        currGear.quantity = vm.quantity;
+      }
     } else {
       $pc.customGear.push(g);
       $pc.gear.push({

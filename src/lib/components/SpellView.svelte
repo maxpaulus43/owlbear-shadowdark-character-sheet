@@ -9,11 +9,14 @@
     unlearnSpellForPlayer,
   } from "../model/PlayerCharacter";
   import type { SpellInfo } from "../types";
+  import Modal from "./Modal.svelte";
+  import CustomSpellForm from "./CustomSpellForm.svelte";
 
   export let s: SpellInfo;
   $: duration = s.duration.amt > 0 ? s.duration.amt : "";
   $: theS = Boolean(s.duration.amt > 1 || s.duration.roll) ? "s" : "";
   let dispatch = createEventDispatcher();
+  let showCustomSpellEditModal = false;
 
   function learnSpell(s: SpellInfo) {
     learnSpellForPlayer($pc, s);
@@ -75,6 +78,27 @@
       <button class="bg-black text-white p-3" on:click={() => deleteSpell(s)}>
         <i class="material-icons translate-y-1">delete</i>
       </button>
+      <button
+        class="bg-black text-white p-3"
+        on:click={() => {
+          showCustomSpellEditModal = true;
+        }}
+      >
+        <i class="material-icons translate-y-1">edit</i>
+      </button>
     {/if}
   </div>
 </div>
+
+{#if showCustomSpellEditModal}
+  <Modal bind:showModal={showCustomSpellEditModal}>
+    <h2 slot="header">Edit Spell: {s.name}</h2>
+    <CustomSpellForm
+      spellToEdit={s}
+      on:finish={() => {
+        showCustomSpellEditModal = false;
+        s = s;
+      }}
+    />
+  </Modal>
+{/if}

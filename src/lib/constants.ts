@@ -31,7 +31,7 @@ export const TIME_UNITS = [
   "Week",
   "Month",
   "Year",
-];
+] as const;
 
 export const NUMERICAL_BONUS_TOS = [
   "gearSlots",
