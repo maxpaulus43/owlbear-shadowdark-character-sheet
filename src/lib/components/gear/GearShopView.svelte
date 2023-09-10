@@ -68,7 +68,7 @@
   }
 </script>
 
-<div class="border-b flex flex-col gap-1 h-max">
+<div class="border-b flex flex-col gap-1">
   <TextInput
     bind:value={gearInput}
     placeholder="search e.g. Torch"
@@ -91,8 +91,8 @@
     />
     <label for="showAffordable">Affordable</label>
   </div>
-  <div class="h-64 overflow-y-auto">
-    <table class="w-full">
+  <div>
+    <table>
       <thead class="text-left sticky top-0 bg-white">
         <tr>
           <th>Name</th>

@@ -1,7 +1,7 @@
 <script lang="ts">
   export let showModal: boolean = true;
-
-  // $: console.log("Modal Show: " + showModal);
+  export let vw: number = 85;
+  export let vh: number = undefined;
 
   let dialog: HTMLDialogElement;
 
@@ -16,6 +16,8 @@
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
 <dialog
+  class="max-w-3xl"
+  style={`min-width: 20rem; width: ${vw}vw;` + vh ? `height: ${vh}vh` : ""}
   bind:this={dialog}
   on:close={() => (showModal = false)}
   on:click|self={() => dialog.close()}
@@ -37,8 +39,6 @@
 
 <style>
   dialog {
-    max-width: 48em;
-    border-radius: 0.2em;
     border: none;
     padding: 0;
   }

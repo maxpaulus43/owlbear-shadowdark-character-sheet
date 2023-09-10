@@ -52,54 +52,56 @@
 </script>
 
 <div class="flex flex-col gap-1">
-  <TextInput
-    bind:value={spellInput}
-    placeholder="search e.g. Burning Hands"
-    class="w-full"
-  />
-  <button class="blk-btn" on:click={() => (showFilters = !showFilters)}
-    >{showFilters ? "Hide" : "Show"} Filters</button
-  >
-  {#if showFilters}
-    <div class="flex gap-1 items-center">
-      <div class="font-bold">Tier:</div>
-      <input id="showTier1" type="checkbox" bind:checked={showTier1} />
-      <label for="showTier1">1</label>
-      <input id="showTier2" type="checkbox" bind:checked={showTier2} />
-      <label for="showTier2">2</label>
-      <input id="showTier3" type="checkbox" bind:checked={showTier3} />
-      <label for="showTier3">3</label>
-      <input id="showTier4" type="checkbox" bind:checked={showTier4} />
-      <label for="showTier4">4</label>
-      <input id="showTier5" type="checkbox" bind:checked={showTier5} />
-      <label for="showTier5">5</label>
-    </div>
-    <div class="flex gap-1 items-center">
-      <div class="font-bold">Class:</div>
-      <input id="showPriest" type="checkbox" bind:checked={showPriest} />
-      <label for="showPriest">Priest</label>
-      <input id="showWizard" type="checkbox" bind:checked={showWizard} />
-      <label for="showWizard">Wizard</label>
-      <input id="showOther" type="checkbox" bind:checked={showOther} />
-      <label for="showWizard">Other</label>
-    </div>
-    <div class="flex gap-1 items-center">
-      <div class="font-bold">Range:</div>
-      <input id="showSelf" type="checkbox" bind:checked={showSelf} />
-      <label for="showSelf">Self</label>
-      <input id="showClose" type="checkbox" bind:checked={showClose} />
-      <label for="showClose">Close</label>
-      <input id="showNear" type="checkbox" bind:checked={showNear} />
-      <label for="showNear">Near</label>
-      <input id="showFar" type="checkbox" bind:checked={showFar} />
-      <label for="showFar">Far</label>
-    </div>
-    <div class="flex gap-1 items-center">
-      <label for="showCustom" class="font-bold">Custom</label>
-      <input id="showCustom" type="checkbox" bind:checked={showCustom} />
-    </div>
-  {/if}
-  <div class="max-h-[500px] overflow-auto">
+  <div class="sticky top-0 flex flex-col bg-white p-3">
+    <TextInput
+      bind:value={spellInput}
+      placeholder="search e.g. Burning Hands"
+      class="w-full"
+    />
+    <button class="blk-btn" on:click={() => (showFilters = !showFilters)}
+      >{showFilters ? "Hide" : "Show"} Filters</button
+    >
+    {#if showFilters}
+      <div class="flex gap-1 items-center">
+        <div class="font-bold">Tier:</div>
+        <input id="showTier1" type="checkbox" bind:checked={showTier1} />
+        <label for="showTier1">1</label>
+        <input id="showTier2" type="checkbox" bind:checked={showTier2} />
+        <label for="showTier2">2</label>
+        <input id="showTier3" type="checkbox" bind:checked={showTier3} />
+        <label for="showTier3">3</label>
+        <input id="showTier4" type="checkbox" bind:checked={showTier4} />
+        <label for="showTier4">4</label>
+        <input id="showTier5" type="checkbox" bind:checked={showTier5} />
+        <label for="showTier5">5</label>
+      </div>
+      <div class="flex gap-1 items-center">
+        <div class="font-bold">Class:</div>
+        <input id="showPriest" type="checkbox" bind:checked={showPriest} />
+        <label for="showPriest">Priest</label>
+        <input id="showWizard" type="checkbox" bind:checked={showWizard} />
+        <label for="showWizard">Wizard</label>
+        <input id="showOther" type="checkbox" bind:checked={showOther} />
+        <label for="showWizard">Other</label>
+      </div>
+      <div class="flex gap-1 items-center">
+        <div class="font-bold">Range:</div>
+        <input id="showSelf" type="checkbox" bind:checked={showSelf} />
+        <label for="showSelf">Self</label>
+        <input id="showClose" type="checkbox" bind:checked={showClose} />
+        <label for="showClose">Close</label>
+        <input id="showNear" type="checkbox" bind:checked={showNear} />
+        <label for="showNear">Near</label>
+        <input id="showFar" type="checkbox" bind:checked={showFar} />
+        <label for="showFar">Far</label>
+      </div>
+      <div class="flex gap-1 items-center">
+        <label for="showCustom" class="font-bold">Custom</label>
+        <input id="showCustom" type="checkbox" bind:checked={showCustom} />
+      </div>
+    {/if}
+  </div>
+  <div>
     <ol>
       {#each spells as s}
         <li>

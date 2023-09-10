@@ -14,7 +14,7 @@
 >
 
 {#if showForm}
-  <Modal bind:showModal>
+  <Modal bind:showModal vw={50}>
     <h1 slot="header">Custom Gear</h1>
     <CustomGearForm
       on:finish={() => {

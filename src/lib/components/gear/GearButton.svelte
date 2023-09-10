@@ -12,7 +12,7 @@
 >
 
 <!-- Always Keep this rendered because we want to preserve the state of the shop's filters etc... -->
-<Modal bind:showModal={showShop}>
+<Modal bind:showModal={showShop} vh={90}>
   <h1 slot="header" class="min-w-[300px]">Gear</h1>
   <GearShopView />
 </Modal>
