@@ -92,7 +92,7 @@
     <label for="showAffordable">Affordable</label>
   </div>
   <div>
-    <table>
+    <table class="w-full">
       <thead class="text-left sticky top-0 bg-white">
         <tr>
           <th>Name</th>
