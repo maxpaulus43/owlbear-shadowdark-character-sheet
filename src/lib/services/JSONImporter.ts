@@ -90,7 +90,7 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
       (b: SDBonus) =>
         !b.name.includes("Spell:") &&
         !b.bonusName.includes("StatBonus") &&
-        !b.bonusTo.includes("Languages")
+        !b.bonusTo.includes("Languages"),
     )
     .map(mapSDBonusToBonus)
     .flat();
@@ -286,7 +286,10 @@ function getSpellsFromJSON(json: any): SpellInfo[] {
   // eslint-disable-next-line
   json.bonuses.forEach(async (b: any) => {
     if (b.name.includes("Spell:") || b.name === "LearnExtraSpell") {
-      spells.push(findSpell(b.bonusName));
+      const s = findSpell(b.bonusName);
+      if (s) {
+        spells.push(s);
+      }
     }
   });
   return spells;

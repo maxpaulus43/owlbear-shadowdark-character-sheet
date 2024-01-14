@@ -9,7 +9,7 @@
   import SpellsButton from "./SpellsButton.svelte";
   import SpellInfoButton from "./SpellInfoButton.svelte";
 
-  $: spells = $pc.spells.map((s) => findSpell(s.name));
+  $: spells = $pc.spells.map((s) => findSpell(s.name)).filter(Boolean);
   $: hasSpells = spells?.length > 0;
 </script>
 
