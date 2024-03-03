@@ -18,7 +18,7 @@ export async function notifiy(msg: string, options: NotifyOptions = {}) {
   } else {
     const myName = await OBR.player.getName();
     OBR.room.setMetadata({
-      [NOTIFICATION_KEY]: `${myName} rolled: ${msg}`,
+      [NOTIFICATION_KEY]: `${myName}: ${msg}`,
     });
   }
 }

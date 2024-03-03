@@ -27,7 +27,8 @@ export default async function savePlayerToFile(pc: PlayerCharacter) {
   if (supportsFileSystemAccess) {
     try {
       // Show the file save dialog.
-      const handle = await window.showSaveFilePicker({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const handle = await (window as any).showSaveFilePicker({
         suggestedName,
         types: [
           {

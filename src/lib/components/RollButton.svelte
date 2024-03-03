@@ -30,7 +30,9 @@
   function roll() {
     const outcome = rollDice(diceType, numDice);
     let critMsg = "";
-    const msg = `${critMsg}${outcome} + ${modifier} = ${outcome + modifier}`;
+    const msg = `rolled ${numDice}${diceType}: ${critMsg}${outcome} + ${modifier} = ${
+      outcome + modifier
+    }`;
     notifiy(msg);
   }
 
@@ -39,7 +41,7 @@
     const outcome2 = rollDice(diceType, numDice);
     const higher = Math.max(outcome1, outcome2);
     let critMsg = "";
-    const msg = `${critMsg}${outcome1} vs. ${outcome2};\n ${higher} + ${modifier} = ${
+    const msg = `rolled ${numDice}${diceType}: ${critMsg}${outcome1} vs. ${outcome2};\n ${higher} + ${modifier} = ${
       higher + modifier
     }`;
     notifiy(msg);
@@ -50,7 +52,7 @@
     const outcome2 = rollDice(diceType, numDice);
     const lower = Math.min(outcome1, outcome2);
     let critMsg = "";
-    const msg = `${critMsg}${outcome1} vs. ${outcome2};\n ${lower} + ${modifier} = ${
+    const msg = `rolled ${numDice}${diceType}: ${critMsg}${outcome1} vs. ${outcome2};\n ${lower} + ${modifier} = ${
       lower + modifier
     }`;
     notifiy(msg);
@@ -59,7 +61,9 @@
   function rollSecretly() {
     const outcome = rollDice(diceType, numDice);
     let critMsg = "";
-    const msg = `${critMsg}${outcome} + ${modifier} = ${outcome + modifier}`;
+    const msg = `rolled ${numDice}${diceType}: ${critMsg}${outcome} + ${modifier} = ${
+      outcome + modifier
+    }`;
     notifiy(msg, { secret: true });
   }
 
