@@ -7,7 +7,6 @@ import type {
   Bonus,
   SDBonus,
   WeaponType,
-  BonusMetaData,
   WeaponBonusMetaData,
 } from "../types";
 import {

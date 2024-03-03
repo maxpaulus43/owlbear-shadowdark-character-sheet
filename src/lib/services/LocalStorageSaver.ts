@@ -3,6 +3,7 @@ import { PlayerCharacterStore } from "../model/PlayerCharacter";
 import { defaultPC } from "../model/PlayerCharacter";
 import { debounce } from "../utils";
 import { CurrentSaveSlot, NUM_SLOTS } from "./SaveSlotTracker";
+import { maintainBackwardsCompat as maintainBackwardsCompatPlayer } from "./JSONImporter";
 import type { PlayerCharacter } from "../types";
 
 export const isSaveInProgress = writable(false);
@@ -11,12 +12,12 @@ const saveToLocalStorage = debounce(
   savePlayerToLocalStorage,
   2000,
   () => isSaveInProgress.set(true),
-  () => isSaveInProgress.set(false)
+  () => isSaveInProgress.set(false),
 );
 
 export function trackAndSavePlayerToLocalStorage(
   pc: PlayerCharacter,
-  saveSlot: number
+  saveSlot: number,
 ) {
   saveToLocalStorage(pc, saveSlot);
 }
@@ -29,10 +30,10 @@ export async function clearLocalStorage() {
 
 export async function init() {
   CurrentSaveSlot.subscribe((slot) =>
-    saveToLocalStorage(get(PlayerCharacterStore), slot)
+    saveToLocalStorage(get(PlayerCharacterStore), slot),
   );
   PlayerCharacterStore.subscribe((pc) =>
-    saveToLocalStorage(pc, get(CurrentSaveSlot))
+    saveToLocalStorage(pc, get(CurrentSaveSlot)),
   );
   CurrentSaveSlot.subscribe(async (slot) => {
     PlayerCharacterStore.set(await loadPlayerFromLocalStorage(slot));
@@ -45,7 +46,7 @@ export async function init() {
 
 export async function savePlayerToLocalStorage(
   pc: PlayerCharacter,
-  saveSlot: number
+  saveSlot: number,
 ) {
   console.log("player saved");
   asyncLocalStorage.setItem(getStorageKey(saveSlot), JSON.stringify(pc));
@@ -57,7 +58,7 @@ function getStorageKey(saveSlot: number) {
 
 export async function getSaveSlot(): Promise<number> {
   return parseInt(
-    (await asyncLocalStorage.getItem("sd-character-sheet-chosen-slot")) ?? "1"
+    (await asyncLocalStorage.getItem("sd-character-sheet-chosen-slot")) ?? "1",
   );
 }
 export async function saveSaveSlot(slot: number) {
@@ -65,16 +66,17 @@ export async function saveSaveSlot(slot: number) {
 }
 
 export async function loadPlayerFromLocalStorage(
-  saveSlot: number
+  saveSlot: number,
 ): Promise<PlayerCharacter> {
-  await maintainBackwardsCompat(saveSlot);
+  await maintainBackwardsCompatSlot(saveSlot);
   const pcJson = await asyncLocalStorage.getItem(getStorageKey(saveSlot));
   if (!pcJson) return defaultPC();
   const pc = JSON.parse(pcJson) as PlayerCharacter;
+  maintainBackwardsCompatPlayer(pc);
   return pc;
 }
 
-async function maintainBackwardsCompat(saveSlot: number) {
+async function maintainBackwardsCompatSlot(saveSlot: number) {
   const oldStorageKey = "sd-character-sheet";
   const oldPcJson = await asyncLocalStorage.getItem(oldStorageKey);
   if (!oldPcJson) return;
