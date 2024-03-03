@@ -81,8 +81,8 @@
         ) {
           options = (highlightedTalent.choices as ModifyBonus[]).filter((b) =>
             $pc.spells.find(
-              (s) => s.name === (b.metadata as SpellBonusMetaData)?.spell
-            )
+              (s) => s.name === (b.metadata as SpellBonusMetaData)?.spell,
+            ),
           );
         } else {
           options = highlightedTalent.choices;

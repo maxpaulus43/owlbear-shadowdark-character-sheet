@@ -7,6 +7,8 @@ import type {
   Bonus,
   SDBonus,
   WeaponType,
+  BonusMetaData,
+  WeaponBonusMetaData,
 } from "../types";
 import {
   ensureAncestryBonuses,
@@ -66,6 +68,8 @@ export function maintainBackwardsCompat(pc: PlayerCharacter) {
   ensureClassBonuses(pc);
   ensureClassGear(pc);
   ensureLanguages(pc);
+
+  ensureProperWeaponNamesInBonuses(pc);
 }
 
 // eslint-disable-next-line
@@ -133,6 +137,8 @@ function importFromShadowDarklingsJson(json: any): PlayerCharacter {
   ensureClassGear(pc);
   ensureLanguages(pc);
   ensureAncestryBonuses(pc);
+
+  ensureProperWeaponNamesInBonuses(pc);
 
   return pc;
 }
@@ -278,6 +284,17 @@ function mapSDBonusToBonus(sdb: SDBonus): Bonus | Bonus[] {
   }
 
   return [];
+}
+
+function ensureProperWeaponNamesInBonuses(pc: PlayerCharacter) {
+  pc.bonuses
+    .map((b) => b.metadata)
+    .filter((m) => Boolean(m) && m.type === "weapon")
+    .forEach((m: WeaponBonusMetaData) => {
+      if (m.weapon === "Bastard sword") {
+        m.weapon = "Bastard Sword";
+      }
+    });
 }
 
 // eslint-disable-next-line
