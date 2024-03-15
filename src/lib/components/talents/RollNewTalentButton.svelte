@@ -61,6 +61,7 @@
             name: highlightedTalent.name,
             desc: highlightedTalent.name,
             type: "generic",
+            editable: true,
           });
         };
         break;

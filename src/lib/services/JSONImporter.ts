@@ -58,6 +58,12 @@ export function maintainBackwardsCompat(pc: PlayerCharacter) {
     });
   }
 
+  if (pc.bonuses) {
+    pc.bonuses.forEach((b) => {
+      b.editable = true;
+    });
+  }
+
   // eslint-disable-next-line
   // @ts-ignore
   if (pc.class === "Level 0") pc.class = "";

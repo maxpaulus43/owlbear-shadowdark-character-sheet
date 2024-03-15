@@ -126,7 +126,7 @@ export type NumericalBonusTo = (typeof NUMERICAL_BONUS_TOS)[number];
 export type RollBonusTo = (typeof ROLL_BONUS_TOS)[number];
 export type BonusTo = (typeof BONUS_TOS)[number];
 export type BonusSourceCategory = "Ability" | "Talent";
-export type BonusSourceType = "Ancestry" | "Class" | "Gear";
+export type BonusSourceType = "Ancestry" | "Class" | "Gear" | "Talent";
 export type WeaponBonusMetaData = {
   type: "weapon";
   weapon: string;
