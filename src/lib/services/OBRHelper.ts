@@ -12,7 +12,7 @@ import {
 } from "./LocalStorageSaver";
 import { CurrentSaveSlot, NUM_SLOTS } from "./SaveSlotTracker";
 import type { PlayerCharacter } from "../types";
-import { NOTIFICATION_KEY } from "./Notifier";
+import { NOTIFICATION_KEY, showPopover } from "./Notifier";
 
 const PLUGIN_ID = "com.maxpaulus.sd-character-sheet";
 
@@ -45,30 +45,9 @@ export async function init() {
 }
 
 function subscribeToRoomNotifications() {
-  let timeout: ReturnType<typeof setTimeout>;
-  OBR.room.onMetadataChange((md) => {
-    const notif = md[NOTIFICATION_KEY] as string;
-    const popoverId = pluginId("popover");
-
-    if (notif) {
-      OBR.popover
-        .open({
-          id: popoverId,
-          url: `/popover.html?msg=${encodeURIComponent(notif)}`,
-          height: 100,
-          width: 400,
-        })
-        .then(() => {
-          OBR.room.setMetadata({
-            [NOTIFICATION_KEY]: undefined,
-          });
-          clearTimeout(timeout);
-          timeout = setTimeout(() => {
-            OBR.popover.close(popoverId);
-          }, 5000);
-        })
-        .catch(() => alert(notif));
-    }
+  OBR.broadcast.onMessage(NOTIFICATION_KEY, ({ data: notif }) => {
+    if (typeof notif !== "string") return;
+    showPopover(notif);
   });
 }
 
@@ -124,7 +103,7 @@ async function initPlayer() {
       savePlayerToLocalStorage(pc, slot);
       pmd[`slot-${slot}`] = pc;
       PlayerMetaDataStore.set(pmd);
-    }, 1000)
+    }, 1000),
   );
 
   CurrentSaveSlot.subscribe((slot) => {
