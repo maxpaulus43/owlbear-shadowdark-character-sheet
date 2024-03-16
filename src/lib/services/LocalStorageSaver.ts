@@ -48,7 +48,6 @@ export async function savePlayerToLocalStorage(
   pc: PlayerCharacter,
   saveSlot: number,
 ) {
-  console.log("player saved");
   asyncLocalStorage.setItem(getStorageKey(saveSlot), JSON.stringify(pc));
 }
 

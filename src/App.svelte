@@ -24,6 +24,7 @@
   import OBR from "@owlbear-rodeo/sdk";
   import AncestryView from "./lib/components/AncestryView.svelte";
   import { isSaveInProgress } from "./lib/services/LocalStorageSaver";
+  import NotificationsButton from "./lib/components/NotificationsButton.svelte";
 
   const { isGM } = OBRHelper;
 
@@ -104,6 +105,7 @@
                 {/if}
                 <OptionsButton bind:files />
                 <NotesButton />
+                <NotificationsButton />
                 <PlayersView />
               </div>
             </div>

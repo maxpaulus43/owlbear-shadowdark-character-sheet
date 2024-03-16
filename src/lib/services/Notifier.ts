@@ -1,4 +1,5 @@
 import OBR from "@owlbear-rodeo/sdk";
+import { pushNotification } from "./NotificationLogger";
 import { pluginId } from "./OBRHelper";
 
 export const NOTIFICATION_KEY = pluginId("notification");
@@ -17,20 +18,17 @@ export async function notifiy(msg: string, options: NotifyOptions = {}) {
   const m = `${myName}: ${msg}`;
 
   if (options.secret) {
-    notifySecretly(m);
+    showPopover(`Secret: ${m}`);
   } else {
     OBR.broadcast.sendMessage(NOTIFICATION_KEY, m);
     showPopover(m);
   }
 }
 
-export function notifySecretly(msg: string) {
-  showPopover("Secret: " + msg);
-}
-
 let timeoutHandle: NodeJS.Timeout;
 
 export async function showPopover(msg: string) {
+  pushNotification(msg);
   const popoverId = pluginId("popover");
   if (timeoutHandle) {
     clearTimeout(timeoutHandle);
