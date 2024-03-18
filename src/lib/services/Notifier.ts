@@ -1,6 +1,8 @@
 import OBR from "@owlbear-rodeo/sdk";
+import { get } from "svelte/store";
 import { pushNotification } from "./NotificationLogger";
 import { pluginId } from "./OBRHelper";
+import { Settings } from "./SettingsTracker";
 
 export const NOTIFICATION_KEY = pluginId("notification");
 
@@ -41,9 +43,12 @@ export async function showPopover(msg: string) {
       height: 100,
       width: 400,
     });
-    timeoutHandle = setTimeout(() => {
-      OBR.popover.close(popoverId);
-    }, 5000);
+    timeoutHandle = setTimeout(
+      () => {
+        OBR.popover.close(popoverId);
+      },
+      (get(Settings).popoverDuration ?? 5) * 1000,
+    );
   } catch {
     alert(msg);
   }

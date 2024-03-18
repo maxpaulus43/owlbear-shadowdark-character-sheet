@@ -83,7 +83,7 @@ async function maintainBackwardsCompatSlot(saveSlot: number) {
   await asyncLocalStorage.removeItem(oldStorageKey);
 }
 
-const asyncLocalStorage = {
+export const asyncLocalStorage = {
   setItem: async function (key: string, value: string) {
     return Promise.resolve().then(function () {
       window.localStorage.setItem(key, value);

@@ -8,6 +8,8 @@
   import Modal from "./Modal.svelte";
   import { CurrentSaveSlot, NUM_SLOTS } from "../services/SaveSlotTracker";
   import { isGM } from "../services/OBRHelper";
+  import OBR from "@owlbear-rodeo/sdk";
+  import { Settings } from "../services/SettingsTracker";
   export let files: FileList | undefined;
   let showModal = false;
 </script>
@@ -41,6 +43,22 @@
         {/each}
       </div>
     </div>
+    {#if OBR.isAvailable}
+      <label for="notificationDuration">
+        <div class="flex flex-row gap-1 items-center">
+          <div>Notification Duration:</div>
+          <input
+            class="w-16 text-right"
+            id="notificationDuration"
+            type="number"
+            inputmode="numeric"
+            bind:value={$Settings.popoverDuration}
+            min="0"
+          />
+          <div>seconds</div>
+        </div>
+      </label>
+    {/if}
     <label for="jsonImport" class="btn">
       <div class="text-center">Import JSON</div>
       <input

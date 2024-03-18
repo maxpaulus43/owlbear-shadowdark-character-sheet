@@ -269,3 +269,7 @@ export type ArmorInfo = Merge<
     ac: ArmorAC;
   }
 >;
+
+type LocalSettings = {
+  popoverDuration?: number;
+};

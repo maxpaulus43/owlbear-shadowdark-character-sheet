@@ -25,10 +25,12 @@
   import AncestryView from "./lib/components/AncestryView.svelte";
   import { isSaveInProgress } from "./lib/services/LocalStorageSaver";
   import NotificationsButton from "./lib/components/NotificationsButton.svelte";
+  import { initSettings } from "./lib/services/SettingsTracker";
 
   const { isGM } = OBRHelper;
 
   onMount(() => {
+    initSettings();
     if (OBR.isAvailable) {
       OBRHelper.init();
     } else {
@@ -105,7 +107,9 @@
                 {/if}
                 <OptionsButton bind:files />
                 <NotesButton />
-                <NotificationsButton />
+                {#if OBR.isAvailable}
+                  <NotificationsButton />
+                {/if}
                 <PlayersView />
               </div>
             </div>
