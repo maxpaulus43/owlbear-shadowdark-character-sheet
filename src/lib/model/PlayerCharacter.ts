@@ -129,7 +129,7 @@ export function calculateDamageDiceTypeForPlayerWeapon(
     .sort(compareDiceType)
     .reverse();
 
-  if (diceTypeBonuses[0]) {
+  if (diceTypeBonuses[0] && compareDiceType(diceTypeBonuses[0], result) > 0) {
     // this will be the greatest diceType among all bonuses.
     result = diceTypeBonuses[0];
   }
