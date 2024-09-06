@@ -199,6 +199,16 @@
           </div>
         </div>
         <div class="col-span-full cell">
+          <label>
+            <h2>LUCK TOKENS</h2>
+            <input
+              type="number"
+              inputmode="numeric"
+              bind:value={$pc.luckTokens}
+            />
+          </label>
+        </div>
+        <div class="col-span-full cell">
           <h2>TITLE</h2>
           {#if $pc.hasCustomClass}
             <input

@@ -119,6 +119,7 @@ export type PlayerCharacter = {
   spells: Spell[];
   customSpells: SpellInfo[];
   hitPoints: number;
+  luckTokens: number;
 };
 
 /////// Bonus
