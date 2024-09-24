@@ -26,13 +26,14 @@ export function pluginId(s: string) {
   return `${PLUGIN_ID}/${s}`;
 }
 
-export const gmId = writable<string>();
 export const isGM = writable(false);
 export const PartyStore = writable<Player[]>([]);
 export const TrackedPlayer = writable<string>();
+export const GmId = writable<string>();
+export const GmPlayer = writable<Player>();
 
 export const isTrackedPlayerGM = derived(TrackedPlayer, ($trackedPlayer) => {
-  return $trackedPlayer == get(gmId);
+  return $trackedPlayer == get(GmId);
 });
 
 export async function init() {
@@ -60,8 +61,12 @@ function subscribeToRoomNotifications() {
 }
 
 async function initGM() {
-  gmId.set(OBR.player.id)
+  GmId.set(OBR.player.id)
   TrackedPlayer.set(OBR.player.id)
+
+  OBR.player.onChange((gm) => {
+    GmPlayer.set(gm);
+  });
 
   OBR.party.onChange((party) => {
     PartyStore.set(party);
@@ -71,7 +76,7 @@ async function initGM() {
     const pmd: { [pId: string]: PlayerMetaData } = {};
 
     // add GM metadata too
-    pmd[get(gmId)] = (await OBR.player.getMetadata())[pluginId("sheetData")];
+    pmd[OBR.player.id] = (await OBR.player.getMetadata())[pluginId("sheetData")];
 
     for (const p of party) {
       pmd[p.id] = p.metadata[pluginId("sheetData")];

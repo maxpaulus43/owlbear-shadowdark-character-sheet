@@ -4,8 +4,9 @@
     isGM,
     PartyStore,
     TrackedPlayer,
-    gmId,
     isTrackedPlayerGM,
+    GmId,
+    GmPlayer,
   } from "../services/OBRHelper";
   import Modal from "./Modal.svelte";
 
@@ -20,7 +21,9 @@
 
   $: {
     allPlayers = $PartyStore.map((p) => ({ id: p.id, name: p.name }));
-    allPlayers.unshift({ id: $gmId, name: "GM" });
+
+    // add GM to the top of the list
+    allPlayers.unshift({ id: $GmId, name: $GmPlayer?.name ?? "GM" });
   }
 
   function onLoadPlayer(p: PlayerItem) {
@@ -31,7 +34,7 @@
 {#if $isGM}
   <button
     on:click={() => (showModal = true)}
-    class="{$isTrackedPlayerGM ? 'bg-black' : 'bg-green-600' } text-white px-1"
+    class="{$isTrackedPlayerGM ? 'bg-black' : 'bg-green-600'} text-white px-1"
   >
     <i class="material-icons translate-y-1">group</i>
   </button>
