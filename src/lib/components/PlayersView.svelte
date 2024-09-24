@@ -42,9 +42,9 @@
 
 <Modal bind:showModal>
   <h1 slot="header">Players</h1>
-  <div class="w-72">
-    NOTE: loading a player only loads their data. It is a READ ONLY view of the
-    players sheet.
+  <div class="w-72 mt-4 mb-4">
+    NOTE: loading another player only loads their data. It is a READ ONLY view
+    of the players sheet.
   </div>
   <div class="flex flex-col gap-1 w-full">
     {#each allPlayers as p}
@@ -58,6 +58,8 @@
             class="bg-black text-white p-1 rounded-md px-1"
             on:click={() => onLoadPlayer(p)}>Load</button
           >
+        {:else if $isTrackedPlayerGM}
+          <div>Me</div>
         {:else}
           <div>In Sync</div>
         {/if}
