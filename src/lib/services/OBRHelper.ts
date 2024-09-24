@@ -3,7 +3,7 @@ import type { Player } from "@owlbear-rodeo/sdk";
 import { defaultPC } from "../model/PlayerCharacter";
 import { PlayerCharacterStore } from "../model/PlayerCharacter";
 import { debounce } from "../utils";
-import { writable, get } from "svelte/store";
+import { writable, get, derived } from "svelte/store";
 import {
   getSaveSlot,
   loadPlayerFromLocalStorage,
@@ -30,6 +30,10 @@ export const gmId = writable<string>();
 export const isGM = writable(false);
 export const PartyStore = writable<Player[]>([]);
 export const TrackedPlayer = writable<string>();
+
+export const isTrackedPlayerGM = derived(TrackedPlayer, ($trackedPlayer) => {
+  return $trackedPlayer == get(gmId);
+});
 
 export async function init() {
   OBR.onReady(async () => {
@@ -109,7 +113,7 @@ async function initPlayer() {
 
   PlayerCharacterStore.subscribe(
     debounce((pc) => {
-      if (get(isGM) && !isTrackedPlayerGM()) return;
+      if (get(isGM) && !get(isTrackedPlayerGM)) return;
 
       const pmd = get(PlayerMetaDataStore);
       const slot = get(CurrentSaveSlot);
@@ -120,7 +124,7 @@ async function initPlayer() {
   );
 
   CurrentSaveSlot.subscribe((slot) => {
-    if (get(isGM) && !isTrackedPlayerGM()) return;
+    if (get(isGM) && !get(isTrackedPlayerGM)) return;
 
     saveSaveSlot(slot);
     const pmd = get(PlayerMetaDataStore);
@@ -128,14 +132,10 @@ async function initPlayer() {
   });
 
   PlayerMetaDataStore.subscribe((pmd) => {
-    if (get(isGM) && !isTrackedPlayerGM()) return;
+    if (get(isGM) && !get(isTrackedPlayerGM)) return;
 
     OBR.player.setMetadata({
       [pluginId("sheetData")]: pmd,
     });
   });
-
-  function isTrackedPlayerGM() {
-    return get(TrackedPlayer) == get(gmId);
-  }
 }
