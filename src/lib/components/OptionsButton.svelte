@@ -25,12 +25,6 @@
   <h1 slot="header">Options</h1>
   <div class="flex flex-col gap-1 min-w-[200px]" id="options">
     <div>
-      {#if $isGM}
-        <div>
-          Note: You are the GM. GM's cannot<br />save player data to local
-          storage.
-        </div>
-      {/if}
       <h2>Choose Save Slot</h2>
       <div class="flex gap-1 w-full justify-stretch">
         {#each { length: NUM_SLOTS } as _, i}
@@ -83,20 +77,18 @@
       href="https://github.com/maxpaulus43/owlbear-shadowdark-character-sheet/issues/new"
       target="_blank">Report Issue</a
     >
-    {#if !$isGM}
-      <div>Advanced Options (Proceed with caution)</div>
-      <button
-        on:click={() => {
-          $pc = defaultPC();
-        }}>Clear Current Save Slot</button
-      >
-      <button
-        on:click={() => {
-          $pc = defaultPC();
-          clearLocalStorage();
-        }}>Clear Storage (Proceed with caution)</button
-      >
-    {/if}
+    <div>Advanced Options (Proceed with caution)</div>
+    <button
+      on:click={() => {
+        $pc = defaultPC();
+      }}>Clear Current Save Slot</button
+    >
+    <button
+      on:click={() => {
+        $pc = defaultPC();
+        clearLocalStorage();
+      }}>Clear Storage (Proceed with caution)</button
+    >
   </div>
 </Modal>
 
