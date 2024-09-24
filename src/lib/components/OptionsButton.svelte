@@ -7,7 +7,6 @@
   } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
   import { CurrentSaveSlot, NUM_SLOTS } from "../services/SaveSlotTracker";
-  import { isGM } from "../services/OBRHelper";
   import OBR from "@owlbear-rodeo/sdk";
   import { Settings } from "../services/SettingsTracker";
   export let files: FileList | undefined;
