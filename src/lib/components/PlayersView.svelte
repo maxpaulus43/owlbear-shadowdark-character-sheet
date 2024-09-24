@@ -10,10 +10,15 @@
     name: string;
   };
 
-  const allPlayerIds: PlayerItem[] = $PartyStore.map(p => ({ id: p.id, name: p.name }));
-  allPlayerIds.unshift({ id: $gmId, name: "GM"});
+  let allPlayers: PlayerItem[];
 
-  function onLoadPlayer(p: Player) {
+  $: {
+    allPlayers = $PartyStore.map(p => ({ id: p.id, name: p.name }));
+    allPlayers.unshift({ id: $gmId, name: "GM"});
+  }
+
+
+  function onLoadPlayer(p: PlayerItem) {
     $TrackedPlayer = p.id;
   }
 </script>
@@ -31,7 +36,7 @@
     players sheet.
   </div>
   <div class="flex flex-col gap-1 w-full">
-    {#each $PartyStore as p}
+    {#each allPlayers as p}
       <div
         class="flex gap-1 justify-between items-center p-1 rounded-md w-full"
         class:bg-yellow-300={$TrackedPlayer === p.id}

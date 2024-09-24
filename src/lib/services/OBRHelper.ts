@@ -57,14 +57,18 @@ function subscribeToRoomNotifications() {
 
 async function initGM() {
   gmId.set(OBR.player.id)
-  TrackedPlayer.set(get(gmId))
+  TrackedPlayer.set(OBR.player.id)
 
   OBR.party.onChange((party) => {
     PartyStore.set(party);
   });
 
-  PartyStore.subscribe((party) => {
+  PartyStore.subscribe(async (party) => {
     const pmd: { [pId: string]: PlayerMetaData } = {};
+
+    // add GM metadata too
+    pmd[get(gmId)] = (await OBR.player.getMetadata())[pluginId("sheetData")];
+
     for (const p of party) {
       pmd[p.id] = p.metadata[pluginId("sheetData")];
     }
@@ -105,6 +109,8 @@ async function initPlayer() {
 
   PlayerCharacterStore.subscribe(
     debounce((pc) => {
+      if (get(isGM) && !isTrackedPlayerGM()) return;
+
       const pmd = get(PlayerMetaDataStore);
       const slot = get(CurrentSaveSlot);
       savePlayerToLocalStorage(pc, slot);
@@ -114,14 +120,22 @@ async function initPlayer() {
   );
 
   CurrentSaveSlot.subscribe((slot) => {
+    if (get(isGM) && !isTrackedPlayerGM()) return;
+
     saveSaveSlot(slot);
     const pmd = get(PlayerMetaDataStore);
     PlayerCharacterStore.set(pmd[`slot-${slot}`]);
   });
 
   PlayerMetaDataStore.subscribe((pmd) => {
+    if (get(isGM) && !isTrackedPlayerGM()) return;
+
     OBR.player.setMetadata({
       [pluginId("sheetData")]: pmd,
     });
   });
+
+  function isTrackedPlayerGM() {
+    return get(TrackedPlayer) == get(gmId);
+  }
 }
