@@ -137,7 +137,15 @@ async function initPlayer() {
   });
 
   PlayerMetaDataStore.subscribe((pmd) => {
-    if (get(isGM) && !get(isTrackedPlayerGM)) return;
+    if (get(isGM)) {
+      if (!get(isTrackedPlayerGM)) return;
+
+      // if this is the GM we also need to update the Player Metadata Map
+      const pmdMap = get(PlayerMetaDataMapStore);
+      const pId = get(GmId);
+
+      pmdMap[pId] = pmd;
+    }
 
     OBR.player.setMetadata({
       [pluginId("sheetData")]: pmd,
