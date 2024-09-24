@@ -26,6 +26,7 @@ export function pluginId(s: string) {
   return `${PLUGIN_ID}/${s}`;
 }
 
+export const gmId = writable<string>();
 export const isGM = writable(false);
 export const PartyStore = writable<Player[]>([]);
 export const TrackedPlayer = writable<string>();
@@ -38,6 +39,9 @@ export async function init() {
 
     if (get(isGM)) {
       initGM();
+
+      // GM is also a player
+      initPlayer();
     } else {
       initPlayer();
     }
@@ -52,6 +56,9 @@ function subscribeToRoomNotifications() {
 }
 
 async function initGM() {
+  gmId.set(OBR.player.id)
+  TrackedPlayer.set(get(gmId))
+
   OBR.party.onChange((party) => {
     PartyStore.set(party);
   });

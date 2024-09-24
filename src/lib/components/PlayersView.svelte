@@ -1,9 +1,17 @@
 <script lang="ts">
   import type { Player } from "@owlbear-rodeo/sdk";
-  import { isGM, PartyStore, TrackedPlayer } from "../services/OBRHelper";
+  import { isGM, PartyStore, TrackedPlayer, gmId } from "../services/OBRHelper";
   import Modal from "./Modal.svelte";
 
   let showModal = false;
+
+  type PlayerItem = {
+    id: string;
+    name: string;
+  };
+
+  const allPlayerIds: PlayerItem[] = $PartyStore.map(p => ({ id: p.id, name: p.name }));
+  allPlayerIds.unshift({ id: $gmId, name: "GM"});
 
   function onLoadPlayer(p: Player) {
     $TrackedPlayer = p.id;

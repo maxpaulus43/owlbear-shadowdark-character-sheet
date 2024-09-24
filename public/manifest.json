@@ -1,6 +1,6 @@
 {
-  "name": "Shadow Dark Character Sheet",
-  "version": "1.0.0",
+  "name": "Shadow Dark Character Sheet Dev",
+  "version": "1.1.0",
   "icon":"/icon.svg",
   "manifest_version": 1,
   "action": {
