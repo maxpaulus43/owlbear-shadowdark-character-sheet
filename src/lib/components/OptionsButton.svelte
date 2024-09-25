@@ -67,6 +67,10 @@
         class="hidden"
         accept="application/json"
         bind:files
+        on:click={(e) => {
+          e.currentTarget.value = "";
+          files = undefined;
+        }}
       />
     </label>
     <button
