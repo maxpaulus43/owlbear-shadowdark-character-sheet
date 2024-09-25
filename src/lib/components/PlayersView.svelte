@@ -52,7 +52,7 @@
         class="flex gap-1 justify-between items-center p-1 rounded-md w-full"
         class:bg-yellow-300={$TrackedPlayer === p.id}
       >
-        <div>{p.name}{p.id == $GmPlayer.id ? " (you)" : ""}</div>
+        <div>{p.name}{p.id == $GmId ? " (you)" : ""}</div>
         {#if $TrackedPlayer !== p.id}
           <button
             class="bg-black text-white p-1 rounded-md px-1"
