@@ -9,8 +9,11 @@
   import { CurrentSaveSlot, NUM_SLOTS } from "../services/SaveSlotTracker";
   import OBR from "@owlbear-rodeo/sdk";
   import { Settings } from "../services/SettingsTracker";
+  import { isGM, isTrackedPlayerGM } from "../services/OBRHelper";
   export let files: FileList | undefined;
   let showModal = false;
+
+  $: isSheetReadOnly = $isGM && !$isTrackedPlayerGM;
 </script>
 
 <button
@@ -52,13 +55,14 @@
         </div>
       </label>
     {/if}
-    <label for="jsonImport" class="btn">
+    <label for="jsonImport" class={isSheetReadOnly ? 'btn-disabled' : 'btn'}>
       <div class="text-center">Import JSON</div>
       <input
         id="jsonImport"
         type="file"
         class="hidden"
         accept="application/json"
+        disabled={isSheetReadOnly}
         bind:files
         on:click={(e) => {
           e.currentTarget.value = "";
@@ -76,25 +80,32 @@
       href="https://github.com/maxpaulus43/owlbear-shadowdark-character-sheet/issues/new"
       target="_blank">Report Issue</a
     >
-    <div>Advanced Options (Proceed with caution)</div>
-    <button
-      on:click={() => {
-        $pc = defaultPC();
-      }}>Clear Current Save Slot</button
-    >
-    <button
-      on:click={() => {
-        $pc = defaultPC();
-        clearLocalStorage();
-      }}>Clear Storage (Proceed with caution)</button
-    >
+    {#if !isSheetReadOnly}
+      <div>Advanced Options (Proceed with caution)</div>
+      <button
+        on:click={() => {
+          $pc = defaultPC();
+        }}>Clear Current Save Slot</button
+      >
+      <button
+        on:click={() => {
+          $pc = defaultPC();
+          clearLocalStorage();
+        }}>Clear Storage (Proceed with caution)</button
+      >
+    {/if}
   </div>
 </Modal>
 
 <style lang="postcss">
   button,
   .btn {
-    @apply bg-black text-white px-1 rounded-md hover:scale-105 transition active:opacity-50 text-center;
+    @apply bg-black text-white px-1 rounded-md hover:scale-105 transition active:opacity-50 text-center cursor-pointer;
+  }
+
+  button[disabled],
+  .btn-disabled {
+    @apply  bg-black text-white px-1 rounded-md text-center opacity-30 cursor-default hover:scale-100;
   }
 
   .green {
@@ -102,7 +113,9 @@
   }
 
   #options button,
-  #options .btn {
+  #options button[disabled],
+  #options .btn,
+  #options .btn-disabled {
     @apply p-2;
   }
 </style>
