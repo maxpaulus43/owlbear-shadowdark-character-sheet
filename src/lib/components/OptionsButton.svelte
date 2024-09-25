@@ -92,6 +92,7 @@
       >
       <button
         on:click={() => {
+          $pc = defaultPC();
           clearLocalStorage();
         }}>Clear Storage (Proceed with caution)</button
       >
