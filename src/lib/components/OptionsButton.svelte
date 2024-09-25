@@ -103,7 +103,6 @@
     @apply bg-black text-white px-1 rounded-md hover:scale-105 transition active:opacity-50 text-center cursor-pointer;
   }
 
-  button[disabled],
   .btn-disabled {
     @apply  bg-black text-white px-1 rounded-md text-center opacity-30 cursor-default hover:scale-100;
   }
@@ -113,7 +112,6 @@
   }
 
   #options button,
-  #options button[disabled],
   #options .btn,
   #options .btn-disabled {
     @apply p-2;
