@@ -82,6 +82,12 @@ async function initGM() {
       pmd[p.id] = p.metadata[pluginId("sheetData")];
     }
     PlayerMetaDataMapStore.set(pmd);
+
+    // update the tracked player if they leave the party
+    const trackedPlayer = get(TrackedPlayer);
+    if (!party.find((p) => p.id === trackedPlayer)) {
+      TrackedPlayer.set(OBR.player.id);
+    }
   });
 
   PlayerMetaDataMapStore.subscribe((pmd) => {
