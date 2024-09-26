@@ -3,7 +3,7 @@ import type { Player } from "@owlbear-rodeo/sdk";
 import { defaultPC } from "../model/PlayerCharacter";
 import { PlayerCharacterStore } from "../model/PlayerCharacter";
 import { debounce } from "../utils";
-import { writable, get } from "svelte/store";
+import { writable, get, derived } from "svelte/store";
 import {
   getSaveSlot,
   loadPlayerFromLocalStorage,
@@ -29,6 +29,12 @@ export function pluginId(s: string) {
 export const isGM = writable(false);
 export const PartyStore = writable<Player[]>([]);
 export const TrackedPlayer = writable<string>();
+export const GmId = writable<string>();
+export const GmPlayer = writable<Player>();
+
+export const isTrackedPlayerGM = derived(TrackedPlayer, ($trackedPlayer) => {
+  return $trackedPlayer == get(GmId);
+});
 
 export async function init() {
   OBR.onReady(async () => {
@@ -38,6 +44,9 @@ export async function init() {
 
     if (get(isGM)) {
       initGM();
+
+      // GM is also a player
+      initPlayer();
     } else {
       initPlayer();
     }
@@ -52,12 +61,23 @@ function subscribeToRoomNotifications() {
 }
 
 async function initGM() {
+  GmId.set(OBR.player.id)
+  TrackedPlayer.set(OBR.player.id)
+
+  OBR.player.onChange((gm) => {
+    GmPlayer.set(gm);
+  });
+
   OBR.party.onChange((party) => {
     PartyStore.set(party);
   });
 
-  PartyStore.subscribe((party) => {
+  PartyStore.subscribe(async (party) => {
     const pmd: { [pId: string]: PlayerMetaData } = {};
+
+    // add GM metadata too
+    pmd[OBR.player.id] = (await OBR.player.getMetadata())[pluginId("sheetData")];
+
     for (const p of party) {
       pmd[p.id] = p.metadata[pluginId("sheetData")];
     }
@@ -98,6 +118,8 @@ async function initPlayer() {
 
   PlayerCharacterStore.subscribe(
     debounce((pc) => {
+      if (get(isGM) && !get(isTrackedPlayerGM)) return;
+
       const pmd = get(PlayerMetaDataStore);
       const slot = get(CurrentSaveSlot);
       savePlayerToLocalStorage(pc, slot);
@@ -107,12 +129,24 @@ async function initPlayer() {
   );
 
   CurrentSaveSlot.subscribe((slot) => {
+    if (get(isGM) && !get(isTrackedPlayerGM)) return;
+
     saveSaveSlot(slot);
     const pmd = get(PlayerMetaDataStore);
     PlayerCharacterStore.set(pmd[`slot-${slot}`]);
   });
 
   PlayerMetaDataStore.subscribe((pmd) => {
+    if (get(isGM)) {
+      if (!get(isTrackedPlayerGM)) return;
+
+      // if this is the GM we also need to update the Player Metadata Map
+      const pmdMap = get(PlayerMetaDataMapStore);
+      const pId = get(GmId);
+
+      pmdMap[pId] = pmd;
+    }
+
     OBR.player.setMetadata({
       [pluginId("sheetData")]: pmd,
     });

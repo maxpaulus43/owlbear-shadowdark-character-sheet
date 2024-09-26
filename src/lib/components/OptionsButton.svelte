@@ -7,11 +7,13 @@
   } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
   import { CurrentSaveSlot, NUM_SLOTS } from "../services/SaveSlotTracker";
-  import { isGM } from "../services/OBRHelper";
   import OBR from "@owlbear-rodeo/sdk";
   import { Settings } from "../services/SettingsTracker";
+  import { isGM, isTrackedPlayerGM } from "../services/OBRHelper";
   export let files: FileList | undefined;
   let showModal = false;
+
+  $: isSheetReadOnly = $isGM && !$isTrackedPlayerGM;
 </script>
 
 <button
@@ -25,12 +27,6 @@
   <h1 slot="header">Options</h1>
   <div class="flex flex-col gap-1 min-w-[200px]" id="options">
     <div>
-      {#if $isGM}
-        <div>
-          Note: You are the GM. GM's cannot<br />save player data to local
-          storage.
-        </div>
-      {/if}
       <h2>Choose Save Slot</h2>
       <div class="flex gap-1 w-full justify-stretch">
         {#each { length: NUM_SLOTS } as _, i}
@@ -59,13 +55,14 @@
         </div>
       </label>
     {/if}
-    <label for="jsonImport" class="btn">
+    <label for="jsonImport" class={isSheetReadOnly ? 'btn-disabled' : 'btn'}>
       <div class="text-center">Import JSON</div>
       <input
         id="jsonImport"
         type="file"
         class="hidden"
         accept="application/json"
+        disabled={isSheetReadOnly}
         bind:files
         on:click={(e) => {
           e.currentTarget.value = "";
@@ -83,7 +80,7 @@
       href="https://github.com/maxpaulus43/owlbear-shadowdark-character-sheet/issues/new"
       target="_blank">Report Issue</a
     >
-    {#if !$isGM}
+    {#if !isSheetReadOnly}
       <div>Advanced Options (Proceed with caution)</div>
       <button
         on:click={() => {
@@ -103,7 +100,11 @@
 <style lang="postcss">
   button,
   .btn {
-    @apply bg-black text-white px-1 rounded-md hover:scale-105 transition active:opacity-50 text-center;
+    @apply bg-black text-white px-1 rounded-md hover:scale-105 transition active:opacity-50 text-center cursor-pointer;
+  }
+
+  .btn-disabled {
+    @apply  bg-black text-white px-1 rounded-md text-center opacity-30 cursor-default hover:scale-100;
   }
 
   .green {
@@ -111,7 +112,8 @@
   }
 
   #options button,
-  #options .btn {
+  #options .btn,
+  #options .btn-disabled {
     @apply p-2;
   }
 </style>
