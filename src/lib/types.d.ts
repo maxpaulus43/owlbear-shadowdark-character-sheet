@@ -56,6 +56,7 @@ export type Talent = GenericTalent | BonusTalent | ChooseBonusTalent;
 export type SpellTier = 1 | 2 | 3 | 4 | 5;
 export type Spell = {
   name: string;
+  failed?: boolean; //  spellcasting check failed
 };
 export type SpellClass =
   | Extract<Class, "Wizard" | "Priest">
