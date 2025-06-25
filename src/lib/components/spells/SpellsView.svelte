@@ -50,7 +50,7 @@
               checked={hasFailedSpellcast(spell)}
               on:click={() => toggleFailed(spell)}
             />
-            <RollButton modifier={mod} />
+            <RollButton disabled={hasFailedSpellcast(spell)} modifier={mod} />
           </div>
         </div>
       </li>
