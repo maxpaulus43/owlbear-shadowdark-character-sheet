@@ -15,6 +15,7 @@
   }
   function longRest() {
     $pc.hitPoints = $pc.maxHitPoints;
+    $pc.spells = $pc.spells.map((s) => ({ name: s.name, failed: false }));
   }
 </script>
 

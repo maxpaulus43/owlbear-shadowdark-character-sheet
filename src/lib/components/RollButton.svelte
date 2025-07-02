@@ -93,6 +93,8 @@
     on:touchstart={touchStart}
     on:touchend={touchEnd}
     class="bg-black text-white pt-1 px-1 rounded-md"
+    class:opacity-50={disabled}
+    class:cursor-not-allowed={disabled}
   >
     <slot
       ><div class="rounded-md bg-black text-white p-1">
