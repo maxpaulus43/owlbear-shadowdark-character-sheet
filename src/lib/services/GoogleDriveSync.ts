@@ -1,13 +1,16 @@
 // src/lib/services/GoogleDriveSync.ts
 import { get } from "svelte/store";
 import { PlayerCharacterStore } from "../model/PlayerCharacter";
-import { asyncLocalStorage, loadPlayerFromLocalStorage, savePlayerToLocalStorage, CurrentSaveSlot } from "./LocalStorageSaver";
-import type { PlayerCharacter } from "../types";
 
+// Remove the old combined import line and replace with these two:
+import { asyncLocalStorage, savePlayerToLocalStorage } from "./LocalStorageSaver";
+import { CurrentSaveSlot } from "./SaveSlotTracker"; 
+
+import type { PlayerCharacter } from "../types";
 // Configuration
-const CLIENT_ID = 'YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com'; // You need to generate this in Google Cloud Console
+const CLIENT_ID = '662108188914-skvn3so90q67jfqssnd0lfb3j9tvftm2.apps.googleusercontent.com'; // You need to generate this in Google Cloud Console
 const API_KEY = 'YOUR_GOOGLE_API_KEY'; // Optional, but recommended for discovery docs
-const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+const SCOPES = 'https://www.googleapis.com/auth/drive.appdata';
 
 // State
 let tokenClient: any;

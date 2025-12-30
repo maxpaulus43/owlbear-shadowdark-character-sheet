@@ -274,3 +274,10 @@ export type ArmorInfo = Merge<
 type LocalSettings = {
   popoverDuration?: number;
 };
+
+// Syncing
+declare global {
+  interface Window {
+    google: any;
+  }
+}

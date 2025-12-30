@@ -5,6 +5,7 @@ import { debounce } from "../utils";
 import { CurrentSaveSlot, NUM_SLOTS } from "./SaveSlotTracker";
 import { maintainBackwardsCompat as maintainBackwardsCompatPlayer } from "./JSONImporter";
 import type { PlayerCharacter } from "../types";
+import { updateLocalTimestamp } from "./GoogleDriveSync";
 
 export const isSaveInProgress = writable(false);
 
@@ -49,6 +50,9 @@ export async function savePlayerToLocalStorage(
   saveSlot: number,
 ) {
   asyncLocalStorage.setItem(getStorageKey(saveSlot), JSON.stringify(pc));
+  //Syncing
+  await asyncLocalStorage.setItem(getStorageKey(saveSlot), JSON.stringify(pc));
+  await updateLocalTimestamp(saveSlot);
 }
 
 function getStorageKey(saveSlot: number) {

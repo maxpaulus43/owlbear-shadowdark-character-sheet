@@ -26,6 +26,7 @@
   import { isSaveInProgress } from "./lib/services/LocalStorageSaver";
   import NotificationsButton from "./lib/components/NotificationsButton.svelte";
   import { initSettings } from "./lib/services/SettingsTracker";
+import { initGoogleAuth, login } from "./lib/services/GoogleDriveSync";
 
   const { isGM } = OBRHelper;
 
@@ -35,6 +36,8 @@
       OBRHelper.init();
     } else {
       LocalStorageSaver.init();
+      // Initialize the Google library
+      initGoogleAuth();
     }
   });
   $: setCustomGearForPlayer($pc);
@@ -61,7 +64,17 @@
     $pc.title = (e.target as HTMLInputElement).value;
   }
 </script>
+<div class="-translate-y-2 flex gap-1">
+  <button 
+    class="bg-black text-white rounded-md px-2" 
+    on:click={login} 
+    title="Sync with Google Drive"
+  >
+    <i class="material-icons translate-y-1">cloud_sync</i>
+  </button>
 
+  <OptionsButton bind:files />
+  </div>
 <div class="flex items-center justify-center bg-black">
   <main>
     <div
