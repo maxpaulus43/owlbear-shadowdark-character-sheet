@@ -30,7 +30,7 @@
   
   // --- SYNC IMPORTS ---
   import { 
-    initGoogleAuth, 
+    initSync,              
     initialSyncComplete, 
     showReauthModal, 
     showConnectionErrorModal,
@@ -42,8 +42,9 @@
     login, 
     enableOfflineMode,
     logout
-  } from "./lib/services/GoogleDriveSync";
+  } from "./lib/services/SyncManager";
   import SyncButton from "./lib/components/SyncButton.svelte"; 
+  import SyncSetupModal from "./lib/components/SyncSetupModal.svelte";
   // --------------------
 
   const { isGM } = OBRHelper;
@@ -53,7 +54,7 @@
     if (OBR.isAvailable) {
       OBRHelper.init();
     } else {
-      initGoogleAuth();
+      initSync(); 
     }
   });
 
@@ -93,6 +94,7 @@
   <div class="flex items-center justify-center bg-black">
     <main>
        <div id="sheet" class="bg-black min-w-[277px] max-w-[1000px] p-2 flex flex-wrap gap-2">
+         
          <div class="flex-[2] min-w-[257px] h-auto min-[805px]:h-[700px] grid grid-rows-8 grid-cols-2 gap-2">
            <div class="col-span-full cell">
               <div class="flex gap-1 justify-around">
@@ -189,12 +191,14 @@
   </div>
 {/if}
 
+<SyncSetupModal />
+
 {#if $showReauthModal}
   <Modal on:close={enableOfflineMode}> 
-    <h1 slot="header">Google Login Required</h1>
+    <h1 slot="header">Authentication Required</h1>
     <div class="flex flex-col gap-4 max-w-xs p-2">
-      <p>In order to synchronize, Google requires you to verify your login every hour.</p>
-      <button class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700" on:click={login}>Login with Google Drive</button>
+      <p>Your sync session has expired or requires a login.</p>
+      <button class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700" on:click={login}>Login / Re-authenticate</button>
       <button class="bg-gray-500 text-white p-2 rounded hover:bg-gray-600" on:click={enableOfflineMode}>Work Offline</button>
     </div>
   </Modal>
@@ -214,7 +218,7 @@
   <Modal on:close={() => showOfflineConfirmationModal.set(false)}>
     <h1 slot="header">Offline Mode</h1>
     <div class="flex flex-col gap-4 max-w-xs p-2">
-      <p>You are now working offline. Be sure to sync to Google Drive before making changes on any other devices.</p>
+      <p>You are now working offline. The app will automatically try to reconnect in the background.</p>
       <button class="bg-black text-white p-2 rounded hover:bg-gray-800" on:click={() => showOfflineConfirmationModal.set(false)}>OK</button>
     </div>
   </Modal>
@@ -224,7 +228,7 @@
 <Modal on:close={() => { showConflictModal.set(false); logout(); }}>
     <h1 slot="header">Sync Conflicts Detected</h1>
     <div class="flex flex-col gap-3 min-w-[300px] p-2 overflow-y-auto max-h-[80vh]">
-        <p class="text-sm">The following slots have changed on both this device and Google Drive since you last synced.</p>
+        <p class="text-sm">The following slots have changed on both this device and the cloud since you last synced.</p>
         
         <div class="flex flex-col gap-2 mt-2">
            {#each $conflictedSlots as conflict}

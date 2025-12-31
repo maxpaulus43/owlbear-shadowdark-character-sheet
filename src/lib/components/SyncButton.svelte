@@ -1,12 +1,16 @@
 <script lang="ts">
-  import { isSyncEnabled, syncStatus, login, forceSync } from "../services/GoogleDriveSync";
+  // FIX: Import from the new SyncManager, not GoogleDriveSync
+  import { isSyncEnabled, syncStatus, login, forceSync } from "../services/SyncManager";
 
   function handleClick() {
     if (!$isSyncEnabled) {
+      // Not Configured -> Start Auth / Setup
       login();
     } else if ($syncStatus === "error") {
+      // Error (Offline/Expired) -> Reconnect
       login();
     } else {
+      // Healthy -> Force Sync
       forceSync();
     }
   }

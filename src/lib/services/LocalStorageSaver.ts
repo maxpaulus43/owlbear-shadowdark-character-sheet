@@ -5,7 +5,8 @@ import { debounce } from "../utils";
 import { CurrentSaveSlot, NUM_SLOTS } from "./SaveSlotTracker";
 import { maintainBackwardsCompat as maintainBackwardsCompatPlayer } from "./JSONImporter";
 import type { PlayerCharacter } from "../types";
-import { updateLocalTimestamp } from "./GoogleDriveSync";
+// FIX: Updated import to the new SyncManager
+import { updateLocalTimestamp } from "./SyncManager";
 
 export const isSaveInProgress = writable(false);
 
@@ -52,8 +53,6 @@ export async function savePlayerToLocalStorage(
   const key = getStorageKey(saveSlot);
   const json = JSON.stringify(pc);
 
-  // FIX: Don't save (and don't update timestamp) if data hasn't changed.
-  // This prevents the "Open App = Update Timestamp" bug.
   const existing = await asyncLocalStorage.getItem(key);
   if (existing === json) {
       return; 

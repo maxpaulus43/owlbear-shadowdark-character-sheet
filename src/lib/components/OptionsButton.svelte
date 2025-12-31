@@ -12,13 +12,15 @@
   import { isGM, isTrackedPlayerGM } from "../services/OBRHelper";
   
   // --- SYNC IMPORTS ---
+  // FIX: Import from SyncManager
   import {
     isSyncEnabled,
     userEmail,
     logout,
     deleteCloudDataAndLogout,
-    login // <--- Added login import
-  } from "../services/GoogleDriveSync";
+    requestSetup,     // Use this for the "Set up" button
+    syncProviderName  // To display "Dropbox" vs "Google"
+  } from "../services/SyncManager";
   // --------------------
 
   export let files: FileList | undefined;
@@ -38,7 +40,7 @@
   }
 
   async function handleDeleteSync() {
-    if (confirm("Are you sure? This will permanently delete your character data from Google Drive.")) {
+    if (confirm("Are you sure? This will permanently delete your character data from the cloud.")) {
       await deleteCloudDataAndLogout();
       showSyncSettingsModal = false;
     }
@@ -118,8 +120,8 @@
            Sync Settings ({$userEmail})
         </button>
       {:else}
-        <button on:click={login}>
-           Set up Google Sync
+        <button on:click={requestSetup}>
+           Set up Cloud Sync
         </button>
       {/if}
 
@@ -143,7 +145,7 @@
   <h1 slot="header">Sync Settings</h1>
   <div class="flex flex-col gap-2 min-w-[250px] p-2" id="sync-options">
     <p class="text-sm text-center mb-2">
-      You are currently syncing as <br/><b>{$userEmail}</b>
+      Syncing with <b>{$syncProviderName}</b> as <br/><b>{$userEmail}</b>
     </p>
 
     <button on:click={handleDisableSync}>
@@ -151,7 +153,7 @@
     </button>
     
     <button class="bg-red-800 hover:bg-red-700" on:click={handleDeleteSync}>
-      Disable Sync & Delete Saved Data
+      Disable Sync & Delete Cloud Data
     </button>
 
     <button class="bg-gray-500 hover:bg-gray-600 mt-2" on:click={() => showSyncSettingsModal = false}>
