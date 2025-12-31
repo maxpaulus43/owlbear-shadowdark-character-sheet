@@ -10,7 +10,8 @@
 
   // --- SYNC IMPORTS ---
   // FIX: Import from SyncManager
-  import { isSyncEnabled, userEmail, showDeleteConfirmationModal } from "../services/SyncManager";
+  import { isSyncEnabled, userEmail, showDeleteConfirmationModal, syncProviderName } from "../services/SyncManager";
+  import { tick } from "svelte";
   // --------------------
 
   export let files: FileList | undefined;
@@ -19,9 +20,12 @@
 
   $: isSheetReadOnly = $isGM && !$isTrackedPlayerGM;
 
-  function handleSyncSettingsClick() {
+  async function handleSyncSettingsClick() {
+    console.log("handleSyncSettingsClick", $isSyncEnabled);
     showModal = false;
+    await tick();
     showSyncSettingsModal = true;
+    console.log("showSyncSettingsModal set to true");
   }
 
   function handleDisableSync() {
@@ -151,7 +155,7 @@
 
   /* Modal styling */
   #sync-options button {
-    @apply transition active:opacity-50 cursor-pointer shadow-sm;
+    @apply transition active:opacity-50 cursor-pointer shadow-sm p-2;
   }
   #sync-options button.bg-red-800 {
     background-color: #991b1b;
