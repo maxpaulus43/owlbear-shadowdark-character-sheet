@@ -113,6 +113,12 @@ export function selectProvider(provider: "google" | "dropbox") {
     if (provider === "dropbox") activeProvider = new DropboxProvider();
 
     localStorage.setItem("sync_provider", provider);
+
+    // Listen for Google Auth Success if selecting Google
+    if (provider === "google") {
+        window.addEventListener('google-auth-success', () => finishSetup());
+    }
+
     activeProvider!.init().then(() => {
         activeProvider!.login();
     });

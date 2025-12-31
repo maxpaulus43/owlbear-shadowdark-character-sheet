@@ -33,9 +33,9 @@
     showSyncSettingsModal = false;
   }
 
-  function handleDeleteSync() {
-    showDeleteConfirmationModal.set(true);
-    showSyncSettingsModal = false;
+  function handleSetupClick() {
+    showModal = false;
+    requestSetup();
   }
 </script>
 
@@ -94,11 +94,11 @@
       <div class="mt-2 border-t border-gray-500 pt-2 font-bold">Advanced Options</div>
 
       {#if $isSyncEnabled}
-        <button on:click={handleSyncSettingsClick}>
-          Sync Settings ({$userEmail})
+        <button on:click={handleSyncSettingsClick} class:dropbox-brand={$syncProviderName === "Dropbox"} class:google-brand={$syncProviderName === "Google Drive"}>
+          {$syncProviderName} Sync
         </button>
       {:else}
-        <button on:click={requestSetup}> Set up Cloud Sync </button>
+        <button on:click={handleSetupClick}> Set up Cloud Sync </button>
       {/if}
 
       <button
@@ -162,5 +162,14 @@
   }
   #sync-options button.bg-gray-500 {
     background-color: #6b7280;
+  }
+
+  .dropbox-brand {
+    background-color: #0061fe !important; /* Dropbox Blue */
+    color: white;
+  }
+  .google-brand {
+    background-color: #4285f4 !important; /* Google Blue */
+    color: white;
   }
 </style>

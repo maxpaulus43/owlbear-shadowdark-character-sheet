@@ -9,15 +9,13 @@
     <div class="flex flex-col gap-4 p-2 min-w-[300px]">
       <p class="text-sm">Choose a provider to sync your characters across devices.</p>
 
-      <button class="bg-blue-800 text-white p-3 rounded flex items-center justify-center gap-2 hover:bg-blue-700 transition border border-blue-600" on:click={() => selectProvider("dropbox")}>
+      <button class="bg-[#0061FE] text-white p-3 rounded flex items-center justify-center gap-2 hover:opacity-90 transition border border-blue-600" on:click={() => selectProvider("dropbox")}>
         <span class="font-bold">Dropbox</span> <span class="text-xs opacity-80">(Recommended)</span>
       </button>
 
-      <button class="bg-gray-800 text-white p-3 rounded flex items-center justify-center gap-2 hover:bg-gray-700 transition border border-gray-600" on:click={() => selectProvider("google")}>
-        <span>Google Drive</span>
+      <button class="bg-[#4285F4] text-white p-3 rounded flex items-center justify-center gap-2 hover:opacity-90 transition border border-blue-400" on:click={() => selectProvider("google")}>
+        <span class="font-bold">Google Drive</span>
       </button>
-
-      <div class="text-xs text-gray-500 mt-2 text-center">Dropbox is recommended for better reliability and fewer login prompts.</div>
     </div>
   </Modal>
 {/if}

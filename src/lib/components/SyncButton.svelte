@@ -18,6 +18,6 @@
   {#if $isSyncEnabled && $syncStatus === "error"}
     <i class="material-icons translate-y-[1px]">warning</i>
   {:else}
-    <i class="material-icons translate-y-[1px]" class:animate-spin={$syncStatus === "syncing"}>sync</i>
+    <i class="material-icons translate-y-[1px] inline-block">sync</i>
   {/if}
 </button>
