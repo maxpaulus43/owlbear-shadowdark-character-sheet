@@ -4,6 +4,7 @@ const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.email';
 const DRIVE_API = 'https://www.googleapis.com/drive/v3/files';
 const UPLOAD_API = 'https://www.googleapis.com/upload/drive/v3/files';
+const USER_INFO_API = 'https://www.googleapis.com/oauth2/v3/userinfo';
 
 export class GoogleProvider implements CloudProvider {
   name: "Google Drive" = "Google Drive";
@@ -14,7 +15,7 @@ export class GoogleProvider implements CloudProvider {
     return new Promise((resolve) => {
       // Load GSI Script if missing
       if (document.getElementById('gsi-script')) { resolve(); return; }
-      
+
       const script = document.createElement('script');
       script.id = 'gsi-script';
       script.src = 'https://accounts.google.com/gsi/client';
@@ -28,7 +29,7 @@ export class GoogleProvider implements CloudProvider {
             if (resp.access_token) {
               this.storeToken(resp.access_token, resp.expires_in);
               // Trigger a specialized event to let SyncManager know auth succeeded
-              window.dispatchEvent(new CustomEvent('google-auth-success')); 
+              window.dispatchEvent(new CustomEvent('google-auth-success'));
             }
           },
         });
@@ -71,7 +72,7 @@ export class GoogleProvider implements CloudProvider {
   async getUserEmail(): Promise<string> {
     if (!this.accessToken) return "";
     try {
-      const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      const res = await fetch(USER_INFO_API, {
         headers: { 'Authorization': `Bearer ${this.accessToken}` }
       });
       const data = await res.json();
@@ -83,28 +84,28 @@ export class GoogleProvider implements CloudProvider {
 
   async list(): Promise<Record<string, CloudFile>> {
     if (!this.accessToken) throw new Error("AUTH_ERROR");
-    const q = encodeURIComponent("trashed = false and 'appDataFolder' in parents");
+    const q = encodeURIComponent("trashed = false and 'appDataFolder' in parents and name contains 'shadowdark_slot_'");
     const url = `${DRIVE_API}?q=${q}&fields=files(id, name, appProperties)&spaces=appDataFolder`;
-    
+
     try {
       const res = await fetch(url, { headers: { 'Authorization': `Bearer ${this.accessToken}` } });
       if (res.status === 401) throw new Error("AUTH_ERROR");
       const data = await res.json();
-      
+
       const map: Record<string, CloudFile> = {};
       if (data.files) {
         data.files.forEach((f: any) => {
-          map[f.name] = { 
-            id: f.id, 
+          map[f.name] = {
+            id: f.id,
             name: f.name,
-            ts: f.appProperties?.ts ? parseInt(f.appProperties.ts) : undefined 
+            ts: f.appProperties?.ts ? parseInt(f.appProperties.ts) : undefined
           };
         });
       }
       return map;
     } catch (e: any) {
-       if (e.message === "AUTH_ERROR") throw e;
-       throw new Error("NETWORK_ERROR");
+      if (e.message === "AUTH_ERROR") throw e;
+      throw new Error("NETWORK_ERROR");
     }
   }
 
@@ -116,19 +117,19 @@ export class GoogleProvider implements CloudProvider {
       if (res.status === 401) throw new Error("AUTH_ERROR");
       return await res.json();
     } catch (e: any) {
-        if (e.message === "AUTH_ERROR") throw e;
-        throw new Error("NETWORK_ERROR");
+      if (e.message === "AUTH_ERROR") throw e;
+      throw new Error("NETWORK_ERROR");
     }
   }
 
   async upload(filename: string, content: any, fileId?: string): Promise<void> {
-    const metadata = { 
-      name: filename, 
-      mimeType: 'application/json', 
+    const metadata = {
+      name: filename,
+      mimeType: 'application/json',
       parents: fileId ? [] : ['appDataFolder'],
-      appProperties: { ts: content.ts.toString() } 
+      appProperties: { ts: content.ts.toString() }
     };
-    
+
     const formData = new FormData();
     formData.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
     formData.append('file', new Blob([JSON.stringify(content)], { type: 'application/json' }));
@@ -140,15 +141,15 @@ export class GoogleProvider implements CloudProvider {
       const res = await fetch(url, { method, headers: { 'Authorization': `Bearer ${this.accessToken}` }, body: formData });
       if (res.status === 401) throw new Error("AUTH_ERROR");
     } catch (e: any) {
-        if (e.message === "AUTH_ERROR") throw e;
-        throw new Error("NETWORK_ERROR");
+      if (e.message === "AUTH_ERROR") throw e;
+      throw new Error("NETWORK_ERROR");
     }
   }
 
   async delete(fileId: string): Promise<void> {
-    await fetch(`${DRIVE_API}/${fileId}`, { 
-        method: 'DELETE', 
-        headers: { 'Authorization': `Bearer ${this.accessToken}` } 
+    await fetch(`${DRIVE_API}/${fileId}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${this.accessToken}` }
     });
   }
 }

@@ -1,6 +1,7 @@
 import { get, writable } from "svelte/store";
 import { PlayerCharacterStore } from "../model/PlayerCharacter";
 import { asyncLocalStorage, savePlayerToLocalStorage } from "./LocalStorageSaver";
+import { debounce } from "../utils";
 import { CurrentSaveSlot, NUM_SLOTS } from "./SaveSlotTracker";
 import type { CloudProvider } from "./sync/CloudProvider";
 import { GoogleProvider } from "./sync/GoogleProvider";
@@ -10,8 +11,8 @@ import { DropboxProvider } from "./sync/DropboxProvider";
 export const isSyncEnabled = writable(false);
 export const userEmail = writable<string>("");
 export const syncStatus = writable<"idle" | "syncing" | "error" | "paused">("idle");
-export const syncMessage = writable<string>(""); 
-export const initialSyncComplete = writable(false); 
+export const syncMessage = writable<string>("");
+export const initialSyncComplete = writable(false);
 export const syncProviderName = writable<string>("");
 
 // Modals
@@ -27,7 +28,7 @@ let activeProvider: CloudProvider | null = null;
 let autoSyncTimer: any;
 let isSyncing = false;
 let isWorkingOffline = false;
-let debounceTimer: any;
+
 
 // --- Init ---
 
@@ -58,7 +59,7 @@ export async function initSync() {
     if (activeProvider) {
         syncProviderName.set(activeProvider.name);
         await activeProvider.init();
-        
+
         // Listen for internal Google success event
         window.addEventListener('google-auth-success', () => finishSetup());
 
@@ -79,16 +80,16 @@ async function finishSetup() {
     isSyncEnabled.set(true);
     syncProviderName.set(activeProvider.name);
     isWorkingOffline = false;
-    
+
     // Reset modals
     showReauthModal.set(false);
     showSetupModal.set(false);
-    
+
     startAutoSync();
-    
+
     // First Sync (check conflicts)
-    performSync(); 
-    
+    performSync();
+
     // If this was startup
     if (!get(initialSyncComplete)) {
         initialSyncComplete.set(true);
@@ -105,7 +106,7 @@ export function requestSetup() {
 export function selectProvider(provider: "google" | "dropbox") {
     if (provider === "google") activeProvider = new GoogleProvider();
     if (provider === "dropbox") activeProvider = new DropboxProvider();
-    
+
     localStorage.setItem("sync_provider", provider);
     activeProvider!.init().then(() => {
         activeProvider!.login();
@@ -135,14 +136,14 @@ export function login() {
 export async function logout() {
     if (autoSyncTimer) clearInterval(autoSyncTimer);
     if (activeProvider) await activeProvider.logout();
-    
+
     localStorage.removeItem("sync_provider");
     activeProvider = null;
     userEmail.set("");
     syncProviderName.set("");
     isSyncEnabled.set(false);
     isWorkingOffline = false;
-    
+
     // Reset history
     for (let i = 1; i <= NUM_SLOTS; i++) {
         await asyncLocalStorage.setItem(`sd-last-synced-ts-${i}`, "0");
@@ -150,11 +151,13 @@ export async function logout() {
     syncStatus.set("idle");
 }
 
+const debouncedSync = debounce(() => performSync(false), 2000);
+
 export async function updateLocalTimestamp(slot: number) {
-    await asyncLocalStorage.setItem(`sd-character-sheet-slot-${slot}-meta`, Date.now().toString());
+    const meta = { ts: Date.now() };
+    await asyncLocalStorage.setItem(`sd-character-sheet-slot-${slot}-meta`, JSON.stringify(meta));
     if (get(isSyncEnabled) && get(initialSyncComplete)) {
-        clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => performSync(false), 2000);
+        debouncedSync();
     }
 }
 
@@ -162,7 +165,7 @@ export function forceSync() { performSync(true); }
 
 export async function performSync(isManual = false) {
     if (isSyncing || !activeProvider) return;
-    
+
     if (!activeProvider.isAuthenticated() && get(isSyncEnabled)) {
         syncStatus.set("error");
         if (isManual || !isWorkingOffline) showReauthModal.set(true);
@@ -182,13 +185,23 @@ export async function performSync(isManual = false) {
             const slotKey = `sd-character-sheet-slot-${i}`;
             const metaKey = `${slotKey}-meta`;
             const filename = `shadowdark_slot_${i}.json`;
-            
+
             const localData = await asyncLocalStorage.getItem(slotKey);
-            const localMeta = await asyncLocalStorage.getItem(metaKey);
-            const localTS = localMeta ? parseInt(localMeta, 10) : 0;
+            const localMetaRaw = await asyncLocalStorage.getItem(metaKey);
+
+            let localTS = 0;
+            if (localMetaRaw) {
+                try {
+                    const parsed = JSON.parse(localMetaRaw);
+                    localTS = parsed.ts || 0;
+                } catch {
+                    // Fallback for legacy string format
+                    localTS = parseInt(localMetaRaw, 10) || 0;
+                }
+            }
             const lastSyncedTSVal = await asyncLocalStorage.getItem(`sd-last-synced-ts-${i}`);
             const lastSyncedTS = lastSyncedTSVal ? parseInt(lastSyncedTSVal, 10) : 0;
-            
+
             const remoteFile = remoteFiles[filename];
             let remoteTS = 0;
             let remoteContent = null;
@@ -208,22 +221,22 @@ export async function performSync(isManual = false) {
 
             // Conflict Detection
             if (remoteFile && !isLocalDefault && lastSyncedTS === 0) {
-                 conflicts.push({ slot: i, localDate: new Date(localTS || Date.now()), remoteDate: new Date(remoteTS) });
-                 continue;
+                conflicts.push({ slot: i, localDate: new Date(localTS || Date.now()), remoteDate: new Date(remoteTS) });
+                continue;
             }
-            if (remoteFile && !isLocalDefault && localMeta) {
-                 if (remoteTS > lastSyncedTS && localTS > lastSyncedTS && remoteTS !== localTS) {
-                     conflicts.push({ slot: i, localDate: new Date(localTS), remoteDate: new Date(remoteTS) });
-                     continue;
-                 }
+            if (remoteFile && !isLocalDefault && localMetaRaw) {
+                if (remoteTS > lastSyncedTS && localTS > lastSyncedTS && remoteTS !== localTS) {
+                    conflicts.push({ slot: i, localDate: new Date(localTS), remoteDate: new Date(remoteTS) });
+                    continue;
+                }
             }
 
             // Sync Actions
-            if (remoteFile && (isLocalDefault || !localMeta || remoteTS > lastSyncedTS)) {
+            if (remoteFile && (isLocalDefault || !localMetaRaw || remoteTS > lastSyncedTS)) {
                 syncMessage.set(`Downloading slot ${i}...`);
                 if (!remoteContent) remoteContent = await activeProvider.download(remoteFile.id);
                 await savePlayerToLocalStorage(remoteContent.value, i);
-                await asyncLocalStorage.setItem(metaKey, remoteTS.toString());
+                await asyncLocalStorage.setItem(metaKey, JSON.stringify({ ts: remoteTS }));
                 await asyncLocalStorage.setItem(`sd-last-synced-ts-${i}`, remoteTS.toString());
                 if (get(CurrentSaveSlot) === i) PlayerCharacterStore.set(remoteContent.value);
             }
@@ -277,7 +290,7 @@ export async function resolveConflict(slot: number, choice: 'local' | 'remote') 
         if (remoteFile) {
             const data = await activeProvider.download(remoteFile.id);
             await savePlayerToLocalStorage(data.value, slot);
-            await asyncLocalStorage.setItem(`sd-character-sheet-slot-${slot}-meta`, data.ts.toString());
+            await asyncLocalStorage.setItem(`sd-character-sheet-slot-${slot}-meta`, JSON.stringify({ ts: data.ts }));
             await asyncLocalStorage.setItem(`sd-last-synced-ts-${slot}`, data.ts.toString());
             if (get(CurrentSaveSlot) === slot) PlayerCharacterStore.set(data.value);
         }
