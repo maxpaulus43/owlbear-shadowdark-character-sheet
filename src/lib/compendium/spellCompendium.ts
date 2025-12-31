@@ -398,7 +398,7 @@ export const SPELLS: SpellInfo[] = [
     range: "Near",
     class: "Wizard",
     tier: 1,
-    desc: "This spell fills a near-sized cube extending from you. Choose a number of living creatures in the area up to your level. Those creatures fall into a deep sleep if they are LV 2 or less. Injury or vigorous shaking wakes them.",
+    desc: "You weave a lulling spell that fills a near-sized cube extending from you. Living creatures in the area of effect fall into a deep sleep if they are LV 2 or less. Vigorous shaking or being injured wakes them.",
     duration: { type: "Instant", amt: 0 },
   },
   {
