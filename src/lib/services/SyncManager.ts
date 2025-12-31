@@ -24,6 +24,7 @@ export const showOfflineConfirmationModal = writable(false);
 export const showConflictModal = writable(false);
 export const showSetupModal = writable(false);
 export const showDeleteConfirmationModal = writable(false);
+export const showDataCorruptionModal = writable(false);
 
 export const conflictedSlots = writable<Array<{ slot: number, localDate: Date, remoteDate: Date }>>([]);
 export const lastSyncedTimestamp = writable<Record<number, number>>({});
@@ -177,12 +178,6 @@ export function forceSync() { performSync(true); }
 export async function performSync(isManual = false) {
     if (isSyncing || !activeProvider) return;
 
-    if (!activeProvider.isAuthenticated() && get(isSyncEnabled)) {
-        syncStatus.set("error");
-        if (isManual || !isWorkingOffline) showReauthModal.set(true);
-        return;
-    }
-
     isSyncing = true;
     syncStatus.set("syncing");
     syncMessage.set("Syncing...");
@@ -300,7 +295,11 @@ export async function performSync(isManual = false) {
         if (isManual || !isWorkingOffline) {
             if (e instanceof SyncError) {
                 if (e.code === SyncErrorCode.AUTH_ERROR) showReauthModal.set(true);
-                else showConnectionErrorModal.set(true); // TODO: Maybe specific error modal for Data Corruption?
+                else if (e.code === SyncErrorCode.DATA_CORRUPTION) {
+                    syncMessage.set("Data Validation Failed");
+                    showDataCorruptionModal.set(true);
+                }
+                else showConnectionErrorModal.set(true);
             } else {
                 // Fallback for unknown errors
                 if (e.message === "AUTH_ERROR") showReauthModal.set(true);

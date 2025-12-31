@@ -14,7 +14,9 @@ import {
 	selectProvider,
 	lastSyncedTimestamp,
 	resetSyncState,
-	initialSyncComplete
+	initialSyncComplete,
+	syncMessage,
+	showDataCorruptionModal
 } from './SyncManager';
 import { MockCloudProvider } from './sync/MockProvider';
 import { asyncLocalStorage } from './LocalStorageSaver';
@@ -63,6 +65,7 @@ describe('SyncManager Integration Tests', () => {
 		conflictedSlots.set([]);
 		showConflictModal.set(false);
 		showReauthModal.set(false);
+		showDataCorruptionModal.set(false);
 	});
 
 	afterEach(() => {
@@ -279,5 +282,43 @@ describe('SyncManager Integration Tests', () => {
 		// The upload might have a new TS or keep 9999 depending on logic.
 		// Sync logic: "const payload = { value: JSON.parse(localData), ts: localTS };"
 		expect(remote.ts).toBe(9999);
+	});
+	it('14. Validation Rejection', async () => {
+		// Create invalid data (missing mandatory fields like 'name', 'stats' etc)
+		const BAD_DATA = { level: 1, class: "Fighter" }; // Missing almost everything
+		mockProvider.seed('shadowdark_slot_1.json', BAD_DATA, 2000);
+
+		await performSync();
+
+		// Should catch the error
+		expect(get(syncMessage)).toContain("Data Validation Failed");
+		expect(get(showDataCorruptionModal)).toBe(true);
+
+		// Local should NOT have been updated with garbage
+		expect(await getLocalSlot(1)).toBeNull();
+	});
+
+	it('15. Validation Pass-through (Forward Compatibility)', async () => {
+		// Valid data + unexpected extra fields
+		const FUTURE_DATA = {
+			...REMOTE_PC,
+			newFeatureFlag: true,
+			complexNestedObj: { foo: "bar" },
+			stats: { ...REMOTE_PC.stats, "LUCK": 18 } // Extra stat
+		};
+
+		mockProvider.seed('shadowdark_slot_1.json', FUTURE_DATA, 2000);
+
+		await performSync();
+
+		// Should succeed
+		expect(get(showDataCorruptionModal)).toBe(false);
+
+		// Verify data was saved WITH the extra fields
+		const local = await getLocalSlot(1);
+		expect(local).toBeDefined();
+		expect(local.newFeatureFlag).toBe(true);
+		expect(local.complexNestedObj).toEqual({ foo: "bar" });
+		expect(local.stats.LUCK).toBe(18);
 	});
 });

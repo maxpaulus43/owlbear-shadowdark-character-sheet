@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { showReauthModal, showConnectionErrorModal, showOfflineConfirmationModal, showConflictModal, conflictedSlots, resolveConflict, syncMessage, login, enableOfflineMode, logout, showDeleteConfirmationModal, deleteCloudDataAndLogout } from "../services/SyncManager";
+  import { showReauthModal, showConnectionErrorModal, showOfflineConfirmationModal, showConflictModal, conflictedSlots, resolveConflict, syncMessage, login, enableOfflineMode, logout, showDeleteConfirmationModal, deleteCloudDataAndLogout, showDataCorruptionModal } from "../services/SyncManager";
   import Modal from "./Modal.svelte";
   import SyncSetupModal from "./SyncSetupModal.svelte";
 
@@ -13,6 +13,20 @@
     showDeleteConfirmationModal.set(false);
   }
 </script>
+
+{#if $showDataCorruptionModal}
+  <Modal on:close={() => showDataCorruptionModal.set(false)} dialogClass="bg-neutral-900 text-gray-200 border border-gray-700 rounded shadow-2xl border-red-900">
+    <h1 slot="header" class="text-2xl mb-2 font-bold text-red-500 border-b border-gray-700 pb-1">Data Validation Error</h1>
+    <div class="flex flex-col gap-4 max-w-xs">
+      <p class="text-red-300">The data from the cloud does not match the expected format. This may be due to a recent update or data corruption.</p>
+      <div class="text-xs font-mono bg-black p-2 rounded text-red-400 border border-red-900 overflow-auto max-h-32">
+        {$syncMessage}
+      </div>
+      <p class="text-xs text-gray-400">Please check the console for more details or contact the developer.</p>
+      <button class="bg-gray-700 text-white p-2 rounded hover:bg-gray-600 transition border border-gray-600" on:click={() => showDataCorruptionModal.set(false)}>Close & Work Offline</button>
+    </div>
+  </Modal>
+{/if}
 
 {#if $showDeleteConfirmationModal}
   <Modal on:close={() => showDeleteConfirmationModal.set(false)} dialogClass="bg-neutral-900 text-gray-200 border border-gray-700 rounded shadow-2xl">

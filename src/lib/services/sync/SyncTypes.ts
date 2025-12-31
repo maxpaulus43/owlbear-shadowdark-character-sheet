@@ -33,7 +33,7 @@ const SpellSchema = z.object({
 
 const BonusSchema = z.object({
 	name: z.string(),
-	sourceType: z.string(),
+	sourceType: z.string().optional(),
 }).passthrough();
 
 // Main PlayerCharacter Schema

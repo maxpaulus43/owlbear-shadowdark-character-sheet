@@ -10,7 +10,7 @@
 
   // --- SYNC IMPORTS ---
   // FIX: Import from SyncManager
-  import { isSyncEnabled, userEmail, showDeleteConfirmationModal, syncProviderName } from "../services/SyncManager";
+  import { isSyncEnabled, userEmail, showDeleteConfirmationModal, syncProviderName, logout, requestSetup } from "../services/SyncManager";
   import { tick } from "svelte";
   // --------------------
 
