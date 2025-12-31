@@ -49,9 +49,17 @@ export async function savePlayerToLocalStorage(
   pc: PlayerCharacter,
   saveSlot: number,
 ) {
-  asyncLocalStorage.setItem(getStorageKey(saveSlot), JSON.stringify(pc));
-  //Syncing
-  await asyncLocalStorage.setItem(getStorageKey(saveSlot), JSON.stringify(pc));
+  const key = getStorageKey(saveSlot);
+  const json = JSON.stringify(pc);
+
+  // FIX: Don't save (and don't update timestamp) if data hasn't changed.
+  // This prevents the "Open App = Update Timestamp" bug.
+  const existing = await asyncLocalStorage.getItem(key);
+  if (existing === json) {
+      return; 
+  }
+
+  asyncLocalStorage.setItem(key, json);
   await updateLocalTimestamp(saveSlot);
 }
 

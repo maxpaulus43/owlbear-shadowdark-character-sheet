@@ -26,9 +26,24 @@
   import { isSaveInProgress } from "./lib/services/LocalStorageSaver";
   import NotificationsButton from "./lib/components/NotificationsButton.svelte";
   import { initSettings } from "./lib/services/SettingsTracker";
+  import Modal from "./lib/components/Modal.svelte"; 
   
   // --- SYNC IMPORTS ---
-  import { initGoogleAuth, initialSyncComplete } from "./lib/services/GoogleDriveSync";
+  import { 
+    initGoogleAuth, 
+    initialSyncComplete, 
+    showReauthModal, 
+    showConnectionErrorModal,
+    showOfflineConfirmationModal,
+    showConflictModal,
+    conflictedSlots, // Array of conflicts
+    resolveConflict, // Function to resolve
+    syncMessage,     // Status text
+    login, 
+    enableOfflineMode,
+    logout
+  } from "./lib/services/GoogleDriveSync";
+  import SyncButton from "./lib/components/SyncButton.svelte"; 
   // --------------------
 
   const { isGM } = OBRHelper;
@@ -38,15 +53,12 @@
     if (OBR.isAvailable) {
       OBRHelper.init();
     } else {
-      // 1. Initialize Google Auth first
       initGoogleAuth();
     }
   });
 
-  // 2. Only start LocalStorage logic when sync is complete
   $: if (!OBR.isAvailable && $initialSyncComplete) {
     LocalStorageSaver.init();
-    // Removed the non-existent initSaveSlotTracker() call
   }
 
   $: setCustomGearForPlayer($pc);
@@ -58,8 +70,6 @@
 
   let files: FileList;
   $: if (files) {
-    // https://developer.mozilla.org/en-US/docs/Web/API/FileList
-    // there should only be one file
     for (const file of files) {
       file.text().then((txt) => {
         $pc = importFromJson(txt);
@@ -82,193 +92,175 @@
 {:else}
   <div class="flex items-center justify-center bg-black">
     <main>
-      <div
-        id="sheet"
-        class="bg-black min-w-[277px] max-w-[1000px] p-2 flex flex-wrap gap-2"
-      >
-        <div
-          class="flex-[2] min-w-[257px] h-[700px] grid grid-rows-8 grid-cols-2 gap-2"
-        >
-          <div class="col-span-full cell">
+       <div id="sheet" class="bg-black min-w-[277px] max-w-[1000px] p-2 flex flex-wrap gap-2">
+         <div class="col-span-full cell">
             <div class="flex gap-1 justify-around">
-              <div class="flex flex-col items-center">
-                <div class="flex items-center gap-1">
-                  <h1 class="">Shadowdark</h1>
-                  <InfoButton />
-                </div>
-                {#if $isSaveInProgress}
-                  <div
-                    title="save in progress..."
-                    class="absolute top-0 left-0 opacity-20 bg-black text-white p-1 rounded-md flex items-center"
-                  >
-                    <i class="material-icons">save</i>...
-                  </div>
-                {/if}
-                <div class="-translate-y-2 flex gap-1">
-                  {#if !$isGM}
-                    <button
-                      on:click={() => pc.undo()}
-                      class:opacity-50={!$canUndo}
-                      disabled={!$canUndo}
-                      class="bg-black text-white rounded-md"
-                    >
-                      <i class="material-icons translate-y-1 px-1">undo</i>
-                    </button>
-                    <button
-                      on:click={() => pc.redo()}
-                      class:opacity-50={!$canRedo}
-                      disabled={!$canRedo}
-                      class="bg-black text-white rounded-md"
-                    >
-                      <i class="material-icons translate-y-1 px-1">redo</i>
-                    </button>
-                  {/if}
-                  <OptionsButton bind:files />
-                  <NotesButton />
-                  {#if OBR.isAvailable}
-                    <NotificationsButton />
-                  {/if}
-                  <PlayersView />
-                </div>
-              </div>
+               <div class="flex flex-col items-center">
+                 <div class="flex items-center gap-1">
+                   <h1>Shadowdark</h1>
+                   <InfoButton />
+                 </div>
+                 {#if $isSaveInProgress}
+                   <div class="absolute top-0 left-0 opacity-20 bg-black text-white p-1 rounded-md flex items-center">
+                     <i class="material-icons">save</i>...
+                   </div>
+                 {/if}
+                 <div class="-translate-y-2 flex gap-1">
+                   {#if !$isGM}
+                      <button on:click={() => pc.undo()} class:opacity-50={!$canUndo} disabled={!$canUndo} class="bg-black text-white rounded-md">
+                        <i class="material-icons translate-y-1 px-1">undo</i>
+                      </button>
+                      <button on:click={() => pc.redo()} class:opacity-50={!$canRedo} disabled={!$canRedo} class="bg-black text-white rounded-md">
+                         <i class="material-icons translate-y-1 px-1">redo</i>
+                      </button>
+                   {/if}
+                   <SyncButton />
+                   <OptionsButton bind:files />
+                   <NotesButton />
+                   {#if OBR.isAvailable}
+                     <NotificationsButton />
+                   {/if}
+                   <PlayersView />
+                 </div>
+               </div>
             </div>
-          </div>
-          <div class="cell">
-            <StatView forStat="STR" />
-          </div>
-          <div class="cell">
-            <StatView forStat="INT" />
-          </div>
-          <div class="cell">
-            <StatView forStat="DEX" />
-          </div>
-          <div class="cell">
-            <StatView forStat="WIS" />
-          </div>
-          <div class="cell">
-            <StatView forStat="CON" />
-          </div>
-          <div class="cell">
-            <StatView forStat="CHA" />
-          </div>
-          <div class="row-span-2 cell">
-            <HpView />
-          </div>
-          <div class="row-span-2 cell">
-            <ArmorClassView />
-          </div>
-          <div class="col-span-full row-span-2 cell">
-            <AttacksView />
-          </div>
-        </div>
-        <div
-          class="flex-[2] min-w-[257px] h-[700px] grid grid-rows-8 grid-cols-2 gap-2"
-        >
+         </div>
+         <div class="cell"><StatView forStat="STR" /></div>
+         <div class="cell"><StatView forStat="INT" /></div>
+         <div class="cell"><StatView forStat="DEX" /></div>
+         <div class="cell"><StatView forStat="WIS" /></div>
+         <div class="cell"><StatView forStat="CON" /></div>
+         <div class="cell"><StatView forStat="CHA" /></div>
+         <div class="row-span-2 cell"><HpView /></div>
+         <div class="row-span-2 cell"><ArmorClassView /></div>
+         <div class="col-span-full row-span-2 cell"><AttacksView /></div>
+       </div>
+       
+       <div class="flex-[2] min-w-[257px] h-[700px] grid grid-rows-8 grid-cols-2 gap-2">
           <div class="col-span-full cell">
-            <label>
-              <h2>NAME</h2>
-              <input type="text" bind:value={$pc.name} />
-            </label>
+            <label><h2>NAME</h2><input type="text" bind:value={$pc.name} /></label>
+          </div>
+          <div class="col-span-full cell"><AncestryView /></div>
+          <div class="col-span-full cell"><ClassView /></div>
+          <div class="cell">
+             <label><h2>LEVEL</h2><input type="number" inputmode="numeric" bind:value={$pc.level} max="10" min="1" /></label>
+          </div>
+          <div class="cell">
+             <h2>XP</h2>
+             <div class="sheet-stat flex gap-1">
+               {#if $pc.level < 10}
+                 <input id="xp" type="number" inputmode="numeric" min="0" bind:value={$pc.xp} />/<div>{xpCap}</div>
+               {:else}MAX LEVEL{/if}
+               <button class="text-2xl" class:opacity-20={!canLevel} disabled={!canLevel} on:click={() => { levelUpPlayer($pc); $pc = $pc; }}>🆙</button>
+             </div>
           </div>
           <div class="col-span-full cell">
-            <AncestryView />
+             <h2>TITLE</h2>
+             {#if $pc.hasCustomClass}
+               <input type="text" value={title ?? $pc.title} on:input={onTitleInput} />
+             {:else}
+               <div>{title}</div>
+             {/if}
           </div>
           <div class="col-span-full cell">
-            <ClassView />
+             <h2>ALIGNMENT</h2>
+             <select bind:value={$pc.alignment}>
+               {#each ALIGNMENTS as alignment}<option value={alignment}>{alignment}</option>{/each}
+             </select>
           </div>
-          <div class="cell">
-            <label>
-              <h2>LEVEL</h2>
-              <input
-                type="number"
-                inputmode="numeric"
-                bind:value={$pc.level}
-                max="10"
-                min="1"
-              />
-            </label>
-          </div>
-          <div class="cell">
-            <h2>XP</h2>
-            <label for="xp" />
-            <div class="sheet-stat flex gap-1">
-              {#if $pc.level < 10}
-                <input
-                  id="xp"
-                  type="number"
-                  inputmode="numeric"
-                  min="0"
-                  bind:value={$pc.xp}
-                />
-                /
-                <div>{xpCap}</div>
-              {:else}
-                MAX LEVEL
-              {/if}
-              <button
-                class="text-2xl"
-                class:opacity-20={!canLevel}
-                disabled={!canLevel}
-                on:click={() => {
-                  levelUpPlayer($pc);
-                  $pc = $pc;
-                }}>🆙</button
-              >
-            </div>
-          </div>
-          <div class="col-span-full cell">
-            <h2>TITLE</h2>
-            {#if $pc.hasCustomClass}
-              <input
-                type="text"
-                value={title ?? $pc.title}
-                on:input={onTitleInput}
-              />
-            {:else}
-              <div>{title}</div>
-            {/if}
-          </div>
-          <div class="col-span-full cell">
-            <h2>ALIGNMENT</h2>
-            <select bind:value={$pc.alignment}>
-              {#each ALIGNMENTS as alignment}
-                <option value={alignment}>
-                  {alignment}
-                </option>
-              {/each}
-            </select>
-          </div>
-          <div class="col-span-full cell">
-            <h2>BACKGROUND</h2>
-            <input type="text" bind:value={$pc.background} />
-          </div>
+          <div class="col-span-full cell"><h2>BACKGROUND</h2><input type="text" bind:value={$pc.background} /></div>
+          <div class="col-span-full cell"><h2>DEITY</h2><input bind:value={$pc.deity} /></div>
+       </div>
 
-          <div class="col-span-full cell">
-            <h2>DEITY</h2>
-            <input bind:value={$pc.deity} />
-          </div>
-        </div>
-        <div
-          class="flex-[3] min-w-[257px] min-[805px]:h-[700px] grid grid-rows-2 gap-2"
-        >
-          <div class="cell">
-            <TalentsSpellsView />
-          </div>
-          <div class="cell">
-            <GearView />
-          </div>
-        </div>
-      </div>
+       <div class="flex-[3] min-w-[257px] min-[805px]:h-[700px] grid grid-rows-2 gap-2">
+          <div class="cell"><TalentsSpellsView /></div>
+          <div class="cell"><GearView /></div>
+       </div>
     </main>
   </div>
 {/if}
 
-<style lang="postcss">
-  input,
-  select {
-    @apply w-full;
-  }
+{#if $syncMessage}
+  <div class="fixed bottom-4 right-4 bg-gray-900 text-white px-3 py-2 rounded shadow-lg text-xs flex items-center gap-2 z-50 opacity-90">
+     <i class="material-icons text-xs animate-spin">sync</i>
+     <span>{$syncMessage}</span>
+  </div>
+{/if}
 
+{#if $showReauthModal}
+  <Modal on:close={enableOfflineMode}> 
+    <h1 slot="header">Google Login Required</h1>
+    <div class="flex flex-col gap-4 max-w-xs p-2">
+      <p>In order to synchronize, Google requires you to verify your login every hour.</p>
+      <button class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700" on:click={login}>Login with Google Drive</button>
+      <button class="bg-gray-500 text-white p-2 rounded hover:bg-gray-600" on:click={enableOfflineMode}>Work Offline</button>
+    </div>
+  </Modal>
+{/if}
+
+{#if $showConnectionErrorModal}
+  <Modal on:close={enableOfflineMode}>
+    <h1 slot="header">Connection Failed</h1>
+    <div class="flex flex-col gap-4 max-w-xs p-2">
+      <p>Synchronization failed due to a bad connection. You can work offline and sync later.</p>
+      <button class="bg-gray-500 text-white p-2 rounded hover:bg-gray-600" on:click={enableOfflineMode}>Work Offline</button>
+    </div>
+  </Modal>
+{/if}
+
+{#if $showOfflineConfirmationModal}
+  <Modal on:close={() => showOfflineConfirmationModal.set(false)}>
+    <h1 slot="header">Offline Mode</h1>
+    <div class="flex flex-col gap-4 max-w-xs p-2">
+      <p>You are now working offline. Be sure to sync to Google Drive before making changes on any other devices.</p>
+      <button class="bg-black text-white p-2 rounded hover:bg-gray-800" on:click={() => showOfflineConfirmationModal.set(false)}>OK</button>
+    </div>
+  </Modal>
+{/if}
+
+{#if $showConflictModal}
+<Modal on:close={() => { showConflictModal.set(false); logout(); }}>
+    <h1 slot="header">Sync Conflicts Detected</h1>
+    <div class="flex flex-col gap-3 min-w-[300px] p-2 overflow-y-auto max-h-[80vh]">
+        <p class="text-sm">The following slots have changed on both this device and Google Drive since you last synced.</p>
+        
+        <div class="flex flex-col gap-2 mt-2">
+           {#each $conflictedSlots as conflict}
+             <div class="border border-gray-400 p-2 rounded bg-gray-100 flex flex-col gap-2">
+                <div class="font-bold">Slot {conflict.slot}</div>
+                <div class="text-xs text-gray-600 flex justify-between">
+                    <span>Local: {conflict.localDate.toLocaleTimeString()}</span>
+                    <span>Cloud: {conflict.remoteDate.toLocaleTimeString()}</span>
+                </div>
+                <div class="flex gap-2 justify-between">
+                   <button 
+                     class="bg-blue-700 text-white px-2 py-1 rounded text-xs hover:bg-blue-600 flex-1"
+                     on:click={() => resolveConflict(conflict.slot, 'local')}
+                   >
+                     Keep Local (Overwrite Cloud)
+                   </button>
+                   <button 
+                     class="bg-green-700 text-white px-2 py-1 rounded text-xs hover:bg-green-600 flex-1"
+                     on:click={() => resolveConflict(conflict.slot, 'remote')}
+                   >
+                     Keep Cloud (Overwrite Local)
+                   </button>
+                </div>
+             </div>
+           {/each}
+        </div>
+
+        <p class="text-xs text-red-800 mt-2 font-bold text-center">There is no undo.</p>
+        
+        <button class="bg-gray-500 text-white p-2 rounded hover:bg-gray-600 mt-2" on:click={() => { showConflictModal.set(false); logout(); }}>
+            Cancel & Work Offline (Export JSON First)
+        </button>
+    </div>
+</Modal>
+{/if}
+
+<style lang="postcss">
+  input, select { @apply w-full; }
   .cell {
     --tw-bg-opacity: 1;
     background-color: rgb(255 255 255 / var(--tw-bg-opacity));

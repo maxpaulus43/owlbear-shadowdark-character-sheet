@@ -12,17 +12,12 @@
   import { isGM, isTrackedPlayerGM } from "../services/OBRHelper";
   
   // --- SYNC IMPORTS ---
-import {
+  import {
     isSyncEnabled,
     userEmail,
-    syncStatus,
-    showConflictModal,
-    login,
     logout,
     deleteCloudDataAndLogout,
-    forceUploadAll,
-    forceDownloadAll,
-    forceSync // <--- Import this
+    // Removed forceUploadAll/forceDownloadAll/showConflictModal
   } from "../services/GoogleDriveSync";
   // --------------------
 
@@ -32,13 +27,9 @@ import {
 
   $: isSheetReadOnly = $isGM && !$isTrackedPlayerGM;
 
-  function handleSyncClick() {
-    if ($isSyncEnabled) {
+  function handleSyncSettingsClick() {
       showModal = false;
       showSyncSettingsModal = true;
-    } else {
-      login();
-    }
   }
 
   function handleDisableSync() {
@@ -53,38 +44,6 @@ import {
     }
   }
 </script>
-
-{#if showSyncSettingsModal}
-<Modal on:close={() => showSyncSettingsModal = false}>
-  <h1 slot="header">Sync Settings</h1>
-  <div class="flex flex-col gap-2 min-w-[250px] p-2" id="sync-options">
-    <p class="text-sm text-center mb-2">
-      You are currently syncing as <br/><b>{$userEmail}</b>
-    </p>
-
-    <button 
-      class="bg-blue-700 hover:bg-blue-600 flex justify-center items-center gap-2" 
-      on:click={forceSync}
-    >
-      <span>Sync Now</span>
-      {#if $syncStatus === 'syncing'}
-        <i class="material-icons text-sm animate-spin">refresh</i>
-      {/if}
-    </button>
-    <button on:click={handleDisableSync}>
-      Disable Sync
-    </button>
-    
-    <button class="bg-red-800 hover:bg-red-700" on:click={handleDeleteSync}>
-      Disable Sync & Delete Saved Data
-    </button>
-
-    <button class="bg-gray-500 hover:bg-gray-600 mt-2" on:click={() => showSyncSettingsModal = false}>
-      Cancel
-    </button>
-  </div>
-</Modal>
-{/if}
 
 <button
   class="bg-black text-white rounded-md px-1 text-xs"
@@ -154,20 +113,15 @@ import {
     {#if !isSheetReadOnly}
       <div class="mt-2 border-t border-gray-500 pt-2 font-bold">Advanced Options</div>
       
-      <button 
-        on:click={handleSyncClick}
-        class:green={$isSyncEnabled}
-        class="flex items-center justify-center gap-2"
-      >
-        {#if $isSyncEnabled}
-          <span class="truncate max-w-[200px]">Syncing ({$userEmail})</span>
-          {#if $syncStatus === 'syncing'}
-            <i class="material-icons text-sm animate-spin">refresh</i>
-          {/if}
-        {:else}
-          Enable Google Sync
-        {/if}
-      </button>
+      {#if $isSyncEnabled}
+        <button on:click={handleSyncSettingsClick}>
+           Sync Settings ({$userEmail})
+        </button>
+      {:else}
+        <div class="text-xs text-gray-500 italic text-center">
+           Enable Sync via Toolbar Icon
+        </div>
+      {/if}
 
       <button
         on:click={() => {
@@ -183,34 +137,6 @@ import {
     {/if}
   </div>
 </Modal>
-
-{#if $showConflictModal}
-<Modal on:close={() => { showConflictModal.set(false); logout(); }}>
-    <h1 slot="header">Sync Conflict</h1>
-    <div class="flex flex-col gap-4 max-w-sm" id="sync-conflict">
-        <p>There is already saved data online.</p>
-        <p class="text-sm">
-            You can <b>Save Current Characters</b>, which will overwrite your current online data. 
-            Or you can <b>Restore from Online</b>, which will delete your current characters.
-        </p>
-        <p class="text-sm font-bold text-red-800">
-            There is no undo. You may want to cancel and export your JSON first.
-        </p>
-        
-        <button class="bg-blue-700 text-white p-2 rounded" on:click={forceUploadAll}>
-            Save Current Characters (Overwrite Cloud)
-        </button>
-        
-        <button class="bg-green-700 text-white p-2 rounded" on:click={forceDownloadAll}>
-            Restore from Online (Overwrite Local)
-        </button>
-
-        <button class="bg-gray-500 text-white p-2 rounded" on:click={() => { showConflictModal.set(false); logout(); }}>
-            Cancel
-        </button>
-    </div>
-</Modal>
-{/if}
 
 {#if showSyncSettingsModal}
 <Modal on:close={() => showSyncSettingsModal = false}>
@@ -256,11 +182,8 @@ import {
   }
   
   /* Modal styling */
-  #sync-options button, #sync-conflict button {
+  #sync-options button {
      @apply transition active:opacity-50 cursor-pointer shadow-sm;
-  }
-  #sync-conflict button {
-      @apply hover:scale-105;
   }
   #sync-options button.bg-red-800 { background-color: #991b1b; }
   #sync-options button.bg-gray-500 { background-color: #6b7280; }
