@@ -17,7 +17,7 @@ const UPLOAD_API = 'https://www.googleapis.com/upload/drive/v3/files';
 export const isSyncEnabled = writable(false);
 export const userEmail = writable<string>("");
 export const syncStatus = writable<"idle" | "syncing" | "error" | "paused">("idle");
-export const syncMessage = writable<string>(""); // NEW: For the bottom-right banner
+export const syncMessage = writable<string>(""); 
 export const initialSyncComplete = writable(false); 
 
 // Modals & Conflicts
@@ -36,6 +36,8 @@ let debounceTimer: any;
 let autoSyncTimer: any;
 let isSyncing = false;
 let isReconnecting = false;
+// NEW: Flag to suppress nagging modals if user chose "Work Offline"
+let isWorkingOffline = false;
 
 // --- Persistence Helpers ---
 function storeToken(token: string, expiresInSeconds: number) {
@@ -69,7 +71,6 @@ function loadToken() {
 }
 
 // Track the timestamp of the file when we LAST successfully synced it.
-// This allows us to detect "Forks" (both sides changed since last sync).
 async function getLastSyncedTS(slot: number): Promise<number> {
     const val = await asyncLocalStorage.getItem(`sd-last-synced-ts-${slot}`);
     return val ? parseInt(val, 10) : 0;
@@ -142,6 +143,9 @@ async function handleAuthSuccess(response: any) {
     await fetchUserProfile();
     isSyncEnabled.set(true);
     
+    // Recovery: Clear the offline flag
+    isWorkingOffline = false;
+    
     showReauthModal.set(false); 
     showConnectionErrorModal.set(false);
     syncStatus.set("idle"); 
@@ -151,17 +155,24 @@ async function handleAuthSuccess(response: any) {
     if (!get(initialSyncComplete)) {
         performStartupSync();
     } else {
-        // Whether new or reconnecting, we run the standard sync.
-        // The standard sync now handles conflicts intelligently.
-        performSync();
+        if (isReconnecting) {
+             performSync(); 
+        } else {
+             checkForCloudDataAndInit();
+        }
     }
     isReconnecting = true;
 }
 
 export function enableOfflineMode() {
+    // 1. Close Error Modals
     showReauthModal.set(false);
     showConnectionErrorModal.set(false);
-    stopAutoSync();
+    
+    // 2. Set State
+    isWorkingOffline = true; // Flag enabled
+    // Note: We DO NOT stop auto sync. We keep trying silently.
+    
     syncStatus.set("error");
     showOfflineConfirmationModal.set(true);
 }
@@ -169,7 +180,7 @@ export function enableOfflineMode() {
 function startAutoSync() {
     stopAutoSync();
     autoSyncTimer = setInterval(() => {
-        performSync();
+        performSync(false); // isManual = false
     }, AUTO_SYNC_INTERVAL_MS);
 }
 
@@ -187,6 +198,7 @@ export function logout() {
   userEmail.set("");
   isSyncEnabled.set(false);
   isReconnecting = false;
+  isWorkingOffline = false;
   localStorage.removeItem("google_user_email");
   syncStatus.set("idle");
 }
@@ -270,8 +282,7 @@ async function deleteFile(fileId: string) {
 // --- CORE SYNC LOGIC ---
 
 async function performStartupSync() {
-    // Startup is identical to performSync, but we force it to run even if paused
-    await performSync();
+    await performSync(false);
     initialSyncComplete.set(true);
 }
 
@@ -283,18 +294,21 @@ export async function updateLocalTimestamp(slot: number) {
 
 function debouncedSync() {
   clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => performSync(), 2000);
+  debounceTimer = setTimeout(() => performSync(false), 2000);
 }
 
 export function forceSync() {
-    performSync();
+    performSync(true); // Manual trigger
 }
 
-export async function performSync() {
+export async function performSync(isManual = false) {
   if (isSyncing) return;
+  
+  // Pre-flight Token Check
   if (!loadToken() && get(isSyncEnabled)) {
       syncStatus.set("error");
-      showReauthModal.set(true);
+      // Only show modal if Manual click OR Not in Offline Mode
+      if (isManual || !isWorkingOffline) showReauthModal.set(true);
       return;
   }
   if (!accessToken) return;
@@ -308,7 +322,6 @@ export async function performSync() {
     const conflicts = [];
 
     for (let i = 1; i <= NUM_SLOTS; i++) {
-        // Update Banner
         syncMessage.set(`Comparing slot ${i}...`);
 
         const slotKey = `sd-character-sheet-slot-${i}`;
@@ -318,60 +331,47 @@ export async function performSync() {
         const localData = await asyncLocalStorage.getItem(slotKey);
         const localMeta = await asyncLocalStorage.getItem(metaKey);
         const localTS = localMeta ? parseInt(localMeta, 10) : 0;
-        const lastSyncedTS = await getLastSyncedTS(i); // Baseline
+        const lastSyncedTS = await getLastSyncedTS(i); 
         
         const remoteFile = remoteFiles[filename];
 
-        // 1. DETERMINE REMOTE TS
         let remoteTS = 0;
-        let remoteContent = null; // Lazy load if possible
+        let remoteContent = null; 
 
         if (remoteFile) {
             if (remoteFile.appProperties?.ts) {
                 remoteTS = parseInt(remoteFile.appProperties.ts);
             } else {
-                // Legacy file check
                 syncMessage.set(`Downloading slot ${i} (Legacy check)...`);
                 remoteContent = await downloadFile(remoteFile.id);
                 remoteTS = remoteContent.ts || 0;
             }
         }
 
-        // 2. CHECK FOR CONFLICTS (FORKS)
-        // A conflict occurs if BOTH changed since we last synced.
-        // Remote > LastSync AND Local > LastSync
-        
-        // Safety: Empty local slots don't cause conflicts, they just accept remote.
         const isLocalDefault = localData ? isDefaultCharacter(JSON.parse(localData)) : true;
         const hasLocalTimestamp = localMeta !== null;
 
         if (remoteFile && !isLocalDefault && hasLocalTimestamp) {
              if (remoteTS > lastSyncedTS && localTS > lastSyncedTS) {
-                 // CONFLICT FOUND
-                 if (remoteTS !== localTS) { // Ignore if identical timestamps (rare)
-                     console.log(`[Conflict] Slot ${i}: Local ${localTS} vs Remote ${remoteTS} (Base ${lastSyncedTS})`);
+                 if (remoteTS !== localTS) {
                      conflicts.push({
                          slot: i,
                          localDate: new Date(localTS),
                          remoteDate: new Date(remoteTS)
                      });
-                     continue; // Skip processing this slot, let user decide
+                     continue;
                  }
              }
         }
 
-        // 3. AUTO-RESOLVE NON-CONFLICTS
-        
-        // Case A: Local is Empty/Default -> Always Download Remote
         if (remoteFile && (isLocalDefault || !hasLocalTimestamp)) {
             syncMessage.set(`Downloading slot ${i}...`);
             if (!remoteContent) remoteContent = await downloadFile(remoteFile.id);
             await savePlayerToLocalStorage(remoteContent.value, i);
             await asyncLocalStorage.setItem(metaKey, remoteTS.toString());
-            await setLastSyncedTS(i, remoteTS); // Update Baseline
+            await setLastSyncedTS(i, remoteTS);
             if (get(CurrentSaveSlot) === i) PlayerCharacterStore.set(remoteContent.value);
         }
-        // Case B: Remote is Newer (and Local hasn't changed since last sync)
         else if (remoteFile && remoteTS > lastSyncedTS) {
             syncMessage.set(`Downloading slot ${i}...`);
             if (!remoteContent) remoteContent = await downloadFile(remoteFile.id);
@@ -380,14 +380,12 @@ export async function performSync() {
             await setLastSyncedTS(i, remoteTS);
             if (get(CurrentSaveSlot) === i) PlayerCharacterStore.set(remoteContent.value);
         }
-        // Case C: Local is Newer (and Remote hasn't changed since last sync)
         else if (localData && localTS > lastSyncedTS) {
             syncMessage.set(`Uploading slot ${i}...`);
             const payload = { value: JSON.parse(localData), ts: localTS };
             await uploadFile(filename, payload, remoteFile ? remoteFile.id : null);
-            await setLastSyncedTS(i, localTS); // Update Baseline (Local is now the truth)
+            await setLastSyncedTS(i, localTS); 
         }
-        // Case D: New Local File (No Remote)
         else if (localData && !remoteFile && !isLocalDefault) {
              syncMessage.set(`Uploading new slot ${i}...`);
              const payload = { value: JSON.parse(localData), ts: localTS || Date.now() };
@@ -396,13 +394,14 @@ export async function performSync() {
         }
     }
 
-    // 4. HANDLE RESULTS
     if (conflicts.length > 0) {
         conflictedSlots.set(conflicts);
         showConflictModal.set(true);
         syncStatus.set("paused");
         syncMessage.set("Conflicts detected");
     } else {
+        // SUCCESS: Auto-recover from offline mode
+        isWorkingOffline = false; 
         syncStatus.set("idle");
         syncMessage.set("");
     }
@@ -412,65 +411,53 @@ export async function performSync() {
     syncStatus.set("error");
     syncMessage.set("Sync Failed");
     
+    // Only show error modals if Manual or NOT in Offline Mode
+    const shouldShowModal = isManual || !isWorkingOffline;
+
     if (e.message === "AUTH_ERROR") {
-        showReauthModal.set(true);
+        if (shouldShowModal) showReauthModal.set(true);
     } else if (e.message === "NETWORK_ERROR") {
-        showConnectionErrorModal.set(true);
+        if (shouldShowModal) showConnectionErrorModal.set(true);
     }
   } finally {
     isSyncing = false;
-    // Clear message after delay if idle
     if (get(syncStatus) === 'idle') {
         setTimeout(() => syncMessage.set(""), 2000);
     }
   }
 }
 
-// --- CONFLICT RESOLUTION ---
-
+// ... Conflict Resolution & Others (No changes needed) ...
 export async function resolveConflict(slot: number, choice: 'local' | 'remote') {
-    // 1. Get File Info
     const slotKey = `sd-character-sheet-slot-${slot}`;
     const metaKey = `${slotKey}-meta`;
     const filename = `shadowdark_slot_${slot}.json`;
-    
-    // We assume the user is online if they are clicking buttons in the modal
     const remoteFiles = await listAllSyncedFiles();
     const remoteFile = remoteFiles[filename];
 
-    if (!remoteFile) return; // Should not happen in a conflict
-
+    if (!remoteFile) return;
     syncMessage.set(`Resolving slot ${slot}...`);
 
     if (choice === 'local') {
-        // Overwrite Remote with Local
         const localData = await asyncLocalStorage.getItem(slotKey);
         const localMeta = await asyncLocalStorage.getItem(metaKey);
         const localTS = localMeta ? parseInt(localMeta, 10) : Date.now();
-        
         if (localData) {
             const payload = { value: JSON.parse(localData), ts: localTS };
             await uploadFile(filename, payload, remoteFile.id);
             await setLastSyncedTS(slot, localTS);
         }
     } else {
-        // Overwrite Local with Remote
         const remoteContent = await downloadFile(remoteFile.id);
         const remoteTS = remoteContent.ts || 0;
-        
         await savePlayerToLocalStorage(remoteContent.value, slot);
         await asyncLocalStorage.setItem(metaKey, remoteTS.toString());
         await setLastSyncedTS(slot, remoteTS);
-        
-        if (get(CurrentSaveSlot) === slot) {
-            PlayerCharacterStore.set(remoteContent.value);
-        }
+        if (get(CurrentSaveSlot) === slot) PlayerCharacterStore.set(remoteContent.value);
     }
 
-    // Remove from conflict list
     conflictedSlots.update(list => list.filter(c => c.slot !== slot));
 
-    // If no conflicts left, resume idle state
     if (get(conflictedSlots).length === 0) {
         showConflictModal.set(false);
         syncStatus.set("idle");
@@ -487,4 +474,13 @@ export async function deleteCloudDataAndLogout() {
         for (const key in files) await deleteFile(files[key].id);
         logout();
     } catch (e) { syncStatus.set("error"); }
+}
+async function checkForCloudDataAndInit() {
+    syncStatus.set("syncing");
+    const files = await listAllSyncedFiles();
+    if (Object.keys(files).length > 0) {
+        showConflictModal.set(true);
+    } else {
+        performSync();
+    }
 }
