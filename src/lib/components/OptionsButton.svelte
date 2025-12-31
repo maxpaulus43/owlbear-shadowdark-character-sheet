@@ -17,7 +17,7 @@
     userEmail,
     logout,
     deleteCloudDataAndLogout,
-    // Removed forceUploadAll/forceDownloadAll/showConflictModal
+    login // <--- Added login import
   } from "../services/GoogleDriveSync";
   // --------------------
 
@@ -118,9 +118,9 @@
            Sync Settings ({$userEmail})
         </button>
       {:else}
-        <div class="text-xs text-gray-500 italic text-center">
-           Enable Sync via Toolbar Icon
-        </div>
+        <button on:click={login}>
+           Set up Google Sync
+        </button>
       {/if}
 
       <button

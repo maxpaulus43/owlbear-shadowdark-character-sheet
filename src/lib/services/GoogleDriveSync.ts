@@ -26,7 +26,6 @@ export const showConnectionErrorModal = writable(false);
 export const showOfflineConfirmationModal = writable(false);
 export const showConflictModal = writable(false);
 
-// Stores which slots are currently in a "Forked" state
 export const conflictedSlots = writable<Array<{ slot: number, localDate: Date, remoteDate: Date }>>([]);
 
 let tokenClient: any;
@@ -36,7 +35,6 @@ let debounceTimer: any;
 let autoSyncTimer: any;
 let isSyncing = false;
 let isReconnecting = false;
-// NEW: Flag to suppress nagging modals if user chose "Work Offline"
 let isWorkingOffline = false;
 
 // --- Persistence Helpers ---
@@ -70,7 +68,6 @@ function loadToken() {
   return false;
 }
 
-// Track the timestamp of the file when we LAST successfully synced it.
 async function getLastSyncedTS(slot: number): Promise<number> {
     const val = await asyncLocalStorage.getItem(`sd-last-synced-ts-${slot}`);
     return val ? parseInt(val, 10) : 0;
@@ -142,8 +139,6 @@ async function handleAuthSuccess(response: any) {
     storeToken(response.access_token, response.expires_in);
     await fetchUserProfile();
     isSyncEnabled.set(true);
-    
-    // Recovery: Clear the offline flag
     isWorkingOffline = false;
     
     showReauthModal.set(false); 
@@ -155,24 +150,15 @@ async function handleAuthSuccess(response: any) {
     if (!get(initialSyncComplete)) {
         performStartupSync();
     } else {
-        if (isReconnecting) {
-             performSync(); 
-        } else {
-             checkForCloudDataAndInit();
-        }
+        performSync(); 
     }
     isReconnecting = true;
 }
 
 export function enableOfflineMode() {
-    // 1. Close Error Modals
     showReauthModal.set(false);
     showConnectionErrorModal.set(false);
-    
-    // 2. Set State
-    isWorkingOffline = true; // Flag enabled
-    // Note: We DO NOT stop auto sync. We keep trying silently.
-    
+    isWorkingOffline = true;
     syncStatus.set("error");
     showOfflineConfirmationModal.set(true);
 }
@@ -180,7 +166,7 @@ export function enableOfflineMode() {
 function startAutoSync() {
     stopAutoSync();
     autoSyncTimer = setInterval(() => {
-        performSync(false); // isManual = false
+        performSync(false);
     }, AUTO_SYNC_INTERVAL_MS);
 }
 
@@ -192,7 +178,8 @@ export function login() {
   if (tokenClient) tokenClient.requestAccessToken();
 }
 
-export function logout() {
+// UPDATED LOGOUT
+export async function logout() {
   stopAutoSync();
   clearToken();
   userEmail.set("");
@@ -200,6 +187,13 @@ export function logout() {
   isReconnecting = false;
   isWorkingOffline = false;
   localStorage.removeItem("google_user_email");
+  
+  // RESET SYNC HISTORY for all slots
+  // This ensures next login is treated as a "First Sync" for conflict detection
+  for (let i = 1; i <= NUM_SLOTS; i++) {
+      await setLastSyncedTS(i, 0);
+  }
+
   syncStatus.set("idle");
 }
 
@@ -287,9 +281,10 @@ async function performStartupSync() {
 }
 
 export async function updateLocalTimestamp(slot: number) {
-  if (!get(isSyncEnabled) || !get(initialSyncComplete)) return;
   await asyncLocalStorage.setItem(`sd-character-sheet-slot-${slot}-meta`, Date.now().toString());
-  debouncedSync();
+  if (get(isSyncEnabled) && get(initialSyncComplete)) {
+      debouncedSync();
+  }
 }
 
 function debouncedSync() {
@@ -298,16 +293,14 @@ function debouncedSync() {
 }
 
 export function forceSync() {
-    performSync(true); // Manual trigger
+    performSync(true); 
 }
 
 export async function performSync(isManual = false) {
   if (isSyncing) return;
   
-  // Pre-flight Token Check
   if (!loadToken() && get(isSyncEnabled)) {
       syncStatus.set("error");
-      // Only show modal if Manual click OR Not in Offline Mode
       if (isManual || !isWorkingOffline) showReauthModal.set(true);
       return;
   }
@@ -349,9 +342,19 @@ export async function performSync(isManual = false) {
         }
 
         const isLocalDefault = localData ? isDefaultCharacter(JSON.parse(localData)) : true;
-        const hasLocalTimestamp = localMeta !== null;
 
-        if (remoteFile && !isLocalDefault && hasLocalTimestamp) {
+        // 1. First Sync Safety (No Last Sync recorded)
+        if (remoteFile && !isLocalDefault && lastSyncedTS === 0) {
+             conflicts.push({
+                 slot: i,
+                 localDate: new Date(localTS || Date.now()),
+                 remoteDate: new Date(remoteTS)
+             });
+             continue;
+        }
+
+        // 2. Standard Fork Detection
+        if (remoteFile && !isLocalDefault && localMeta) {
              if (remoteTS > lastSyncedTS && localTS > lastSyncedTS) {
                  if (remoteTS !== localTS) {
                      conflicts.push({
@@ -364,7 +367,8 @@ export async function performSync(isManual = false) {
              }
         }
 
-        if (remoteFile && (isLocalDefault || !hasLocalTimestamp)) {
+        // 3. Auto-Resolve
+        if (remoteFile && (isLocalDefault || !localMeta)) {
             syncMessage.set(`Downloading slot ${i}...`);
             if (!remoteContent) remoteContent = await downloadFile(remoteFile.id);
             await savePlayerToLocalStorage(remoteContent.value, i);
@@ -400,7 +404,6 @@ export async function performSync(isManual = false) {
         syncStatus.set("paused");
         syncMessage.set("Conflicts detected");
     } else {
-        // SUCCESS: Auto-recover from offline mode
         isWorkingOffline = false; 
         syncStatus.set("idle");
         syncMessage.set("");
@@ -411,13 +414,9 @@ export async function performSync(isManual = false) {
     syncStatus.set("error");
     syncMessage.set("Sync Failed");
     
-    // Only show error modals if Manual or NOT in Offline Mode
-    const shouldShowModal = isManual || !isWorkingOffline;
-
-    if (e.message === "AUTH_ERROR") {
-        if (shouldShowModal) showReauthModal.set(true);
-    } else if (e.message === "NETWORK_ERROR") {
-        if (shouldShowModal) showConnectionErrorModal.set(true);
+    if (isManual || !isWorkingOffline) {
+        if (e.message === "AUTH_ERROR") showReauthModal.set(true);
+        else if (e.message === "NETWORK_ERROR") showConnectionErrorModal.set(true);
     }
   } finally {
     isSyncing = false;
@@ -427,7 +426,6 @@ export async function performSync(isManual = false) {
   }
 }
 
-// ... Conflict Resolution & Others (No changes needed) ...
 export async function resolveConflict(slot: number, choice: 'local' | 'remote') {
     const slotKey = `sd-character-sheet-slot-${slot}`;
     const metaKey = `${slotKey}-meta`;
@@ -474,13 +472,4 @@ export async function deleteCloudDataAndLogout() {
         for (const key in files) await deleteFile(files[key].id);
         logout();
     } catch (e) { syncStatus.set("error"); }
-}
-async function checkForCloudDataAndInit() {
-    syncStatus.set("syncing");
-    const files = await listAllSyncedFiles();
-    if (Object.keys(files).length > 0) {
-        showConflictModal.set(true);
-    } else {
-        performSync();
-    }
 }
