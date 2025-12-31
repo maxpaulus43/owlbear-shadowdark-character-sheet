@@ -33,6 +33,11 @@
     showSyncSettingsModal = false;
   }
 
+  function handleDeleteSync() {
+    showDeleteConfirmationModal.set(true);
+    showSyncSettingsModal = false;
+  }
+
   function handleSetupClick() {
     showModal = false;
     requestSetup();
