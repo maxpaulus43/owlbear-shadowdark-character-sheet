@@ -23,6 +23,7 @@ export const showConflictModal = writable(false);
 export const showSetupModal = writable(false); // NEW
 
 export const conflictedSlots = writable<Array<{ slot: number, localDate: Date, remoteDate: Date }>>([]);
+export const lastSyncedTimestamp = writable<Record<number, number>>({});
 
 let activeProvider: CloudProvider | null = null;
 let autoSyncTimer: any;
@@ -161,6 +162,12 @@ export async function updateLocalTimestamp(slot: number) {
     }
 }
 
+export function resetSyncState() {
+    isSyncing = false;
+    syncStatus.set("idle");
+    syncMessage.set("");
+}
+
 export function forceSync() { performSync(true); }
 
 export async function performSync(isManual = false) {
@@ -193,9 +200,14 @@ export async function performSync(isManual = false) {
             if (localMetaRaw) {
                 try {
                     const parsed = JSON.parse(localMetaRaw);
-                    localTS = parsed.ts || 0;
+                    // Check if object with ts, otherwise fallback
+                    if (parsed && typeof parsed === 'object' && 'ts' in parsed) {
+                        localTS = parsed.ts;
+                    } else {
+                        throw new Error("Not a meta object");
+                    }
                 } catch {
-                    // Fallback for legacy string format
+                    // Fallback for legacy string format or raw number
                     localTS = parseInt(localMetaRaw, 10) || 0;
                 }
             }
