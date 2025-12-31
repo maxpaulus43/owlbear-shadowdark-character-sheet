@@ -1,4 +1,5 @@
 import type { CloudProvider, CloudFile } from "./CloudProvider";
+import { SyncError, SyncErrorCode } from "./SyncTypes";
 
 const CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/userinfo.email';
@@ -83,13 +84,13 @@ export class GoogleProvider implements CloudProvider {
   // --- API ---
 
   async list(): Promise<Record<string, CloudFile>> {
-    if (!this.accessToken) throw new Error("AUTH_ERROR");
+    if (!this.accessToken) throw new SyncError(SyncErrorCode.AUTH_ERROR);
     const q = encodeURIComponent("trashed = false and 'appDataFolder' in parents and name contains 'shadowdark_slot_'");
     const url = `${DRIVE_API}?q=${q}&fields=files(id, name, appProperties)&spaces=appDataFolder`;
 
     try {
       const res = await fetch(url, { headers: { 'Authorization': `Bearer ${this.accessToken}` } });
-      if (res.status === 401) throw new Error("AUTH_ERROR");
+      if (res.status === 401) throw new SyncError(SyncErrorCode.AUTH_ERROR);
       const data = await res.json();
 
       const map: Record<string, CloudFile> = {};
@@ -104,8 +105,8 @@ export class GoogleProvider implements CloudProvider {
       }
       return map;
     } catch (e: any) {
-      if (e.message === "AUTH_ERROR") throw e;
-      throw new Error("NETWORK_ERROR");
+      if (e instanceof SyncError) throw e;
+      throw new SyncError(SyncErrorCode.NETWORK_ERROR, e.message, e);
     }
   }
 
@@ -114,11 +115,11 @@ export class GoogleProvider implements CloudProvider {
       const res = await fetch(`${DRIVE_API}/${fileId}?alt=media`, {
         headers: { 'Authorization': `Bearer ${this.accessToken}` }
       });
-      if (res.status === 401) throw new Error("AUTH_ERROR");
+      if (res.status === 401) throw new SyncError(SyncErrorCode.AUTH_ERROR);
       return await res.json();
     } catch (e: any) {
-      if (e.message === "AUTH_ERROR") throw e;
-      throw new Error("NETWORK_ERROR");
+      if (e instanceof SyncError) throw e;
+      throw new SyncError(SyncErrorCode.NETWORK_ERROR, e.message, e);
     }
   }
 
@@ -139,17 +140,23 @@ export class GoogleProvider implements CloudProvider {
 
     try {
       const res = await fetch(url, { method, headers: { 'Authorization': `Bearer ${this.accessToken}` }, body: formData });
-      if (res.status === 401) throw new Error("AUTH_ERROR");
+      if (res.status === 401) throw new SyncError(SyncErrorCode.AUTH_ERROR);
     } catch (e: any) {
-      if (e.message === "AUTH_ERROR") throw e;
-      throw new Error("NETWORK_ERROR");
+      if (e instanceof SyncError) throw e;
+      throw new SyncError(SyncErrorCode.NETWORK_ERROR, e.message, e);
     }
   }
 
   async delete(fileId: string): Promise<void> {
-    await fetch(`${DRIVE_API}/${fileId}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${this.accessToken}` }
-    });
+    try {
+      const res = await fetch(`${DRIVE_API}/${fileId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${this.accessToken}` }
+      });
+      if (res.status === 401) throw new SyncError(SyncErrorCode.AUTH_ERROR);
+    } catch (e: any) {
+      if (e instanceof SyncError) throw e;
+      throw new SyncError(SyncErrorCode.NETWORK_ERROR, e.message, e);
+    }
   }
 }

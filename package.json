@@ -31,6 +31,7 @@
     "vitest": "^4.0.16"
   },
   "dependencies": {
-    "@owlbear-rodeo/sdk": "^2.3.0"
+    "@owlbear-rodeo/sdk": "^2.3.0",
+    "zod": "^4.3.3"
   }
 }

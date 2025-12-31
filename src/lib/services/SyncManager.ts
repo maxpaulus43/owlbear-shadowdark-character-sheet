@@ -6,6 +6,8 @@ import { CurrentSaveSlot, NUM_SLOTS } from "./SaveSlotTracker";
 import type { CloudProvider } from "./sync/CloudProvider";
 import { GoogleProvider } from "./sync/GoogleProvider";
 import { DropboxProvider } from "./sync/DropboxProvider";
+import { determineSyncAction } from "./sync/SyncUtils";
+import { ShadowdarkCharacterSchema, SyncError, SyncErrorCode, type SyncMetadata } from "./sync/SyncTypes";
 
 // State
 export const isSyncEnabled = writable(false);
@@ -20,7 +22,8 @@ export const showReauthModal = writable(false);
 export const showConnectionErrorModal = writable(false);
 export const showOfflineConfirmationModal = writable(false);
 export const showConflictModal = writable(false);
-export const showSetupModal = writable(false); // NEW
+export const showSetupModal = writable(false);
+export const showDeleteConfirmationModal = writable(false);
 
 export const conflictedSlots = writable<Array<{ slot: number, localDate: Date, remoteDate: Date }>>([]);
 export const lastSyncedTimestamp = writable<Record<number, number>>({});
@@ -170,6 +173,7 @@ export function resetSyncState() {
 
 export function forceSync() { performSync(true); }
 
+
 export async function performSync(isManual = false) {
     if (isSyncing || !activeProvider) return;
 
@@ -185,7 +189,7 @@ export async function performSync(isManual = false) {
 
     try {
         const remoteFiles = await activeProvider.list();
-        const conflicts = [];
+        const conflicts: Array<{ slot: number, localDate: Date, remoteDate: Date }> = [];
 
         for (let i = 1; i <= NUM_SLOTS; i++) {
             syncMessage.set(`Comparing slot ${i}...`);
@@ -193,24 +197,26 @@ export async function performSync(isManual = false) {
             const metaKey = `${slotKey}-meta`;
             const filename = `shadowdark_slot_${i}.json`;
 
-            const localData = await asyncLocalStorage.getItem(slotKey);
+            const localDataRaw = await asyncLocalStorage.getItem(slotKey);
             const localMetaRaw = await asyncLocalStorage.getItem(metaKey);
+            let localMeta: SyncMetadata | null = null;
 
-            let localTS = 0;
+            // Parse Local Metadata safely
             if (localMetaRaw) {
                 try {
                     const parsed = JSON.parse(localMetaRaw);
                     // Check if object with ts, otherwise fallback
                     if (parsed && typeof parsed === 'object' && 'ts' in parsed) {
-                        localTS = parsed.ts;
+                        localMeta = parsed;
                     } else {
-                        throw new Error("Not a meta object");
+                        // Legacy: treat raw number/string as ts
+                        localMeta = { ts: parseInt(localMetaRaw, 10) || 0 };
                     }
                 } catch {
-                    // Fallback for legacy string format or raw number
-                    localTS = parseInt(localMetaRaw, 10) || 0;
+                    localMeta = { ts: parseInt(localMetaRaw, 10) || 0 };
                 }
             }
+
             const lastSyncedTSVal = await asyncLocalStorage.getItem(`sd-last-synced-ts-${i}`);
             const lastSyncedTS = lastSyncedTSVal ? parseInt(lastSyncedTSVal, 10) : 0;
 
@@ -219,44 +225,59 @@ export async function performSync(isManual = false) {
             let remoteContent = null;
 
             if (remoteFile) {
-                // Use metadata if available (Google), else lazy download (Dropbox)
                 if (remoteFile.ts) {
                     remoteTS = remoteFile.ts;
                 } else {
                     syncMessage.set(`Checking slot ${i}...`);
+                    // Pre-download to check TS if not in metadata (Dropbox)
                     remoteContent = await activeProvider.download(remoteFile.id);
                     remoteTS = remoteContent.ts || 0;
                 }
             }
 
-            const isLocalDefault = localData ? isDefaultCharacter(JSON.parse(localData)) : true;
+            // Determine Action
+            const action = determineSyncAction({
+                localData: localDataRaw,
+                localMeta,
+                lastSyncedTS,
+                remoteFile,
+                remoteTS
+            });
 
-            // Conflict Detection
-            if (remoteFile && !isLocalDefault && lastSyncedTS === 0) {
-                conflicts.push({ slot: i, localDate: new Date(localTS || Date.now()), remoteDate: new Date(remoteTS) });
-                continue;
+            if (action.type === "conflict") {
+                const localTSVal = localMeta?.ts || Date.now();
+                conflicts.push({ slot: i, localDate: new Date(localTSVal), remoteDate: new Date(remoteTS) });
             }
-            if (remoteFile && !isLocalDefault && localMetaRaw) {
-                if (remoteTS > lastSyncedTS && localTS > lastSyncedTS && remoteTS !== localTS) {
-                    conflicts.push({ slot: i, localDate: new Date(localTS), remoteDate: new Date(remoteTS) });
-                    continue;
+            else if (action.type === "download") {
+                syncMessage.set(`Downloading slot ${i}...`);
+                if (!remoteContent && remoteFile) remoteContent = await activeProvider.download(remoteFile.id);
+
+                if (remoteContent) {
+                    // Zod Validation
+                    try {
+                        ShadowdarkCharacterSchema.parse(remoteContent.value);
+                    } catch (e) {
+                        console.error(`Slot ${i} remote data invalid`, e);
+                        throw new SyncError(SyncErrorCode.DATA_CORRUPTION, `Slot ${i} data corrupted`);
+                    }
+
+                    await savePlayerToLocalStorage(remoteContent.value, i);
+                    const newMeta = { ts: remoteTS };
+                    await asyncLocalStorage.setItem(metaKey, JSON.stringify(newMeta));
+                    await asyncLocalStorage.setItem(`sd-last-synced-ts-${i}`, remoteTS.toString());
+
+                    if (get(CurrentSaveSlot) === i) PlayerCharacterStore.set(remoteContent.value);
                 }
             }
-
-            // Sync Actions
-            if (remoteFile && (isLocalDefault || !localMetaRaw || remoteTS > lastSyncedTS)) {
-                syncMessage.set(`Downloading slot ${i}...`);
-                if (!remoteContent) remoteContent = await activeProvider.download(remoteFile.id);
-                await savePlayerToLocalStorage(remoteContent.value, i);
-                await asyncLocalStorage.setItem(metaKey, JSON.stringify({ ts: remoteTS }));
-                await asyncLocalStorage.setItem(`sd-last-synced-ts-${i}`, remoteTS.toString());
-                if (get(CurrentSaveSlot) === i) PlayerCharacterStore.set(remoteContent.value);
-            }
-            else if (localData && (!remoteFile || localTS > lastSyncedTS)) {
+            else if (action.type === "upload") {
                 syncMessage.set(`Uploading slot ${i}...`);
-                const payload = { value: JSON.parse(localData), ts: localTS };
-                await activeProvider.upload(filename, payload, remoteFile?.id);
-                await asyncLocalStorage.setItem(`sd-last-synced-ts-${i}`, localTS.toString());
+                const localTSVal = localMeta?.ts || Date.now();
+                // Ensure we have data to upload
+                if (localDataRaw) {
+                    const payload = { value: JSON.parse(localDataRaw), ts: localTSVal };
+                    await activeProvider.upload(filename, payload, remoteFile?.id);
+                    await asyncLocalStorage.setItem(`sd-last-synced-ts-${i}`, localTSVal.toString());
+                }
             }
         }
 
@@ -275,9 +296,16 @@ export async function performSync(isManual = false) {
         console.error("Sync Error", e);
         syncStatus.set("error");
         syncMessage.set("Sync Failed");
+
         if (isManual || !isWorkingOffline) {
-            if (e.message === "AUTH_ERROR") showReauthModal.set(true);
-            else showConnectionErrorModal.set(true);
+            if (e instanceof SyncError) {
+                if (e.code === SyncErrorCode.AUTH_ERROR) showReauthModal.set(true);
+                else showConnectionErrorModal.set(true); // TODO: Maybe specific error modal for Data Corruption?
+            } else {
+                // Fallback for unknown errors
+                if (e.message === "AUTH_ERROR") showReauthModal.set(true);
+                else showConnectionErrorModal.set(true);
+            }
         }
     } finally {
         isSyncing = false;
@@ -320,8 +348,4 @@ export async function deleteCloudDataAndLogout() {
     const files = await activeProvider.list();
     for (const key in files) await activeProvider.delete(files[key].id);
     logout();
-}
-
-function isDefaultCharacter(pc: any): boolean {
-    return (pc.name === "" && pc.class === "" && pc.level === 0 && pc.xp === 0 && (!pc.gear || pc.gear.length === 0));
 }

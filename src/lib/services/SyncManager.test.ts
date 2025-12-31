@@ -87,8 +87,17 @@ describe('SyncManager Integration Tests', () => {
 		return d ? parseInt(d) : 0;
 	}
 
-	const TEST_PC = { name: "TestChar", level: 1, xp: 0, class: "Fighter", gear: [] };
-	const REMOTE_PC = { name: "RemoteChar", level: 2, xp: 10, class: "Wizard", gear: [] };
+	const TEST_PC = {
+		name: "TestChar", level: 1, xp: 0, class: "Fighter", ancestry: "Human", alignment: "N", background: "Soldier", deity: "Crom", notes: "",
+		stats: { STR: 10, DEX: 10, CON: 10, INT: 10, WIS: 10, CHA: 10 },
+		maxHitPoints: 10, hitPoints: 10, armorClass: 10, gearSlotsTotal: 10,
+		gold: 0, silver: 0, copper: 0,
+		gear: [], spells: [], languages: ["Common"], bonuses: []
+	};
+	const REMOTE_PC = {
+		...TEST_PC,
+		name: "RemoteChar", level: 2, xp: 10, class: "Wizard"
+	};
 
 	it('1. Setup Sync - No Data anywhere', async () => {
 		await performSync();
