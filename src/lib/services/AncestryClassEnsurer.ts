@@ -71,7 +71,42 @@ function clearClassBonuses(pc: PlayerCharacter) {
         "Learning Spells",
         "Hauler",
         "Herbalism",
+        "Herbal Remedy",
         "Wayfinder",
+        "Languages: Bard",
+        "Bardic Arts",
+        "Magical Dabbler",
+        "Presence",
+        "Prolific",
+        "Spellcasting: Knight of St. Ydris",
+        "Languages: Knight of St. Ydris",
+        "Demonic Possession",
+        "Languages: Warlock",
+        "Patron",
+        "Patrons",
+        "Patron Boon",
+        "Spellcasting: Witch",
+        "Languages: Witch",
+        "Familiar",
+        "Charge",
+        "Mount",
+        "Flourish",
+        "Implacable",
+        "Last Stand",
+        "Relentless",
+        "Languages: Ras-Godai",
+        "Assassinate",
+        "Smoke Step",
+        "Black Lotus",
+        "Black Lotus Talents",
+        "Seafarer",
+        "Old Gods",
+        "Old Gods Options",
+        "Shield Wall",
+        "Spellcasting: Seer",
+        "Destined",
+        "Omen",
+        "Seer Penance",
       ].includes(b.name) && !b.name.includes("Thievery:")
   );
 }
@@ -265,17 +300,294 @@ function addClassBonuses(bonuses: Bonus[], c: Class) {
           {
             name,
             bonusSource: "Class",
-            desc: "Make an INT check to find some herbs",
+            desc: "Make an INT check to prepare an herbal remedy you choose. If you fail, you can't make that remedy again until you successfully rest. Unused remedies expire in 3 rounds.",
+            type: "generic",
+          },
+          {
+            name: "Herbal Remedy",
+            bonusSource: "Class",
+            desc: "DC 11, Salve. Heals 1 HP; DC 12, Stimulant. You can't be surprised for 10 rounds; DC 13, Foebane. You get ADV on attacks and damage against one creature type you choose for 1d6 rounds; DC 14, Restorative. Ends one poison or disease; DC 15, Curative. Equivalent to a Potion of Healing.",
             type: "generic",
           },
           {
             name: "Wayfinder",
             bonusSource: "Class",
-            desc: "Advantage on checks associated with navigation, survivalism, tracking, sneaking, hiding, nature, animals",
+            desc: "You have advantage on checks associated with: Navigation, Tracking, Bushcraft, Stealth, Wild animals.",
             type: "generic",
           }
         );
       }
+      break;
+    }
+    case "Bard": {
+      const name = "Bardic Arts";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: "Languages: Bard",
+            bonusSource: "Class",
+            desc: "You know four additional common languages and one rare language.",
+            type: "generic",
+          },
+          {
+            name,
+            bonusSource: "Class",
+            desc: "You're trained in oration, performing arts, lore, and diplomacy. You have advantage on related checks.",
+            type: "generic",
+          },
+          {
+            name: "Magical Dabbler",
+            bonusSource: "Class",
+            desc: "You can activate spell scrolls and wands using Charisma as your spellcasting stat. If you critically fail, roll a wizard mishap.",
+            type: "generic",
+          },
+          {
+            name: "Presence",
+            bonusSource: "Class",
+            desc: "Make a DC 12 CHA check to enact Inspire (target in near gets luck token) or Fascinate (Focus, transfix targets LV 4 or less). Fail = can't use again until rest.",
+            type: "generic",
+          },
+          {
+            name: "Prolific",
+            bonusSource: "Class",
+            desc: "Add 1d6 to your learning rolls. Groups carousing with bards add 1d6 to carousing rolls.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Knight of St. Ydris": {
+      const name = "Demonic Possession";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: "Spellcasting: Knight of St. Ydris",
+            bonusSource: "Class",
+            desc: "Cast Witch spells using Charisma (DC = 10 + tier). Fail = can't cast again until rest. Natural 1 = Diabolical Mishap.",
+            type: "generic",
+          },
+          {
+            name: "Languages: Knight of St. Ydris",
+            bonusSource: "Class",
+            desc: "You know Diabolic.",
+            type: "generic",
+          },
+          {
+            name,
+            bonusSource: "Class",
+            desc: "3/day, gain a +1 bonus (+ half level rounded down) to damage rolls for 3 rounds.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Warlock": {
+      const name = "Patron";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: "Languages: Warlock",
+            bonusSource: "Class",
+            desc: "You know either Celestial, Diabolic, Draconic, Primordial, or Sylvan.",
+            type: "generic",
+          },
+          {
+            name,
+            bonusSource: "Class",
+            desc: "Choose a patron to serve. Your patron is the source of your supernatural gifts. If your patron is displeased with you, it can withhold its gifts. You lose any talents granted by your Patron Boons during this time.",
+            type: "generic",
+          },
+          {
+            name: "Patron Boon",
+            bonusSource: "Class",
+            desc: "At 1st level, gain a random Patron Boon talent. Can roll on Patron Boon table instead of Warlock Talents table when gaining talents.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Witch": {
+      const name = "Familiar";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: "Spellcasting: Witch",
+            bonusSource: "Class",
+            desc: "Cast Witch spells using Charisma (DC = 10 + tier). Fail = can't cast again until rest. Natural 1 = Diabolical Mishap.",
+            type: "generic",
+          },
+          {
+            name: "Languages: Witch",
+            bonusSource: "Class",
+            desc: "You know Diabolic, Primordial, and Sylvan.",
+            type: "generic",
+          },
+          {
+            name,
+            bonusSource: "Class",
+            desc: "Small animal familiar who speaks Common. Can cast spells through familiar. Resurrecting costs permanent 1d4 HP.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Desert Rider": {
+      const name = "Mount";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: "Charge",
+            bonusSource: "Class",
+            desc: "3/day, double damage on melee attacks for the round when charging (moving near before attacking).",
+            type: "generic",
+          },
+          {
+            name,
+            bonusSource: "Class",
+            desc: "Have a reliable common camel or horse. Riding mount adds half level to AC of both, and mount gets extra levels equal to half level.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Pit Fighter": {
+      const name = "Relentless";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: "Flourish",
+            bonusSource: "Class",
+            desc: "3/day, regain 1d6 HP when you hit an enemy with a melee attack.",
+            type: "generic",
+          },
+          {
+            name: "Implacable",
+            bonusSource: "Class",
+            desc: "You have advantage on Constitution checks to resist injury, poison, or endure extreme environments.",
+            type: "generic",
+          },
+          {
+            name: "Last Stand",
+            bonusSource: "Class",
+            desc: "Get up from dying with 1 HP on a natural d20 roll of 18-20.",
+            type: "generic",
+          },
+          {
+            name,
+            bonusSource: "Class",
+            desc: "3/day when reduced to 0 HP, make DC 18 CON check (Implacable applies). On success, go to 1 HP instead.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Ras-Godai": {
+      const name = "Assassinate";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: "Languages: Ras-Godai",
+            bonusSource: "Class",
+            desc: "You know Diabolic.",
+            type: "generic",
+          },
+          {
+            name,
+            bonusSource: "Class",
+            desc: "When you attack a surprised target, you deal double damage.",
+            type: "generic",
+          },
+          {
+            name: "Smoke Step",
+            bonusSource: "Class",
+            desc: "3/day, teleport near as a non-action.",
+            type: "generic",
+          },
+          {
+            name: "Black Lotus",
+            bonusSource: "Class",
+            desc: "Roll one talent on the Black Lotus Talents table.",
+            type: "generic",
+          },
+          {
+            name: "Black Lotus Talents",
+            bonusSource: "Class",
+            desc: "1: Triple Assassinate damage; 2: 1/day Paralyze target for 1d4 rds; 3: ADV on DEX checks vs trap/injury; 4: +1 AC dual wielding; 5: +1 HD; 6: ADV on DEX to hide; 7: Morale DC is 18 vs you; 8: 1/day walk on water; 9: 1/day DC 15 CON sleep; 10: 1/day walk on sheer surfaces; 11: +1 melee damage; 12: 1/day target DC 15 WIS can't see/hear you.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Sea Wolf": {
+      const name = "Old Gods";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: "Seafarer",
+            bonusSource: "Class",
+            desc: "Advantage on checks related to navigating and crewing boats.",
+            type: "generic",
+          },
+          {
+            name,
+            bonusSource: "Class",
+            desc: "Align purpose with Odin (+1d4 HP on kill), Freya (+1 luck token, +1d6 to rolls using it), or Loki (ADV on lie, sneak, hide) after rest.",
+            type: "generic",
+          },
+          {
+            name: "Old Gods Options",
+            bonusSource: "Class",
+            desc: "Odin: Regain 1d4 HP on kill. Freya: Luck token grants +1d6 to roll. Loki: ADV on lie, sneak, hide.",
+            type: "generic",
+          },
+          {
+            name: "Shield Wall",
+            bonusSource: "Class",
+            desc: "Use action to take defensive stance with shield. AC becomes 20.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Seer": {
+      const name = "Omen";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: "Spellcasting: Seer",
+            bonusSource: "Class",
+            desc: "Cast Seer spells using Wisdom (DC = 10 + tier). Fail = can't cast again until rest. Natural 1 = can't cast until Seer Penance.",
+            type: "generic",
+          },
+          {
+            name: "Destined",
+            bonusSource: "Class",
+            desc: "Whenever you use a luck token, add 1d6 to the roll.",
+            type: "generic",
+          },
+          {
+            name,
+            bonusSource: "Class",
+            desc: "3/day, make DC 9 WIS check. On success, gain a luck token.",
+            type: "generic",
+          },
+          {
+            name: "Seer Penance",
+            bonusSource: "Class",
+            desc: "T1: Give up 1d4 HP for a week; T2: Lower WIS by 2 for two weeks; T3: Permanent sacrifice 1 CHA; T4: Sink burning longboat; T5: Sacrifice 9 humanoids.",
+            type: "generic",
+          }
+        );
+      }
+      break;
     }
   }
 }

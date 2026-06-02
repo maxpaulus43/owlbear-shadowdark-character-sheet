@@ -35,6 +35,8 @@ export type Roll = {
 export type GenericTalent = {
   name: string;
   type: "generic";
+  min?: number;
+  max?: number;
 };
 export type BonusTalent = Merge<
   GenericTalent,
@@ -59,7 +61,7 @@ export type Spell = {
   failed?: boolean; //  spellcasting check failed
 };
 export type SpellClass =
-  | Extract<Class, "Wizard" | "Priest">
+  | Class
   | "PriestWizard"
   | "Other";
 export type SpellInfo = {

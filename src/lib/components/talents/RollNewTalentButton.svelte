@@ -24,6 +24,18 @@
     { min: 10, max: 11 },
   ];
 
+  function getRangeString(i: number, classTalents: any[]): string {
+    const t = classTalents && classTalents[i];
+    if (t && t.min !== undefined && t.max !== undefined) {
+      return t.min === t.max ? `${t.min}` : `${t.min}-${t.max}`;
+    }
+    const r = ranges[i];
+    if (r) {
+      return r.min === r.max ? `${r.min}` : `${r.min}-${r.max}`;
+    }
+    return "";
+  }
+
   let highlight = -1;
   function rollTalent() {
     const result = rollDice("d6") + rollDice("d6");
@@ -32,11 +44,20 @@
       highlight = 4;
       return;
     }
-    for (let i = 0; i < ranges.length; i++) {
-      const r = ranges[i];
-      if (result >= r.min && result <= r.max) {
-        highlight = i;
-        break;
+    const talents = CLASS_TALENTS[$pc.class] ?? [];
+    for (let i = 0; i < talents.length; i++) {
+      const t = talents[i];
+      if (t && t.min !== undefined && t.max !== undefined) {
+        if (result >= t.min && result <= t.max) {
+          highlight = i;
+          break;
+        }
+      } else {
+        const r = ranges[i];
+        if (r && result >= r.min && result <= r.max) {
+          highlight = i;
+          break;
+        }
       }
     }
   }
@@ -182,8 +203,8 @@
     </tr>
     {#each ranges as r, i}
       <tr class="border-b border-black" class:bg-yellow-300={highlight === i}>
-        <td>{r.min === r.max ? r.min : `${r.min}-${r.max}`}</td>
-        <td>{CLASS_TALENTS[$pc.class][i]?.name}</td>
+        <td>{getRangeString(i, CLASS_TALENTS[$pc.class])}</td>
+        <td>{CLASS_TALENTS[$pc.class]?.[i]?.name}</td>
       </tr>
     {/each}
     <tr class="border-b border-black" class:bg-yellow-300={highlight === 4}>
@@ -198,7 +219,7 @@
       <option value={-1}>Select a talent...</option>
       {#each ranges as r, i}
         <option value={i}>
-          {r.min === r.max ? r.min : `${r.min}-${r.max}`}: {CLASS_TALENTS[$pc.class][i]?.name}
+          {getRangeString(i, CLASS_TALENTS[$pc.class])}: {CLASS_TALENTS[$pc.class]?.[i]?.name}
         </option>
       {/each}
       <option value={4}>

@@ -7,7 +7,7 @@ export const SHIELD_PROPERTIES = [
   "TwoHanded",
   "Magic",
 ] as const;
-export const RANGE_TYPES = ["Self", "Close", "Near", "Far"] as const;
+export const RANGE_TYPES = ["Self", "Close", "Near", "Far", "Unlimited"] as const;
 export const DICE_TYPES = ["d4", "d6", "d8", "d10", "d12", "d20"] as const;
 export const SCHEMA_VERSION = "1.0.0";
 export const SCHEMA_TYPE = "sd-char-sheet";
@@ -94,6 +94,15 @@ export const CLASSES = [
   "Wizard",
   "Thief",
   "Ranger",
+  "Bard",
+  "Knight of St. Ydris",
+  "Warlock",
+  "Witch",
+  "Desert Rider",
+  "Pit Fighter",
+  "Ras-Godai",
+  "Sea Wolf",
+  "Seer",
 ] as const;
 
 export const TITLE_MAP: {
@@ -121,11 +130,55 @@ export const TITLE_MAP: {
     Chaotic: ["Adept", "Channeler", "Witch/Warlock", "Diabolist", "Sorcerer"],
     Neutral: ["Shaman", "Seer", "Warden", "sage", "Druid"],
   },
-  // TODO Ranger Titles
   Ranger: {
-    Lawful: ["Squire", "Cavalier", "Knight", "Thane", "Lord/Lady"],
-    Chaotic: ["Knave", "Bandit", "Slayer", "Reaver", "Warlord"],
-    Neutral: ["Warrior", "Bararian", "Battlerager", "Warchief", "Chieftain"],
+    Lawful: ["Wanderer", "Strider", "Warden", "Guardian", "Sentinel"],
+    Chaotic: ["Hood", "Outlaw", "Fugitive", "Exile", "Pariah"],
+    Neutral: ["Stranger", "Wayfarer", "Outlander", "Recluse", "Hermit"],
+  },
+  Bard: {
+    Lawful: ["Storyteller", "Balladeer", "Philosopher", "Poet", "Master Poet"],
+    Chaotic: ["Guttersnipe", "Charlatan", "Satirist", "Silvertongue", "Doomspeaker"],
+    Neutral: ["Seeker", "Witness", "Speaker", "Voice", "Truthbearer"],
+  },
+  "Knight of St. Ydris": {
+    Lawful: ["Arbiter", "Enforcer", "Knight Marshal", "Judge", "Justicar"],
+    Chaotic: ["Traitor", "Fallen", "Oathbreaker", "Blackguard", "Demonlord"],
+    Neutral: ["Brother/Sister", "Exorcist", "Reverend Knight", "Inquisitor", "Grand Inquisitor"],
+  },
+  Warlock: {
+    Lawful: ["Favored", "Herald", "Eminent", "Exalted", "Incarnation"],
+    Chaotic: ["Marked", "Zealot", "Occultist", "Champion", "Harbinger"],
+    Neutral: ["Chosen", "Channeler", "Prophesied", "Transcendent", "Avatar"],
+  },
+  Witch: {
+    Lawful: ["Fortune Teller", "Far Seer", "Prophet", "Wise One", "Baba"],
+    Chaotic: ["Whisperer", "Hexer", "Hag/Elder", "Crone/Uncle", "Baba"],
+    Neutral: ["Shaman", "Conjurer", "Soothsayer", "Conduit", "Baba"],
+  },
+  "Desert Rider": {
+    Lawful: ["Outrider", "Sandrunner", "Trailblazer", "Swift Wind", "Stormrunner"],
+    Chaotic: ["Bandit", "Robber", "Raider", "Scourge", "Bandit King/Queen"],
+    Neutral: ["Rat", "Fox", "Wolf", "Tiger", "Dragon"],
+  },
+  "Pit Fighter": {
+    Lawful: ["Rookie", "Gladiator", "Hero", "Champion", "Legend"],
+    Chaotic: ["Ruffian", "Brawler", "Heel", "Villain", "Legend"],
+    Neutral: ["Underdog", "Dark Horse", "Wild Card", "Victor", "Legend"],
+  },
+  "Ras-Godai": {
+    Lawful: ["Acolyte", "Mirror Path", "Monk", "Master", "White Lotus"],
+    Chaotic: ["Acolyte", "Shadow Path", "Monk", "Assassin", "Black Lotus"],
+    Neutral: ["Acolyte", "Fire Path", "Monk", "Demon Blade", "Red Lotus"],
+  },
+  "Sea Wolf": {
+    Lawful: ["Freefolk", "Shieldman/maiden", "Thane", "Jarl", "King/Queen"],
+    Chaotic: ["Rabble", "Raider", "Reaver", "Conqueror", "Usurper"],
+    Neutral: ["Wanderer", "Explorer", "Adventurer", "Renowned", "Legendary"],
+  },
+  Seer: {
+    Lawful: ["Guide", "Chanter", "Rune Reader", "Wise One", "Seer of Odin"],
+    Chaotic: ["Hedge Witch", "Whisperer", "Bone Reader", "Dreaded One", "Seer of Loki"],
+    Neutral: ["Fortune Teller", "Singer", "Star Reader", "Blessed One", "Seer of Freya"],
   },
 } as const;
 
@@ -142,6 +195,36 @@ export const TITLES = [
   ...TITLE_MAP["Priest"]["Lawful"],
   ...TITLE_MAP["Priest"]["Chaotic"],
   ...TITLE_MAP["Priest"]["Neutral"],
+  ...TITLE_MAP["Ranger"]["Lawful"],
+  ...TITLE_MAP["Ranger"]["Chaotic"],
+  ...TITLE_MAP["Ranger"]["Neutral"],
+  ...TITLE_MAP["Bard"]["Lawful"],
+  ...TITLE_MAP["Bard"]["Chaotic"],
+  ...TITLE_MAP["Bard"]["Neutral"],
+  ...TITLE_MAP["Knight of St. Ydris"]["Lawful"],
+  ...TITLE_MAP["Knight of St. Ydris"]["Chaotic"],
+  ...TITLE_MAP["Knight of St. Ydris"]["Neutral"],
+  ...TITLE_MAP["Warlock"]["Lawful"],
+  ...TITLE_MAP["Warlock"]["Chaotic"],
+  ...TITLE_MAP["Warlock"]["Neutral"],
+  ...TITLE_MAP["Witch"]["Lawful"],
+  ...TITLE_MAP["Witch"]["Chaotic"],
+  ...TITLE_MAP["Witch"]["Neutral"],
+  ...TITLE_MAP["Desert Rider"]["Lawful"],
+  ...TITLE_MAP["Desert Rider"]["Chaotic"],
+  ...TITLE_MAP["Desert Rider"]["Neutral"],
+  ...TITLE_MAP["Pit Fighter"]["Lawful"],
+  ...TITLE_MAP["Pit Fighter"]["Chaotic"],
+  ...TITLE_MAP["Pit Fighter"]["Neutral"],
+  ...TITLE_MAP["Ras-Godai"]["Lawful"],
+  ...TITLE_MAP["Ras-Godai"]["Chaotic"],
+  ...TITLE_MAP["Ras-Godai"]["Neutral"],
+  ...TITLE_MAP["Sea Wolf"]["Lawful"],
+  ...TITLE_MAP["Sea Wolf"]["Chaotic"],
+  ...TITLE_MAP["Sea Wolf"]["Neutral"],
+  ...TITLE_MAP["Seer"]["Lawful"],
+  ...TITLE_MAP["Seer"]["Chaotic"],
+  ...TITLE_MAP["Seer"]["Neutral"],
 ] as const;
 
 export const ANCESTRIES = [

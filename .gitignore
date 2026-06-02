@@ -22,3 +22,6 @@ dist-ssr
 # Configuration
 .env
 .env.local
+
+# Other
+temp
