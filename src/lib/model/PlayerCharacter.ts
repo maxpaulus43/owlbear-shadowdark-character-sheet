@@ -482,7 +482,7 @@ export function addBonusToPlayer(pc: PlayerCharacter, b: Bonus) {
 }
 
 export function deleteBonusForPlayer(pc: PlayerCharacter, theBonus: Bonus) {
-  pc.bonuses = pc.bonuses.filter((b) => b.name !== theBonus.name);
+  pc.bonuses = pc.bonuses.filter((b) => b !== theBonus);
 }
 
 export function calculateTotalHitPointsForPlayer(pc: PlayerCharacter): number {

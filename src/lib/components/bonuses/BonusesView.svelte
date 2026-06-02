@@ -1,14 +1,14 @@
 <script lang="ts">
   import { findAny } from "../../compendium";
   import { CLASSES } from "../../constants";
-  import { pc } from "../../model/PlayerCharacter";
+  import { deleteBonusForPlayer, pc } from "../../model/PlayerCharacter";
   import { alphabetically } from "../../utils";
   import RollNewTalentButton from "../talents/RollNewTalentButton.svelte";
   import BonusView from "./BonusView.svelte";
   import CustomBonusButton from "./CustomBonusButton.svelte";
   import CustomBonusForm from "./CustomBonusForm.svelte";
   import Modal from "../Modal.svelte";
-  import type { CustomBonus } from "../../types";
+  import type { CustomBonus, Bonus } from "../../types";
 
   $: equippableGearWithBonuses = $pc.gear
     .filter((g) => g.equipped)
@@ -28,13 +28,17 @@
     showEditModal = true;
   }
 
+  function deleteFlatBonus(b: Bonus) {
+    deleteBonusForPlayer($pc, b);
+    $pc = $pc;
+  }
 </script>
 
 <h2>Bonuses</h2>
 <ul class="px-1">
   {#each $pc.bonuses.sort((a, b) => alphabetically(a.desc || a.name || "", b.desc || b.name || "")) as b}
-    <li class="border-b">
-      <BonusView bonus={b} />
+    <li class="border-b py-1 flex items-center w-full">
+      <BonusView bonus={b} showDelete={b.editable} on:delete={() => deleteFlatBonus(b)} />
     </li>
   {/each}
 </ul>
