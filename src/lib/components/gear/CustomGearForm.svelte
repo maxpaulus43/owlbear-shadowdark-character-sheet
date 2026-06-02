@@ -17,6 +17,9 @@
   } from "../../types";
   import { pc } from "../../model/PlayerCharacter";
   import MultiSelect from "../MultiSelect.svelte";
+  import BonusConfigurator from "../bonuses/BonusConfigurator.svelte";
+  import BonusView from "../bonuses/BonusView.svelte";
+  import type { Bonus } from "../../types";
 
   const dispatch = createEventDispatcher();
 
@@ -78,11 +81,28 @@
     armorProperties: (gear as ArmorInfo)?.properties ?? [],
     acModifier: (gear as ArmorInfo)?.ac?.modifier ?? 0,
     armorStat: (gear as ArmorInfo)?.ac?.stat,
+
+    playerBonuses: gear?.playerBonuses ?? [],
   };
 
   let vm = JSON.parse(
     JSON.stringify(defaultViewModel)
   ) as typeof defaultViewModel;
+
+  let showAddBonusForm = false;
+
+  function removeBonusAt(index: number) {
+    vm.playerBonuses.splice(index, 1);
+    vm = vm;
+  }
+
+  function onAddBonus(e: CustomEvent<Bonus>) {
+    const newBonus = e.detail;
+    newBonus.editable = true;
+    newBonus.bonusSource = "Gear";
+    vm.playerBonuses = [...vm.playerBonuses, newBonus];
+    showAddBonusForm = false;
+  }
 
   $: weaponHasAtLeastDamage =
     vm.gearType !== "Weapon" || vm.hasOneHandedAttack || vm.hasTwoHandedAttack;
@@ -126,7 +146,7 @@
         freeCarry: vm.slots > 0 ? 0 : 1,
       },
       editable: true,
-      playerBonuses: [],
+      playerBonuses: (vm.playerBonuses ?? []).filter(b => b.editable !== false),
       cost: {
         gp: 0,
         sp: 0,
@@ -421,9 +441,50 @@
     {/if}
   {/if}
 
+  <div class="mt-3 border-t pt-2">
+    <div class="font-bold block mb-1">Attached Bonuses</div>
+    {#if vm.playerBonuses && vm.playerBonuses.filter(b => b.editable !== false).length > 0}
+      <ul class="list-disc ps-4 mb-2">
+        {#each vm.playerBonuses.filter(b => b.editable !== false) as b}
+          <li class="flex justify-between items-center text-sm py-1 border-b">
+            <BonusView bonus={b} showInfo={false} />
+            <button
+              type="button"
+              class="text-red-600 hover:text-red-800 flex items-center"
+              on:click={() => removeBonusAt(vm.playerBonuses.indexOf(b))}
+            >
+              <i class="material-icons text-sm">delete</i>
+            </button>
+          </li>
+        {/each}
+      </ul>
+    {:else}
+      <div class="text-xs text-gray-500 mb-2">No custom bonuses attached to this item.</div>
+    {/if}
+
+    {#if showAddBonusForm}
+      <BonusConfigurator on:add={onAddBonus} />
+      <button
+        type="button"
+        class="mt-2 text-xs text-gray-600 hover:underline"
+        on:click={() => showAddBonusForm = false}
+      >
+        Cancel
+      </button>
+    {:else}
+      <button
+        type="button"
+        class="mt-1 px-2 py-1 bg-black text-white text-xs rounded hover:bg-gray-800"
+        on:click={() => showAddBonusForm = true}
+      >
+        Add Bonus
+      </button>
+    {/if}
+  </div>
+
   <button
     on:click={createGearItem}
-    class="px-3 hover:bg-gray-400 bg-black text-white p-2"
+    class="px-3 hover:bg-gray-400 bg-black text-white p-2 mt-2"
     class:opacity-50={!canAdd}
     disabled={!canAdd}
   >

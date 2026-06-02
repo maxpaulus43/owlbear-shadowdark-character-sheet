@@ -4,7 +4,10 @@
   import { findAny } from "../../compendium";
   import { calculateGearSlotsForPlayer, pc } from "../../model/PlayerCharacter";
   import { alphabetically } from "../../utils";
-  import type { Gear } from "../../types";
+  import type { Gear, GearInfo } from "../../types";
+  import CustomGearForm from "./CustomGearForm.svelte";
+  import Modal from "../Modal.svelte";
+  import BonusView from "../bonuses/BonusView.svelte";
 
   const COIN_NAME = "Extra Coins";
   $: costlyGear = $pc.gear
@@ -31,6 +34,14 @@
     costlyGear.reduce((acc, curr) => {
       return acc + slotsForGear(curr);
     }, 0);
+
+  let editingGear: GearInfo | undefined = undefined;
+  let showEditModal = false;
+
+  function editCustomGear(gearInfo: GearInfo) {
+    editingGear = gearInfo;
+    showEditModal = true;
+  }
 
   function slotsForGear(g: Gear): number {
     if (g.name === COIN_NAME) {
@@ -62,9 +73,6 @@
 
   function canInteractWithGear(_gear: Gear): boolean {
     return true;
-    // as nice as this is, it is ultimately limiting to the player's creativity
-    // if (gear.equipped) return true;
-    // return gear.equipped || canPlayerEquipGear($pc, gear);
   }
 </script>
 
@@ -114,9 +122,10 @@
 >
   <ul>
     {#each costlyGear as g, i}
-      <li>
+      {@const foundGear = findAny(g.name)}
+      <li class="border-b border-gray-400 py-1">
         <div
-          class="flex gap-1 items-center justify-between border-b border-gray-400"
+          class="flex gap-1 items-center justify-between"
         >
           <div class="flex justify-between">
             <span>
@@ -125,7 +134,7 @@
           </div>
           {#if g.name !== COIN_NAME}
             <div class="flex gap-1 items-center">
-              {#if findAny(g.name).canBeEquipped}
+              {#if foundGear && foundGear.canBeEquipped}
                 <input
                   title="equipped"
                   type="checkbox"
@@ -135,27 +144,50 @@
                   on:click={() => toggleEquipped(g)}
                 />
               {/if}
+              {#if foundGear && foundGear.editable}
+                <button
+                  on:click={() => editCustomGear(foundGear)}
+                  class="px-1 pt-1 rounded-md bg-black text-white"
+                  ><i class="material-icons text-sm">edit</i></button
+                >
+              {/if}
               <button
                 on:click={() => deleteGear(g.name)}
                 class="px-1 pt-1 rounded-md bg-black text-white"
-                ><i class="material-icons">delete</i></button
+                ><i class="material-icons text-sm">delete</i></button
               >
             </div>
           {/if}
         </div>
+        {#if foundGear && (foundGear.desc || (foundGear.playerBonuses && foundGear.playerBonuses.length > 0))}
+          <div class="text-xs text-gray-600 ps-4 pb-1">
+            {#if foundGear.desc && foundGear.desc !== foundGear.name}
+              <div>{foundGear.desc}</div>
+            {/if}
+            {#if foundGear.playerBonuses && foundGear.playerBonuses.filter(b => b.editable !== false).length > 0}
+              <div class="font-semibold mt-1">Bonuses:</div>
+              <ul class="list-disc ps-4">
+                {#each foundGear.playerBonuses.filter(b => b.editable !== false) as b}
+                  <li><BonusView bonus={b} showInfo={false} /></li>
+                {/each}
+              </ul>
+            {/if}
+          </div>
+        {/if}
       </li>
     {/each}
   </ul>
   <h2>Free Gear</h2>
   <ul>
     {#each freeGear as g, i}
-      <li>
+      {@const foundGear = findAny(g.name)}
+      <li class="border-b border-gray-400 py-1">
         <div
-          class="flex gap-1 items-center justify-between border-b border-gray-400"
+          class="flex gap-1 items-center justify-between"
         >
           <span>{i + 1 + ". "}{g.name} x {g.quantity}</span>
           <div class="flex gap-1 items-center">
-            {#if findAny(g.name).canBeEquipped}
+            {#if foundGear && foundGear.canBeEquipped}
               <input
                 title="equipped"
                 type="checkbox"
@@ -165,14 +197,49 @@
                 on:click={() => toggleEquipped(g)}
               />
             {/if}
+            {#if foundGear && foundGear.editable}
+              <button
+                on:click={() => editCustomGear(foundGear)}
+                class="px-1 pt-1 rounded-md bg-black text-white"
+                ><i class="material-icons text-sm">edit</i></button
+              >
+            {/if}
             <button
               on:click={() => deleteGear(g.name)}
               class="px-1 pt-1 rounded-md bg-black text-white"
-              ><i class="material-icons">delete</i></button
+              ><i class="material-icons text-sm">delete</i></button
             >
           </div>
         </div>
+        {#if foundGear && (foundGear.desc || (foundGear.playerBonuses && foundGear.playerBonuses.length > 0))}
+          <div class="text-xs text-gray-600 ps-4 pb-1">
+            {#if foundGear.desc && foundGear.desc !== foundGear.name}
+              <div>{foundGear.desc}</div>
+            {/if}
+            {#if foundGear.playerBonuses && foundGear.playerBonuses.filter(b => b.editable !== false).length > 0}
+              <div class="font-semibold mt-1">Bonuses:</div>
+              <ul class="list-disc ps-4">
+                {#each foundGear.playerBonuses.filter(b => b.editable !== false) as b}
+                  <li><BonusView bonus={b} showInfo={false} /></li>
+                {/each}
+              </ul>
+            {/if}
+          </div>
+        {/if}
       </li>
     {/each}
   </ul>
 </div>
+
+{#if showEditModal && editingGear}
+  <Modal bind:showModal={showEditModal}>
+    <h2 slot="header">Custom Gear</h2>
+    <CustomGearForm
+      gear={editingGear}
+      on:finish={() => {
+        showEditModal = false;
+        editingGear = undefined;
+      }}
+    />
+  </Modal>
+{/if}

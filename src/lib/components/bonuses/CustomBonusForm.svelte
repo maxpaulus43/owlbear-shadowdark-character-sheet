@@ -1,219 +1,115 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
-  import { ARMORS } from "../../compendium/armorCompendium";
-  import { SPELLS } from "../../compendium/spellCompendium";
-  import { WEAPONS } from "../../compendium/weaponCompendium";
-  import {
-    ROLL_BONUS_TOS,
-    BONUS_TOS,
-    DICE_TYPES,
-    STATS,
-  } from "../../constants";
-  import { addBonusToPlayer, pc } from "../../model/PlayerCharacter";
-  import type {
-    WeaponInfo,
-    ArmorInfo,
-    Bonus,
-    BonusTo,
-    BonusMetaData,
-    DiceType,
-    Stat,
-    WeaponType,
-    RollBonusTo,
-  } from "../../types";
+  import { pc } from "../../model/PlayerCharacter";
+  import type { CustomBonus, Bonus } from "../../types";
+  import BonusConfigurator from "./BonusConfigurator.svelte";
+  import BonusView from "./BonusView.svelte";
 
   const dispatch = createEventDispatcher();
 
-  $: allWeapons = WEAPONS.concat(
-    $pc.customGear
-      .filter((g) => g.type === "Weapon")
-      .map((g) => g as WeaponInfo) ?? []
-  );
+  export let customBonus: CustomBonus = undefined;
 
-  $: allArmors = ARMORS.concat(
-    $pc.customGear
-      .filter((g) => g.type === "Armor")
-      .map((g) => g as ArmorInfo) ?? []
-  );
+  let name: string = customBonus?.name ?? "";
+  let desc: string = customBonus?.desc ?? "";
+  let bonuses: Bonus[] = customBonus?.bonuses ? JSON.parse(JSON.stringify(customBonus.bonuses)) : [];
 
-  $: allSpells = SPELLS.concat($pc.customSpells ?? []);
+  let showAddBonusForm = false;
 
-  let name: string = "";
-  let desc: string = "";
-  let type: Bonus["type"];
-  let bonusTo: BonusTo;
-  let bonusAmount: number = 1;
-  let mdType: BonusMetaData["type"] | "";
-  let diceType: DiceType = "d8";
-  let selectedWeapon: string;
-  let selectedArmor: string;
-  let selectedSpell: string;
-  let selectedStat: Stat | "";
-  let weaponType: WeaponType | "";
-
-  $: if (bonusTo) {
-    selectedWeapon = "";
-    selectedArmor = "";
-    selectedSpell = "";
-    selectedStat = "";
-    weaponType = "";
+  function removeBonusAt(index: number) {
+    bonuses.splice(index, 1);
+    bonuses = bonuses;
   }
 
-  let reqsMet = Boolean(name) && Boolean(desc);
+  function onAddBonus(e: CustomEvent<Bonus>) {
+    const newBonus = e.detail;
+    newBonus.editable = true;
+    newBonus.bonusSource = "Talent";
+    bonuses = [...bonuses, newBonus];
+    showAddBonusForm = false;
+  }
+
+  let reqsMet = false;
+  $: reqsMet = Boolean(name) && Boolean(desc) && bonuses.length > 0;
   let buttonText = "ADD";
   $: {
-    if (bonusTo === "stat" || bonusTo === "statRoll") {
-      mdType = "stat";
-      reqsMet = Boolean(name) && Boolean(desc) && Boolean(selectedStat);
-    } else {
-      if (mdType === "stat") mdType = "";
-      reqsMet = Boolean(name) && Boolean(desc);
-    }
-    buttonText = reqsMet ? "ADD" : "Please add required fields";
+    buttonText = reqsMet ? (customBonus ? "UPDATE" : "ADD") : "Please add name, description, and at least one bonus";
   }
 
-  function addBonus() {
-    let b: Bonus;
-    switch (type) {
-      case "generic":
-        b = { name, desc, type };
-        break;
-      case "modifyAmt":
-        b = { name, desc, type, bonusTo, bonusAmount };
-        break;
-      case "advantage":
-      case "disadvantage": {
-        let rbto = bonusTo as RollBonusTo;
-        b = { name, desc, type, bonusTo: rbto };
-        break;
+  function saveCustomBonus() {
+    const cb: CustomBonus = {
+      name,
+      desc,
+      bonuses,
+      editable: true
+    };
+
+    if (customBonus) {
+      const idx = $pc.customBonuses?.findIndex(x => x.name === customBonus.name) ?? -1;
+      if (idx > -1) {
+        $pc.customBonuses[idx] = cb;
       }
-      case "diceType":
-        let rbto = bonusTo as RollBonusTo;
-        b = { name, desc, type, bonusTo: rbto, diceType };
-        break;
+    } else {
+      if (!$pc.customBonuses) $pc.customBonuses = [];
+      $pc.customBonuses.push(cb);
     }
-    switch (mdType) {
-      case "weapon":
-        if (selectedWeapon)
-          b.metadata = { type: mdType, weapon: selectedWeapon };
-        break;
-      case "weaponType":
-        if (weaponType) b.metadata = { type: mdType, weaponType };
-        break;
-      case "armor":
-        if (selectedArmor) b.metadata = { type: mdType, armor: selectedArmor };
-        break;
-      case "stat":
-        if (selectedStat) b.metadata = { type: mdType, stat: selectedStat };
-        break;
-      case "spell":
-        if (selectedSpell) b.metadata = { type: mdType, spell: selectedSpell };
-        break;
-    }
-    b.editable = true; // custom bonuses are editable
-    addBonusToPlayer($pc, b);
     $pc = $pc;
     dispatch("finish");
   }
 </script>
 
-<div class="flex flex-col gap-1 w-full">
+<div class="flex flex-col gap-1 w-full text-black">
   <label for="name">Name</label>
-  <input id="name" type="text" placeholder="Poison" bind:value={name} />
-  <label for="desc">Description</label>
-  <input id="desc" placeholder="-2 CON for 10 rounds" bind:value={desc} />
-  <label for="type">What kind of bonus is it?</label>
-  <select id="type" bind:value={type}>
-    <option value="generic">Generic</option>
-    <option value="modifyAmt"> Numerical Modifier </option>
-    <option value="advantage"> Advantage </option>
-    <option value="disadvantage"> Disadvantage </option>
-    <option value="diceType"> Dice Type </option>
-  </select>
-  {#if type === "diceType" || type === "advantage" || type === "disadvantage"}
-    <label for="bto">Bonus To:</label>
-    <select id="bto" bind:value={bonusTo}>
-      {#each ROLL_BONUS_TOS as bto}
-        <option>{bto}</option>
-      {/each}
-    </select>
-  {:else if type === "modifyAmt"}
-    <label for="bto">Bonus To:</label>
-    <select id="bto" bind:value={bonusTo}>
-      {#each BONUS_TOS as bto}
-        <option>{bto}</option>
-      {/each}
-    </select>
-  {/if}
-  {#if type === "modifyAmt"}
-    <label for="modifyAmt">By how much?</label>
-    <input
-      id="modifyAmt"
-      type="number"
-      inputmode="numeric"
-      bind:value={bonusAmount}
-    />
-  {:else if type === "diceType"}
-    <label for="diceType">Dice Type</label>
-    <select id="diceType" bind:value={diceType}>
-      {#each DICE_TYPES as d}
-        <option>{d}</option>
-      {/each}
-    </select>
-  {/if}
-  <label for="metaDataType"
-    >Does this bonus target a specific item, spell, or stat?</label
-  >
-  <select id="metaDataType" bind:value={mdType}>
-    <option value="">No</option>
-    <option value="weapon">Equipped Weapon</option>
-    <option value="armor">Equipped Armor</option>
-    <option value="spell">Spell</option>
-    <option value="stat">Stat</option>
-    <option value="weaponType">Weapon Type</option>
-  </select>
+  <input id="name" type="text" placeholder="e.g. Belt of Giant Strength" bind:value={name} />
 
-  {#if mdType === "weapon"}
-    <label for="weapon">Which weapon?</label>
-    <select id="weapon" bind:value={selectedWeapon}>
-      {#each allWeapons as w}
-        <option>{w.name}</option>
-      {/each}
-    </select>
-  {:else if mdType === "armor"}
-    <label for="armor">Which armor?</label>
-    <select id="armor" bind:value={selectedArmor}>
-      {#each allArmors as a}
-        <option>{a.name}</option>
-      {/each}
-    </select>
-  {:else if mdType === "spell"}
-    <label for="spell">Which spell?</label>
-    <select id="spell" bind:value={selectedSpell}>
-      {#each allSpells as s}
-        <option>{s.name}</option>
-      {/each}
-    </select>
-  {:else if mdType === "stat"}
-    <label for="stat">Which stat?</label>
-    <select id="stat" bind:value={selectedStat}>
-      {#each STATS as s}
-        <option>{s}</option>
-      {/each}
-    </select>
-  {:else if mdType === "weaponType"}
-    <label for="weaponType">Which weapon type?</label>
-    <select id="weaponType" bind:value={weaponType}>
-      {#each ["Melee", "Ranged"] as s}
-        <option>{s}</option>
-      {/each}
-    </select>
-  {/if}
+  <label for="desc">Description</label>
+  <input id="desc" placeholder="e.g. Grants +2 Strength" bind:value={desc} />
+
+  <div class="mt-3 border-t pt-2">
+    <div class="font-bold block mb-1">Attached Bonuses</div>
+    {#if bonuses.length > 0}
+      <ul class="list-disc ps-4 mb-2">
+        {#each bonuses as b, i}
+          <li class="flex justify-between items-center text-sm py-1 border-b">
+            <BonusView bonus={b} showInfo={false} />
+            <button
+              type="button"
+              class="text-red-600 hover:text-red-800 flex items-center"
+              on:click={() => removeBonusAt(i)}
+            >
+              <i class="material-icons text-sm">delete</i>
+            </button>
+          </li>
+        {/each}
+      </ul>
+    {:else}
+      <div class="text-xs text-gray-500 mb-2">No bonuses attached yet.</div>
+    {/if}
+
+    {#if showAddBonusForm}
+      <BonusConfigurator on:add={onAddBonus} />
+      <button
+        type="button"
+        class="mt-2 text-xs text-gray-600 hover:underline"
+        on:click={() => showAddBonusForm = false}
+      >
+        Cancel
+      </button>
+    {:else}
+      <button
+        type="button"
+        class="mt-1 px-2 py-1 bg-black text-white text-xs rounded hover:bg-gray-800"
+        on:click={() => showAddBonusForm = true}
+      >
+        Add Bonus
+      </button>
+    {/if}
+  </div>
 
   <button
-    class="w-full p-2 bg-black text-white mt-1"
+    class="w-full p-2 bg-black text-white mt-4 font-bold hover:bg-gray-800 disabled:opacity-50"
     disabled={!reqsMet}
-    class:opacity-50={!reqsMet}
-    on:click={addBonus}>{buttonText}</button
+    on:click={saveCustomBonus}
   >
+    {buttonText}
+  </button>
 </div>

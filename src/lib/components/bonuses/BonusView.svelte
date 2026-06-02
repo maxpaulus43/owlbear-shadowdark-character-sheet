@@ -44,12 +44,31 @@
     deleteBonusForPlayer($pc, b);
     $pc = $pc;
   }
+
+  function getGeneratedDesc(b: Bonus): string {
+    if (b.desc) return b.desc;
+    let target = b.metadata?.type === "stat" ? b.metadata.stat : 
+                 b.metadata?.type === "weapon" ? b.metadata.weapon : 
+                 b.metadata?.type === "armor" ? b.metadata.armor : 
+                 b.metadata?.type === "spell" ? b.metadata.spell : 
+                 b.metadata?.type === "weaponType" ? b.metadata.weaponType : "";
+    let prefix = target ? `${target}: ` : "";
+    if (b.type === "modifyAmt") {
+      return `${prefix}+${b.bonusAmount} to ${b.bonusTo}`;
+    } else if (b.type === "advantage" || b.type === "disadvantage") {
+      return `${prefix}${b.type} on ${b.bonusTo}`;
+    } else if (b.type === "diceType") {
+      return `${prefix}${b.diceType} on ${b.bonusTo}`;
+    } else {
+      return `${prefix}generic bonus`;
+    }
+  }
 </script>
 
 <div class="flex justify-between gap-3 items-center">
   <div class="flex gap-1">
     {#if b.type === "generic"}
-      <div>{b.desc}</div>
+      <div>{b.desc || getGeneratedDesc(b)}</div>
     {:else if b.type === "modifyAmt"}
       <div class="font-bold">{displayableName}</div>
       <div>{addSign(calculateBonusAmount($pc, b))} to {b.bonusTo}</div>
@@ -60,7 +79,7 @@
       <div class="font-bold">{displayableName}</div>
       <div>{b.diceType} on {b.bonusTo}</div>
     {/if}
-    {#if showInfo}
+    {#if showInfo && (b.name || b.desc)}
       <button
         on:click={() => {
           showModal = true;
@@ -84,8 +103,8 @@
 
 {#if showModal}
   <Modal bind:showModal>
-    <h2 slot="header">{b.name}</h2>
-    <div>Description: {b.desc}</div>
+    <h2 slot="header">{b.name || "Bonus"}</h2>
+    <div>Description: {b.desc || getGeneratedDesc(b)}</div>
     <div>Source: {b.bonusSource ?? "none"}</div>
     <div>Editable: {b.editable ?? "no"}</div>
   </Modal>

@@ -106,7 +106,7 @@ export type PlayerCharacter = {
   notes: string;
   stats: StatBlock;
   bonuses: Bonus[];
-  customBonuses: Bonus[];
+  customBonuses: CustomBonus[];
   customTalents: Talent[];
   maxHitPoints: number;
   armorClass: number;
@@ -155,11 +155,17 @@ export type BonusMetaData =
   | StatBonusMetaData
   | SpellBonusMetaData;
 export type GenericBonus = {
-  name: string;
-  desc: string;
+  name?: string;
+  desc?: string;
   bonusSource?: BonusSourceType;
   type: "generic";
   metadata?: BonusMetaData;
+  editable?: boolean;
+};
+export type CustomBonus = {
+  name: string;
+  desc: string;
+  bonuses: Bonus[];
   editable?: boolean;
 };
 export type ModifyBonus = Merge<

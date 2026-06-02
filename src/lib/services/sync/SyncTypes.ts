@@ -19,7 +19,6 @@ export class SyncError extends Error {
 // --- Schemas ---
 
 // Helper schemas for nested types
-const StatSchema = z.enum(["STR", "DEX", "CON", "INT", "WIS", "CHA"]);
 
 const GearSchema = z.object({
 	name: z.string(),
