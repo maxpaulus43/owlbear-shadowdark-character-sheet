@@ -385,7 +385,7 @@ export function calculateAttackBonusForPlayerWeapon(
 }
 
 export function calculateGearSlotsForPlayer(pc: PlayerCharacter) {
-  const base = Math.max(10, pc.stats.STR);
+  const base = Math.max(10, calculateStatValueForPlayerStat(pc, "STR"));
 
   const bonuses = pc.bonuses.reduce((acc: number, b: Bonus) => {
     if (b.type === "modifyAmt" && b.bonusTo === "gearSlots") {
