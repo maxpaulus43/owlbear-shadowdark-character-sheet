@@ -446,15 +446,8 @@
     {#if vm.playerBonuses && vm.playerBonuses.filter(b => b.editable !== false).length > 0}
       <ul class="list-disc ps-4 mb-2">
         {#each vm.playerBonuses.filter(b => b.editable !== false) as b}
-          <li class="flex justify-between items-center text-sm py-1 border-b">
-            <BonusView bonus={b} showInfo={false} />
-            <button
-              type="button"
-              class="text-red-600 hover:text-red-800 flex items-center"
-              on:click={() => removeBonusAt(vm.playerBonuses.indexOf(b))}
-            >
-              <i class="material-icons text-sm">delete</i>
-            </button>
+          <li class="flex items-center text-sm py-1 border-b w-full">
+            <BonusView bonus={b} showInfo={false} showDelete={true} on:delete={() => removeBonusAt(vm.playerBonuses.indexOf(b))} />
           </li>
         {/each}
       </ul>

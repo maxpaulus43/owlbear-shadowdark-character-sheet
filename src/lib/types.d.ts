@@ -181,7 +181,7 @@ export type DiceTypeBonus = Merge<
   GenericBonus,
   {
     type: "diceType";
-    bonusTo: RollBonusTo;
+    bonusTo: BonusTo;
     diceType: DiceType;
   }
 >;
@@ -189,13 +189,13 @@ export type AdvantageBonus = Merge<
   GenericBonus,
   {
     type: "advantage";
-    bonusTo: RollBonusTo;
+    bonusTo: BonusTo;
   }
 >;
 export type DisadvantageBonus = Merge<
   GenericBonus,
   {
-    bonusTo: RollBonusTo;
+    bonusTo: BonusTo;
     type: "disadvantage";
   }
 >;

@@ -1,15 +1,18 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import {
     calculateBonusAmount,
-    deleteBonusForPlayer,
     pc,
   } from "../../model/PlayerCharacter";
   import type { Bonus } from "../../types";
   import { addSign } from "../../utils";
   import Modal from "../Modal.svelte";
 
+  const dispatch = createEventDispatcher();
+
   export let bonus: Bonus;
   export let showInfo = true;
+  export let showDelete = false;
   let showModal = false;
   $: b = bonus;
 
@@ -40,11 +43,6 @@
     }
   }
 
-  function deleteBonus(b: Bonus) {
-    deleteBonusForPlayer($pc, b);
-    $pc = $pc;
-  }
-
   function getGeneratedDesc(b: Bonus): string {
     if (b.desc) return b.desc;
     let target = b.metadata?.type === "stat" ? b.metadata.stat : 
@@ -65,7 +63,7 @@
   }
 </script>
 
-<div class="flex justify-between gap-3 items-center">
+<div class="flex justify-between gap-3 items-center w-full">
   <div class="flex gap-1">
     {#if b.type === "generic"}
       <div>{b.desc || getGeneratedDesc(b)}</div>
@@ -89,13 +87,13 @@
       </button>
     {/if}
   </div>
-  {#if b.editable}
+  {#if showDelete}
     <div class="flex gap-1">
       <button
         class="pt-1 px-1 rounded-md bg-black text-white"
-        on:click={() => deleteBonus(b)}
+        on:click={() => dispatch("delete")}
       >
-        <i class="material-icons">delete</i>
+        <i class="material-icons text-sm">delete</i>
       </button>
     </div>
   {/if}

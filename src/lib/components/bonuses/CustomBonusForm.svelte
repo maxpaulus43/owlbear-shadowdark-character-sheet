@@ -55,6 +55,14 @@
     $pc = $pc;
     dispatch("finish");
   }
+
+  function deleteThisCustomBonus() {
+    if (customBonus) {
+      $pc.customBonuses = ($pc.customBonuses ?? []).filter(x => x.name !== customBonus.name);
+      $pc = $pc;
+      dispatch("finish");
+    }
+  }
 </script>
 
 <div class="flex flex-col gap-1 w-full text-black">
@@ -69,15 +77,8 @@
     {#if bonuses.length > 0}
       <ul class="list-disc ps-4 mb-2">
         {#each bonuses as b, i}
-          <li class="flex justify-between items-center text-sm py-1 border-b">
-            <BonusView bonus={b} showInfo={false} />
-            <button
-              type="button"
-              class="text-red-600 hover:text-red-800 flex items-center"
-              on:click={() => removeBonusAt(i)}
-            >
-              <i class="material-icons text-sm">delete</i>
-            </button>
+          <li class="flex items-center text-sm py-1 border-b w-full">
+            <BonusView bonus={b} showInfo={false} showDelete={true} on:delete={() => removeBonusAt(i)} />
           </li>
         {/each}
       </ul>
@@ -112,4 +113,14 @@
   >
     {buttonText}
   </button>
+
+  {#if customBonus}
+    <button
+      type="button"
+      class="w-full p-2 bg-red-800 text-white mt-2 font-bold hover:bg-red-700"
+      on:click={deleteThisCustomBonus}
+    >
+      DELETE CUSTOM BONUS
+    </button>
+  {/if}
 </div>

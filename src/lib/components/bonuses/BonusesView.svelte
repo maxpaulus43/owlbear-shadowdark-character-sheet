@@ -1,7 +1,7 @@
 <script lang="ts">
   import { findAny } from "../../compendium";
   import { CLASSES } from "../../constants";
-  import { deleteCustomBonusForPlayer, pc } from "../../model/PlayerCharacter";
+  import { pc } from "../../model/PlayerCharacter";
   import { alphabetically } from "../../utils";
   import RollNewTalentButton from "../talents/RollNewTalentButton.svelte";
   import BonusView from "./BonusView.svelte";
@@ -28,10 +28,6 @@
     showEditModal = true;
   }
 
-  function deleteCustomBonus(cb: CustomBonus) {
-    deleteCustomBonusForPlayer($pc, cb);
-    $pc = $pc;
-  }
 </script>
 
 <h2>Bonuses</h2>
@@ -59,12 +55,6 @@
               on:click={() => editCustomBonus(cb)}
             >
               <i class="material-icons text-sm">edit</i>
-            </button>
-            <button
-              class="pt-1 px-1 rounded-md bg-black text-white text-xs"
-              on:click={() => deleteCustomBonus(cb)}
-            >
-              <i class="material-icons text-sm">delete</i>
             </button>
           </div>
         </div>

@@ -31,7 +31,7 @@ const SpellSchema = z.object({
 }).passthrough();
 
 const BonusSchema = z.object({
-	name: z.string(),
+	name: z.string().optional(),
 	sourceType: z.string().optional(),
 }).passthrough();
 
