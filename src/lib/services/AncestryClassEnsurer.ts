@@ -78,6 +78,22 @@ function clearClassBonuses(pc: PlayerCharacter) {
         "Magical Dabbler",
         "Presence",
         "Prolific",
+        "Fascinate (Focus)",
+        "Inspire",
+        "Languages: Wyrdling",
+        "Corruption",
+        "Hideous Biology",
+        "Pseudopod",
+        "Languages: Delver",
+        "Scavenger",
+        "Trailblazer",
+        "Trusty Gear",
+        "Basilisk Blood",
+        "Petrifying Gaze",
+        "Stone Skin",
+        "Parry",
+        "Tale Spinner",
+        "Taunt",
         "Spellcasting: Knight of St. Ydris",
         "Languages: Knight of St. Ydris",
         "Demonic Possession",
@@ -336,21 +352,21 @@ function addClassBonuses(bonuses: Bonus[], c: Class) {
             type: "generic",
           },
           {
+            name: "Fascinate (Focus)",
+            bonusSource: "Class",
+            desc: "Make a DC 12 CHA check. On a success, you transfix all targets in near whose LV is equal to or less than 1 + half your level (round down). If you fail, excluding focus, you can't use this again until you rest.",
+            type: "generic",
+          },
+          {
+            name: "Inspire",
+            bonusSource: "Class",
+            desc: "Each day, you can grant a number of luck tokens equal to your Charisma modifier (min. 1).",
+            type: "generic",
+          },
+          {
             name: "Magical Dabbler",
             bonusSource: "Class",
-            desc: "You can activate spell scrolls and wands using Charisma as your spellcasting stat. If you critically fail, roll a wizard mishap.",
-            type: "generic",
-          },
-          {
-            name: "Presence",
-            bonusSource: "Class",
-            desc: "Make a DC 12 CHA check to enact Inspire (target in near gets luck token) or Fascinate (Focus, transfix targets LV 4 or less). Fail = can't use again until rest.",
-            type: "generic",
-          },
-          {
-            name: "Prolific",
-            bonusSource: "Class",
-            desc: "Add 1d6 to your learning rolls. Groups carousing with bards add 1d6 to carousing rolls.",
+            desc: "You can activate spell scrolls and wands using Charisma as your spellcasting stat. If you critically fail, roll a wizard mishap. In place of making a talent roll, you may choose to find a random priest or wizard wand (you decide which type).",
             type: "generic",
           }
         );
@@ -574,7 +590,7 @@ function addClassBonuses(bonuses: Bonus[], c: Class) {
             type: "generic",
           },
           {
-            name,
+            name: name,
             bonusSource: "Class",
             desc: "3/day, make DC 9 WIS check. On success, gain a luck token.",
             type: "generic",
@@ -583,6 +599,122 @@ function addClassBonuses(bonuses: Bonus[], c: Class) {
             name: "Seer Penance",
             bonusSource: "Class",
             desc: "T1: Give up 1d4 HP for a week; T2: Lower WIS by 2 for two weeks; T3: Permanent sacrifice 1 CHA; T4: Sink burning longboat; T5: Sacrifice 9 humanoids.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Wyrdling": {
+      const name = "Corruption";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: "Languages: Wyrdling",
+            bonusSource: "Class",
+            desc: "You know Primordial.",
+            type: "generic",
+          },
+          {
+            name,
+            bonusSource: "Class",
+            desc: "Roll one talent on the Corruption Table.",
+            type: "generic",
+          },
+          {
+            name: "Hideous Biology",
+            bonusSource: "Class",
+            desc: "You can hideously stretch your body to fit through inch-wide cracks. It takes you 3 rounds to pass through an obstacle in this way.",
+            type: "generic",
+          },
+          {
+            name: "Pseudopod",
+            bonusSource: "Class",
+            desc: "You can sprout a clawed, horrid pseudopod from your body. Finesse (F). You may use your STR or DEX when attacking with this weapon.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Delver": {
+      const name = "Scavenger";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name: "Languages: Delver",
+            bonusSource: "Class",
+            desc: "You know two additional common languages.",
+            type: "generic",
+          },
+          {
+            name,
+            bonusSource: "Class",
+            desc: "When you expend the last of a consumable item you've carried since your last rest, roll a d6. On a 5 or 6, you regain one use of that item.",
+            type: "generic",
+          },
+          {
+            name: "Trailblazer",
+            bonusSource: "Class",
+            desc: "You are adept at exploring inhospitable, lost, or unknown places. You have advantage on the following tasks: Climbing, Swimming, Foraging, Understanding unknown languages, Avoiding or escaping natural terrain hazards.",
+            type: "generic",
+          },
+          {
+            name: "Trusty Gear",
+            bonusSource: "Class",
+            desc: "Choose one type of gear or weapon you can wield. You gain 1 + half your level (round down) on checks or attack rolls made with that type of gear or weapon.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Basilisk Warrior": {
+      const name = "Basilisk Blood";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name,
+            bonusSource: "Class",
+            desc: "You have ADV on CON checks to avoid harmful maladies, poisons, or afflictions.",
+            type: "generic",
+          },
+          {
+            name: "Petrifying Gaze",
+            bonusSource: "Class",
+            desc: "One creature of your level or less that meets your gaze must pass a DC 15 CON check or be petrified for 1d4 rounds. It still takes damage as normal while petrified. You can use this talent a number of times per day equal to your CON modifier (minimum 1).",
+            type: "generic",
+          },
+          {
+            name: "Stone Skin",
+            bonusSource: "Class",
+            desc: "Add 2 + half your level (round down) to your AC if you are otherwise unarmored. You have advantage on checks to hide in natural environments.",
+            type: "generic",
+          }
+        );
+      }
+      break;
+    }
+    case "Duelist": {
+      const name = "Parry";
+      if (!bonuses.find((b) => b.name === name)) {
+        bonuses.push(
+          {
+            name,
+            bonusSource: "Class",
+            desc: "Once per day, an attack of your choice that would hit you misses instead.",
+            type: "generic",
+          },
+          {
+            name: "Tale Spinner",
+            bonusSource: "Class",
+            desc: "You may make a DC 15 CHA check. If you pass, strangers around you believe you are famous and important for the remainder of your interaction with them. The same individual cannot be fooled by this twice.",
+            type: "generic",
+          },
+          {
+            name: "Taunt",
+            bonusSource: "Class",
+            desc: "When an enemy misses you with an attack, you have advantage on attacks against that enemy next round.",
             type: "generic",
           }
         );

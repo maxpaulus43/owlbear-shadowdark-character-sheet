@@ -103,6 +103,10 @@ export const CLASSES = [
   "Ras-Godai",
   "Sea Wolf",
   "Seer",
+  "Wyrdling",
+  "Delver",
+  "Basilisk Warrior",
+  "Duelist",
 ] as const;
 
 export const TITLE_MAP: {
@@ -180,6 +184,26 @@ export const TITLE_MAP: {
     Chaotic: ["Hedge Witch", "Whisperer", "Bone Reader", "Dreaded One", "Seer of Loki"],
     Neutral: ["Fortune Teller", "Singer", "Star Reader", "Blessed One", "Seer of Freya"],
   },
+  Wyrdling: {
+    Lawful: ["Chosen One", "Cursed", "Haunted", "Tortured", "Crazed One"],
+    Chaotic: ["Chosen One", "Blessed", "Consecrated", "Revered", "Exalted One"],
+    Neutral: ["Chosen One", "Seeker", "Listener", "Watcher", "Learned One"],
+  },
+  Delver: {
+    Lawful: ["Explorer", "Researcher", "Antiquarian", "Archaeologist", "Professor"],
+    Chaotic: ["Intruder", "Opportunist", "Larcenist", "Tomb Robber", "Defiler"],
+    Neutral: ["Investigator", "Observer", "Pathfinder", "Trailblazer", "Pioneer"],
+  },
+  "Basilisk Warrior": {
+    Lawful: ["Stone Warrior", "Strong Stone", "Protector", "Sun Serpent", "Amber Basilisk"],
+    Chaotic: ["Stone Warrior", "Sharp Stone", "Slayer", "Moon Serpent", "Obsidian Basilisk"],
+    Neutral: ["Stone Warrior", "Silent Stone", "Watcher", "Sky Serpent", "Sapphire Basilisk"],
+  },
+  Duelist: {
+    Lawful: ["Fencer", "Defender", "Mongoose", "Wolf", "Swordmaster"],
+    Chaotic: ["Ruffian", "Heckler", "Viper", "Cobra", "Swordmaster"],
+    Neutral: ["Student", "Challenger", "Mouser", "Panther", "Swordmaster"],
+  },
 } as const;
 
 export const TITLES = [
@@ -225,6 +249,18 @@ export const TITLES = [
   ...TITLE_MAP["Seer"]["Lawful"],
   ...TITLE_MAP["Seer"]["Chaotic"],
   ...TITLE_MAP["Seer"]["Neutral"],
+  ...TITLE_MAP["Wyrdling"]["Lawful"],
+  ...TITLE_MAP["Wyrdling"]["Chaotic"],
+  ...TITLE_MAP["Wyrdling"]["Neutral"],
+  ...TITLE_MAP["Delver"]["Lawful"],
+  ...TITLE_MAP["Delver"]["Chaotic"],
+  ...TITLE_MAP["Delver"]["Neutral"],
+  ...TITLE_MAP["Basilisk Warrior"]["Lawful"],
+  ...TITLE_MAP["Basilisk Warrior"]["Chaotic"],
+  ...TITLE_MAP["Basilisk Warrior"]["Neutral"],
+  ...TITLE_MAP["Duelist"]["Lawful"],
+  ...TITLE_MAP["Duelist"]["Chaotic"],
+  ...TITLE_MAP["Duelist"]["Neutral"],
 ] as const;
 
 export const ANCESTRIES = [
