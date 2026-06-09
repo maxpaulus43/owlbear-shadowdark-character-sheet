@@ -270,6 +270,7 @@ export const ANCESTRIES = [
   "Halfling",
   "Half-Orc",
   "Dwarf",
+  "Kobold",
 ] as const;
 
 export const LANGUAGES = [

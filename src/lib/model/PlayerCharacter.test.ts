@@ -7,7 +7,9 @@ import {
   calculateArmorClassForPlayer,
   addBonusToPlayer,
   addCustomBonusToPlayer,
+  setAncestryForPlayer,
 } from "./PlayerCharacter";
+import { ensureAncestryBonuses } from "../services/AncestryClassEnsurer";
 import { setCustomGearForPlayer } from "../compendium";
 import { ShadowdarkCharacterSchema } from "../services/sync/SyncTypes";
 
@@ -178,5 +180,62 @@ describe("PlayerCharacter Multi-Bonus calculations", () => {
 
     // Verify it parses cleanly without throwing ZodError
     expect(() => ShadowdarkCharacterSchema.parse(pc)).not.toThrow();
+  });
+
+  describe("Ancestry bonuses and choices", () => {
+    it("should set up languages and default Knack bonus for Kobold", () => {
+      const pc = defaultPC();
+      setAncestryForPlayer(pc, "Kobold");
+      expect(pc.languages).toContain("Common");
+      expect(pc.languages).toContain("Draconic");
+      
+      const knackSpell = pc.bonuses.find((b) => b.name === "Knack: Spellcasting");
+      expect(knackSpell).toBeDefined();
+      expect(knackSpell?.type).toBe("modifyAmt");
+      expect(knackSpell?.bonusTo).toBe("spellcastRoll");
+      expect(knackSpell?.bonusAmount).toBe(1);
+    });
+
+    it("should set up default Farsight bonus for Elf", () => {
+      const pc = defaultPC();
+      setAncestryForPlayer(pc, "Elf");
+      expect(pc.languages).toContain("Elvish");
+      expect(pc.languages).toContain("Sylvan");
+      
+      const farsightRanged = pc.bonuses.find((b) => b.name === "Farsight: Ranged Attacks");
+      expect(farsightRanged).toBeDefined();
+      expect(farsightRanged?.type).toBe("modifyAmt");
+      expect(farsightRanged?.bonusTo).toBe("attackRoll");
+      expect(farsightRanged?.bonusAmount).toBe(1);
+      expect(farsightRanged?.metadata).toEqual({
+        type: "weaponType",
+        weaponType: "Ranged",
+      });
+    });
+
+    it("should preserve user selection when ensuring ancestry bonuses", () => {
+      const pc = defaultPC();
+      setAncestryForPlayer(pc, "Elf");
+      
+      // Simulating changing Farsight to spellcasting
+      pc.bonuses = pc.bonuses.filter((b) => b.name !== "Farsight: Ranged Attacks");
+      pc.bonuses.push({
+        name: "Farsight: Spellcasting",
+        desc: "+1 bonus to spellcasting checks",
+        bonusSource: "Ancestry",
+        type: "modifyAmt",
+        bonusTo: "spellcastRoll",
+        bonusAmount: 1,
+      });
+
+      // Ensure bonuses again (e.g. during a load/import)
+      ensureAncestryBonuses(pc);
+
+      const farsightRanged = pc.bonuses.find((b) => b.name === "Farsight: Ranged Attacks");
+      const farsightSpell = pc.bonuses.find((b) => b.name === "Farsight: Spellcasting");
+      
+      expect(farsightRanged).toBeUndefined();
+      expect(farsightSpell).toBeDefined();
+    });
   });
 });

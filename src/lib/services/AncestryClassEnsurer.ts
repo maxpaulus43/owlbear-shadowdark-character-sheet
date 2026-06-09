@@ -24,6 +24,10 @@ export function ensureLanguages(pc: PlayerCharacter) {
       languages.push("Orcish");
       break;
     }
+    case "Kobold": {
+      languages.push("Draconic");
+      break;
+    }
   }
   for (const l of languages) {
     if (!pc.languages.includes(l)) {
@@ -33,7 +37,7 @@ export function ensureLanguages(pc: PlayerCharacter) {
 }
 
 export function ensureAncestryBonuses(pc: PlayerCharacter) {
-  clearAncestryBonuses(pc);
+  clearAncestryBonuses(pc, pc.ancestry);
   addAncestryBonuses(pc.bonuses, pc.ancestry);
 }
 
@@ -49,17 +53,24 @@ export function ensureClassGear(pc: PlayerCharacter) {
   addClassGear(pc.gear, pc.class);
 }
 
-function clearAncestryBonuses(pc: PlayerCharacter) {
-  pc.bonuses = pc.bonuses.filter(
-    (b) =>
-      ![
-        "Stout",
-        "Keen senses",
-        "Stealthy",
-        "Mighty Attack ancestry",
-        "Mighty Damage ancestry",
-      ].includes(b.name)
-  );
+function clearAncestryBonuses(pc: PlayerCharacter, ancestry: Ancestry | "") {
+  const elfBonuses = ["Farsight: Ranged Attacks", "Farsight: Spellcasting"];
+  const koboldBonuses = ["Knack: Spellcasting", "Knack: Luck Token"];
+  const dwarfBonuses = ["Stout"];
+  const goblinBonuses = ["Keen senses"];
+  const halflingBonuses = ["Stealthy"];
+  const halfOrcBonuses = ["Mighty Attack ancestry", "Mighty Damage ancestry"];
+
+  let toRemove: string[] = [];
+
+  if (ancestry !== "Elf") toRemove.push(...elfBonuses);
+  if (ancestry !== "Kobold") toRemove.push(...koboldBonuses);
+  if (ancestry !== "Dwarf") toRemove.push(...dwarfBonuses);
+  if (ancestry !== "Goblin") toRemove.push(...goblinBonuses);
+  if (ancestry !== "Halfling") toRemove.push(...halflingBonuses);
+  if (ancestry !== "Half-Orc") toRemove.push(...halfOrcBonuses);
+
+  pc.bonuses = pc.bonuses.filter((b) => !toRemove.includes(b.name));
 }
 
 function clearClassBonuses(pc: PlayerCharacter) {
@@ -143,8 +154,40 @@ function addClassGear(gear: Gear[], c: Class) {
 
 function addAncestryBonuses(bonuses: Bonus[], a: Ancestry | "") {
   switch (a) {
-    case "Elf":
+    case "Elf": {
+      const nameRanged = "Farsight: Ranged Attacks";
+      const nameSpell = "Farsight: Spellcasting";
+      if (!bonuses.find((b) => b.name === nameRanged || b.name === nameSpell)) {
+        bonuses.push({
+          name: nameRanged,
+          desc: "+1 bonus to attack rolls with ranged weapons",
+          bonusSource: "Ancestry",
+          type: "modifyAmt",
+          bonusTo: "attackRoll",
+          bonusAmount: 1,
+          metadata: {
+            type: "weaponType",
+            weaponType: "Ranged",
+          },
+        });
+      }
       break;
+    }
+    case "Kobold": {
+      const nameSpell = "Knack: Spellcasting";
+      const nameLuck = "Knack: Luck Token";
+      if (!bonuses.find((b) => b.name === nameSpell || b.name === nameLuck)) {
+        bonuses.push({
+          name: nameSpell,
+          desc: "+1 to spellcasting checks",
+          bonusSource: "Ancestry",
+          type: "modifyAmt",
+          bonusTo: "spellcastRoll",
+          bonusAmount: 1,
+        });
+      }
+      break;
+    }
     case "Human":
       break;
     case "Dwarf": {
