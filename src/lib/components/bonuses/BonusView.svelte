@@ -16,30 +16,40 @@
   let showModal = false;
   $: b = bonus;
 
+  $: resolvedB = b.type === "choice" && b.choices && b.selectedChoiceId
+    ? b.choices.find((c) => c.id === b.selectedChoiceId)?.bonus
+    : undefined;
+
+  $: activeB = resolvedB || b;
+
   let displayableName = "";
-  $: switch (b.metadata?.type) {
-    case "weapon": {
-      displayableName = b.metadata.weapon + ":";
-      break;
-    }
-    case "weaponType": {
-      displayableName = b.metadata.weaponType + ":";
-      break;
-    }
-    case "armor": {
-      displayableName = b.metadata.armor + ":";
-      break;
-    }
-    case "stat": {
-      displayableName = b.metadata.stat + ":";
-      break;
-    }
-    case "spell": {
-      displayableName = b.metadata.spell + ":";
-      break;
-    }
-    default: {
-      displayableName = "";
+  $: if (b.bonusSource === "Ancestry" && b.name) {
+    displayableName = b.name.split(":")[0] + ":";
+  } else {
+    switch (activeB.metadata?.type) {
+      case "weapon": {
+        displayableName = activeB.metadata.weapon + ":";
+        break;
+      }
+      case "weaponType": {
+        displayableName = activeB.metadata.weaponType + ":";
+        break;
+      }
+      case "armor": {
+        displayableName = activeB.metadata.armor + ":";
+        break;
+      }
+      case "stat": {
+        displayableName = activeB.metadata.stat + ":";
+        break;
+      }
+      case "spell": {
+        displayableName = activeB.metadata.spell + ":";
+        break;
+      }
+      default: {
+        displayableName = "";
+      }
     }
   }
 
@@ -65,17 +75,21 @@
 
 <div class="flex justify-between gap-3 items-center w-full">
   <div class="flex gap-1">
-    {#if b.type === "generic"}
-      <div>{b.desc || getGeneratedDesc(b)}</div>
-    {:else if b.type === "modifyAmt"}
+    {#if activeB.type === "choice"}
       <div class="font-bold">{displayableName}</div>
-      <div>{addSign(calculateBonusAmount($pc, b))} to {b.bonusTo}</div>
-    {:else if b.type === "disadvantage" || b.type === "advantage"}
+      <div class="text-red-600 font-semibold italic">select one...</div>
+    {:else if activeB.type === "generic"}
       <div class="font-bold">{displayableName}</div>
-      <div>{b.type} on {b.bonusTo}s</div>
-    {:else if b.type === "diceType"}
+      <div>{activeB.desc || getGeneratedDesc(activeB)}</div>
+    {:else if activeB.type === "modifyAmt"}
       <div class="font-bold">{displayableName}</div>
-      <div>{b.diceType} on {b.bonusTo}</div>
+      <div>{addSign(calculateBonusAmount($pc, activeB))} to {activeB.bonusTo}</div>
+    {:else if activeB.type === "disadvantage" || activeB.type === "advantage"}
+      <div class="font-bold">{displayableName}</div>
+      <div>{activeB.type} on {activeB.bonusTo}s</div>
+    {:else if activeB.type === "diceType"}
+      <div class="font-bold">{displayableName}</div>
+      <div>{activeB.diceType} on {activeB.bonusTo}</div>
     {/if}
     {#if showInfo && (b.name || b.desc)}
       <button
@@ -101,9 +115,37 @@
 
 {#if showModal}
   <Modal bind:showModal>
-    <h2 slot="header">{b.name || "Bonus"}</h2>
-    <div>Description: {b.desc || getGeneratedDesc(b)}</div>
-    <div>Source: {b.bonusSource ?? "none"}</div>
-    <div>Editable: {b.editable ?? "no"}</div>
+    <h2 slot="header">
+      {#if b.type === "choice" && b.selectedChoiceId}
+        {b.name}: {b.choices.find((c) => c.id === b.selectedChoiceId)?.name}
+      {:else}
+        {b.name || "Bonus"}
+      {/if}
+    </h2>
+    <div class="flex flex-col gap-2 my-2 text-black text-sm">
+      <div><strong>Description:</strong> {activeB.desc || getGeneratedDesc(activeB)}</div>
+      <div><strong>Source:</strong> {b.bonusSource ?? "none"}</div>
+      <div><strong>Editable:</strong> {b.editable ?? "no"}</div>
+
+      {#if b.type === "choice" && b.choices}
+        <div class="mt-3 flex flex-col gap-1 border-t pt-3">
+          <label for="ancestry-bonus-select" class="font-semibold text-xs text-gray-700">SELECT OPTION</label>
+          <select
+            id="ancestry-bonus-select"
+            value={b.selectedChoiceId || ""}
+            on:change={(e) => {
+              b.selectedChoiceId = e.target.value;
+              $pc = $pc;
+            }}
+            class="border p-1.5 rounded text-black bg-white w-full text-sm"
+          >
+            <option value="" disabled>Select one...</option>
+            {#each b.choices as choice}
+              <option value={choice.id}>{choice.name}</option>
+            {/each}
+          </select>
+        </div>
+      {/if}
+    </div>
   </Modal>
 {/if}

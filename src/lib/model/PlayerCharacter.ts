@@ -65,6 +65,26 @@ export function defaultPC(): PlayerCharacter {
   };
 }
 
+export function resolveChoices(bonuses: Bonus[]): Bonus[] {
+  if (!bonuses) return [];
+  return bonuses.map((b) => {
+    if (b.type === "choice" && b.choices && b.selectedChoiceId) {
+      const selected = b.choices.find((c) => c.id === b.selectedChoiceId);
+      if (selected) {
+        return {
+          ...selected.bonus,
+          name: b.name,
+          bonusSource: b.bonusSource,
+          choices: b.choices,
+          selectedChoiceId: b.selectedChoiceId,
+          desc: selected.bonus.desc || b.desc,
+        } as Bonus;
+      }
+    }
+    return b;
+  });
+}
+
 export function calculateModifierForPlayerStat(
   pc: PlayerCharacter,
   stat: Stat,
@@ -120,9 +140,9 @@ export function calculateDamageDiceTypeForPlayerWeapon(
   let result = w.damage[handedness].diceType;
 
   const allActiveBonuses = [
-    ...pc.bonuses,
-    ...getActiveGearBonuses(pc),
-    ...getActiveCustomBonuses(pc),
+    ...resolveChoices(pc.bonuses),
+    ...resolveChoices(getActiveGearBonuses(pc)),
+    ...resolveChoices(getActiveCustomBonuses(pc)),
   ];
   const diceTypeBonuses = allActiveBonuses
     .filter(
@@ -148,9 +168,9 @@ export function calculateBonusForPlayerStat(
   stat: Stat,
 ): number {
   const allActiveBonuses = [
-    ...pc.bonuses,
-    ...getActiveGearBonuses(pc),
-    ...getActiveCustomBonuses(pc),
+    ...resolveChoices(pc.bonuses),
+    ...resolveChoices(getActiveGearBonuses(pc)),
+    ...resolveChoices(getActiveCustomBonuses(pc)),
   ];
   return allActiveBonuses
     .filter(
@@ -177,14 +197,14 @@ export function calculateArmorClassForPlayer(pc: PlayerCharacter) {
   let modsFromStat = calculateModifierForPlayerStat(pc, "DEX"); // default to DEX
 
   let modsFromUnrestrictedBonuses = 0;
-  const allActiveBonuses = [...pc.bonuses, ...getActiveCustomBonuses(pc)];
+  const allActiveBonuses = [...resolveChoices(pc.bonuses), ...resolveChoices(getActiveCustomBonuses(pc))];
   for (const b of allActiveBonuses) {
     if (b.type === "modifyAmt" && b.bonusTo === "armorClass" && !b.metadata) {
       modsFromUnrestrictedBonuses += calculateBonusAmount(pc, b);
     }
   }
 
-  const gearBonuses = getActiveGearBonuses(pc);
+  const gearBonuses = resolveChoices(getActiveGearBonuses(pc));
 
   let modsFromGearBonuses = 0;
   for (const b of gearBonuses) {
@@ -263,7 +283,7 @@ export function calculateSpellCastingModifierForPlayer(
   result += baseModifier;
 
   // from bonuses
-  const allActiveBonuses = [...pc.bonuses, ...getActiveCustomBonuses(pc)];
+  const allActiveBonuses = [...resolveChoices(pc.bonuses), ...resolveChoices(getActiveCustomBonuses(pc))];
   const bonuses = allActiveBonuses
     .filter((b) => b.type === "modifyAmt" && b.bonusTo === "spellcastRoll")
     .reduce((acc: number, b: ModifyBonus) => {
@@ -279,7 +299,7 @@ export function calculateSpellCastingModifierForPlayer(
   result += bonuses;
 
   // from gear
-  const gearBonuses = getActiveGearBonuses(pc)
+  const gearBonuses = resolveChoices(getActiveGearBonuses(pc))
     .filter((b) => b.type === "modifyAmt" && b.bonusTo === "spellcastRoll")
     .reduce((acc: number, b: ModifyBonus) => {
       if (
@@ -302,7 +322,7 @@ export function calculateDamageBonusForPlayerWeapon(
 ): number {
   let result = 0;
 
-  const allActiveBonuses = [...pc.bonuses, ...getActiveCustomBonuses(pc)];
+  const allActiveBonuses = [...resolveChoices(pc.bonuses), ...resolveChoices(getActiveCustomBonuses(pc))];
   const bonuses = allActiveBonuses
     .filter((b) => b.type === "modifyAmt" && b.bonusTo === "damageRoll")
     .reduce((acc: number, b: ModifyBonus) => {
@@ -314,7 +334,7 @@ export function calculateDamageBonusForPlayerWeapon(
   result += bonuses;
 
   // gear bonuses
-  const gearBonuses = getActiveGearBonuses(pc)
+  const gearBonuses = resolveChoices(getActiveGearBonuses(pc))
     // only apply bonuses to damageRoll
     .filter((b) => b.type === "modifyAmt" && b.bonusTo === "damageRoll")
     .reduce((acc: number, b: ModifyBonus) => {
@@ -343,7 +363,7 @@ export function calculateAttackBonusForPlayerWeapon(
   }
 
   // pc bonuses
-  const allActiveBonuses = [...pc.bonuses, ...getActiveCustomBonuses(pc)];
+  const allActiveBonuses = [...resolveChoices(pc.bonuses), ...resolveChoices(getActiveCustomBonuses(pc))];
   const bonuses = allActiveBonuses
     .filter((b) => b.type === "modifyAmt" && b.bonusTo === "attackRoll")
     .reduce((acc: number, b: ModifyBonus) => {
@@ -355,7 +375,7 @@ export function calculateAttackBonusForPlayerWeapon(
   result += bonuses;
 
   // gear bonuses
-  const gearBonuses = getActiveGearBonuses(pc)
+  const gearBonuses = resolveChoices(getActiveGearBonuses(pc))
     // only apply bonuses to attackRoll
     .filter((b) => b.type === "modifyAmt" && b.bonusTo === "attackRoll")
     .reduce((acc: number, b: ModifyBonus) => {
@@ -373,9 +393,9 @@ export function calculateGearSlotsForPlayer(pc: PlayerCharacter) {
   const base = Math.max(10, calculateStatValueForPlayerStat(pc, "STR"));
 
   const allActiveBonuses = [
-    ...pc.bonuses,
-    ...getActiveGearBonuses(pc),
-    ...getActiveCustomBonuses(pc),
+    ...resolveChoices(pc.bonuses),
+    ...resolveChoices(getActiveGearBonuses(pc)),
+    ...resolveChoices(getActiveCustomBonuses(pc)),
   ];
 
   const bonuses = allActiveBonuses.reduce((acc: number, b: Bonus) => {
@@ -488,9 +508,9 @@ export function deleteBonusForPlayer(pc: PlayerCharacter, theBonus: Bonus) {
 export function calculateTotalHitPointsForPlayer(pc: PlayerCharacter): number {
   const baseMaxHP = pc.maxHitPoints;
   const allActiveBonuses = [
-    ...pc.bonuses,
-    ...getActiveGearBonuses(pc),
-    ...getActiveCustomBonuses(pc),
+    ...resolveChoices(pc.bonuses),
+    ...resolveChoices(getActiveGearBonuses(pc)),
+    ...resolveChoices(getActiveCustomBonuses(pc)),
   ];
   const bonuses = allActiveBonuses
     .filter((b) => {

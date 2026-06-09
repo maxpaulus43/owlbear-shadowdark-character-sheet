@@ -54,8 +54,8 @@ export function ensureClassGear(pc: PlayerCharacter) {
 }
 
 function clearAncestryBonuses(pc: PlayerCharacter, ancestry: Ancestry | "") {
-  const elfBonuses = ["Farsight: Ranged Attacks", "Farsight: Spellcasting"];
-  const koboldBonuses = ["Knack: Spellcasting", "Knack: Luck Token"];
+  const elfBonuses = ["Farsight"];
+  const koboldBonuses = ["Knack"];
   const dwarfBonuses = ["Stout"];
   const goblinBonuses = ["Keen senses"];
   const halflingBonuses = ["Stealthy"];
@@ -155,35 +155,81 @@ function addClassGear(gear: Gear[], c: Class) {
 function addAncestryBonuses(bonuses: Bonus[], a: Ancestry | "") {
   switch (a) {
     case "Elf": {
-      const nameRanged = "Farsight: Ranged Attacks";
-      const nameSpell = "Farsight: Spellcasting";
-      if (!bonuses.find((b) => b.name === nameRanged || b.name === nameSpell)) {
+      const name = "Farsight";
+      if (!bonuses.find((b) => b.name === name)) {
         bonuses.push({
-          name: nameRanged,
-          desc: "+1 bonus to attack rolls with ranged weapons",
+          name,
+          desc: "+1 bonus to attack rolls with ranged weapons or +1 to spellcasting checks",
           bonusSource: "Ancestry",
-          type: "modifyAmt",
-          bonusTo: "attackRoll",
-          bonusAmount: 1,
-          metadata: {
-            type: "weaponType",
-            weaponType: "Ranged",
-          },
+          type: "choice",
+          choices: [
+            {
+              id: "ranged",
+              name: "+1 to Ranged Attacks",
+              bonus: {
+                name: "Farsight",
+                desc: "+1 bonus to attack rolls with ranged weapons",
+                bonusSource: "Ancestry",
+                type: "modifyAmt",
+                bonusTo: "attackRoll",
+                bonusAmount: 1,
+                metadata: {
+                  type: "weaponType",
+                  weaponType: "Ranged",
+                },
+              },
+            },
+            {
+              id: "spellcasting",
+              name: "+1 to Spellcasting Checks",
+              bonus: {
+                name: "Farsight",
+                desc: "+1 bonus to spellcasting checks",
+                bonusSource: "Ancestry",
+                type: "modifyAmt",
+                bonusTo: "spellcastRoll",
+                bonusAmount: 1,
+              },
+            },
+          ],
+          selectedChoiceId: "",
         });
       }
       break;
     }
     case "Kobold": {
-      const nameSpell = "Knack: Spellcasting";
-      const nameLuck = "Knack: Luck Token";
-      if (!bonuses.find((b) => b.name === nameSpell || b.name === nameLuck)) {
+      const name = "Knack";
+      if (!bonuses.find((b) => b.name === name)) {
         bonuses.push({
-          name: nameSpell,
-          desc: "+1 to spellcasting checks",
+          name,
+          desc: "+1 to spellcasting checks or may begin each session with a luck token",
           bonusSource: "Ancestry",
-          type: "modifyAmt",
-          bonusTo: "spellcastRoll",
-          bonusAmount: 1,
+          type: "choice",
+          choices: [
+            {
+              id: "spellcasting",
+              name: "+1 to Spellcasting Checks",
+              bonus: {
+                name: "Knack",
+                desc: "+1 to spellcasting checks",
+                bonusSource: "Ancestry",
+                type: "modifyAmt",
+                bonusTo: "spellcastRoll",
+                bonusAmount: 1,
+              },
+            },
+            {
+              id: "luck",
+              name: "Luck Token each session",
+              bonus: {
+                name: "Knack",
+                desc: "Begin each session with a luck token",
+                bonusSource: "Ancestry",
+                type: "generic",
+              },
+            },
+          ],
+          selectedChoiceId: "",
         });
       }
       break;

@@ -8,6 +8,8 @@ import {
   addBonusToPlayer,
   addCustomBonusToPlayer,
   setAncestryForPlayer,
+  calculateSpellCastingModifierForPlayer,
+  calculateAttackBonusForPlayerWeapon,
 } from "./PlayerCharacter";
 import { ensureAncestryBonuses } from "../services/AncestryClassEnsurer";
 import { setCustomGearForPlayer } from "../compendium";
@@ -183,59 +185,66 @@ describe("PlayerCharacter Multi-Bonus calculations", () => {
   });
 
   describe("Ancestry bonuses and choices", () => {
-    it("should set up languages and default Knack bonus for Kobold", () => {
+    it("should set up languages and unselected Knack choice bonus for Kobold", () => {
       const pc = defaultPC();
       setAncestryForPlayer(pc, "Kobold");
       expect(pc.languages).toContain("Common");
       expect(pc.languages).toContain("Draconic");
       
-      const knackSpell = pc.bonuses.find((b) => b.name === "Knack: Spellcasting");
-      expect(knackSpell).toBeDefined();
-      expect(knackSpell?.type).toBe("modifyAmt");
-      expect(knackSpell?.bonusTo).toBe("spellcastRoll");
-      expect(knackSpell?.bonusAmount).toBe(1);
+      const knack = pc.bonuses.find((b) => b.name === "Knack");
+      expect(knack).toBeDefined();
+      expect(knack?.type).toBe("choice");
+      expect(knack?.selectedChoiceId).toBe("");
     });
 
-    it("should set up default Farsight bonus for Elf", () => {
-      const pc = defaultPC();
-      setAncestryForPlayer(pc, "Elf");
-      expect(pc.languages).toContain("Elvish");
-      expect(pc.languages).toContain("Sylvan");
-      
-      const farsightRanged = pc.bonuses.find((b) => b.name === "Farsight: Ranged Attacks");
-      expect(farsightRanged).toBeDefined();
-      expect(farsightRanged?.type).toBe("modifyAmt");
-      expect(farsightRanged?.bonusTo).toBe("attackRoll");
-      expect(farsightRanged?.bonusAmount).toBe(1);
-      expect(farsightRanged?.metadata).toEqual({
-        type: "weaponType",
-        weaponType: "Ranged",
-      });
-    });
-
-    it("should preserve user selection when ensuring ancestry bonuses", () => {
+    it("should resolve choices correctly when selected", () => {
       const pc = defaultPC();
       setAncestryForPlayer(pc, "Elf");
       
-      // Simulating changing Farsight to spellcasting
-      pc.bonuses = pc.bonuses.filter((b) => b.name !== "Farsight: Ranged Attacks");
-      pc.bonuses.push({
-        name: "Farsight: Spellcasting",
-        desc: "+1 bonus to spellcasting checks",
-        bonusSource: "Ancestry",
-        type: "modifyAmt",
-        bonusTo: "spellcastRoll",
-        bonusAmount: 1,
-      });
+      const farsight = pc.bonuses.find((b) => b.name === "Farsight");
+      expect(farsight).toBeDefined();
+      expect(farsight?.type).toBe("choice");
+      expect(farsight?.selectedChoiceId).toBe("");
 
-      // Ensure bonuses again (e.g. during a load/import)
+      // With no choice selected, spellcast bonus should be 0
+      const spell = { name: "Magic Missile", class: "Wizard" as const, tier: 1 as const, range: "Near" as const, duration: { type: "Instant" as const }, desc: "" };
+      expect(calculateSpellCastingModifierForPlayer(pc, spell)).toBe(0);
+
+      // Select spellcasting
+      farsight!.selectedChoiceId = "spellcasting";
+      expect(calculateSpellCastingModifierForPlayer(pc, spell)).toBe(1);
+
+      // Select ranged attacks
+      farsight!.selectedChoiceId = "ranged";
+      expect(calculateSpellCastingModifierForPlayer(pc, spell)).toBe(0);
+      
+      const bow = { name: "Longbow", type: "Weapon" as const, canBeEquipped: true, slots: { perSlot: 1, slotsUsed: 1, freeCarry: 0 }, cost: { gp: 8, sp: 0, cp: 0 }, damage: { twoHanded: { diceType: "d8" as const, numDice: 1 } }, range: "Far" as const, weaponType: "Ranged" as const };
+      expect(calculateAttackBonusForPlayerWeapon(pc, bow)).toBe(1); // DEX is 10, modifier is 0, bonus is 1
+    });
+
+    it("should preserve selected choice when ensuring ancestry bonuses", () => {
+      const pc = defaultPC();
+      setAncestryForPlayer(pc, "Elf");
+      
+      const farsight = pc.bonuses.find((b) => b.name === "Farsight");
+      farsight!.selectedChoiceId = "spellcasting";
+
+      // Re-ensure bonuses (e.g. during load/sync)
       ensureAncestryBonuses(pc);
 
-      const farsightRanged = pc.bonuses.find((b) => b.name === "Farsight: Ranged Attacks");
-      const farsightSpell = pc.bonuses.find((b) => b.name === "Farsight: Spellcasting");
-      
-      expect(farsightRanged).toBeUndefined();
-      expect(farsightSpell).toBeDefined();
+      const resolved = pc.bonuses.find((b) => b.name === "Farsight");
+      expect(resolved).toBeDefined();
+      expect(resolved?.selectedChoiceId).toBe("spellcasting");
+    });
+
+    it("should eliminate bonus when changing ancestry", () => {
+      const pc = defaultPC();
+      setAncestryForPlayer(pc, "Elf");
+      expect(pc.bonuses.find((b) => b.name === "Farsight")).toBeDefined();
+
+      setAncestryForPlayer(pc, "Dwarf");
+      expect(pc.bonuses.find((b) => b.name === "Farsight")).toBeUndefined();
+      expect(pc.bonuses.find((b) => b.name === "Stout")).toBeDefined();
     });
   });
 });

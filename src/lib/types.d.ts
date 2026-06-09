@@ -201,12 +201,26 @@ export type DisadvantageBonus = Merge<
     type: "disadvantage";
   }
 >;
+export type ChoiceOption = {
+  id: string;
+  name: string;
+  bonus: Bonus;
+};
+export type ChoiceBonus = Merge<
+  GenericBonus,
+  {
+    type: "choice";
+    choices: ChoiceOption[];
+    selectedChoiceId?: string;
+  }
+>;
 export type Bonus =
   | GenericBonus
   | ModifyBonus
   | DiceTypeBonus
   | AdvantageBonus
-  | DisadvantageBonus;
+  | DisadvantageBonus
+  | ChoiceBonus;
 
 ///// ShadowDarklings
 export type SDBonus = {
