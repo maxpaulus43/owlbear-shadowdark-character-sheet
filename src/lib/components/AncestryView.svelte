@@ -5,7 +5,7 @@
     setAncestryForPlayer,
   } from "../model/PlayerCharacter";
   import type { Ancestry } from "../types";
-  import Modal from "../Modal.svelte";
+  import Modal from "./Modal.svelte";
 
   let showChoiceModal = false;
   let tempFarsightChoice = "ranged";
