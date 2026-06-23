@@ -35,6 +35,8 @@ export type Roll = {
 export type GenericTalent = {
   name: string;
   type: "generic";
+  min?: number;
+  max?: number;
 };
 export type BonusTalent = Merge<
   GenericTalent,
@@ -59,7 +61,7 @@ export type Spell = {
   failed?: boolean; //  spellcasting check failed
 };
 export type SpellClass =
-  | Extract<Class, "Wizard" | "Priest">
+  | Class
   | "PriestWizard"
   | "Other";
 export type SpellInfo = {
@@ -106,7 +108,7 @@ export type PlayerCharacter = {
   notes: string;
   stats: StatBlock;
   bonuses: Bonus[];
-  customBonuses: Bonus[];
+  customBonuses: CustomBonus[];
   customTalents: Talent[];
   maxHitPoints: number;
   armorClass: number;
@@ -155,11 +157,17 @@ export type BonusMetaData =
   | StatBonusMetaData
   | SpellBonusMetaData;
 export type GenericBonus = {
-  name: string;
-  desc: string;
+  name?: string;
+  desc?: string;
   bonusSource?: BonusSourceType;
   type: "generic";
   metadata?: BonusMetaData;
+  editable?: boolean;
+};
+export type CustomBonus = {
+  name: string;
+  desc: string;
+  bonuses: Bonus[];
   editable?: boolean;
 };
 export type ModifyBonus = Merge<
@@ -175,7 +183,7 @@ export type DiceTypeBonus = Merge<
   GenericBonus,
   {
     type: "diceType";
-    bonusTo: RollBonusTo;
+    bonusTo: BonusTo;
     diceType: DiceType;
   }
 >;
@@ -183,14 +191,27 @@ export type AdvantageBonus = Merge<
   GenericBonus,
   {
     type: "advantage";
-    bonusTo: RollBonusTo;
+    bonusTo: BonusTo;
   }
 >;
 export type DisadvantageBonus = Merge<
   GenericBonus,
   {
-    bonusTo: RollBonusTo;
+    bonusTo: BonusTo;
     type: "disadvantage";
+  }
+>;
+export type ChoiceOption = {
+  id: string;
+  name: string;
+  bonus: Bonus;
+};
+export type ChoiceBonus = Merge<
+  GenericBonus,
+  {
+    type: "choice";
+    choices: ChoiceOption[];
+    selectedChoiceId?: string;
   }
 >;
 export type Bonus =
@@ -198,7 +219,8 @@ export type Bonus =
   | ModifyBonus
   | DiceTypeBonus
   | AdvantageBonus
-  | DisadvantageBonus;
+  | DisadvantageBonus
+  | ChoiceBonus;
 
 ///// ShadowDarklings
 export type SDBonus = {
@@ -274,3 +296,10 @@ export type ArmorInfo = Merge<
 type LocalSettings = {
   popoverDuration?: number;
 };
+
+// Syncing
+declare global {
+  interface Window {
+    google: any;
+  }
+}

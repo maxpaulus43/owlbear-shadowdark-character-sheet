@@ -5,6 +5,8 @@ import { debounce } from "../utils";
 import { CurrentSaveSlot, NUM_SLOTS } from "./SaveSlotTracker";
 import { maintainBackwardsCompat as maintainBackwardsCompatPlayer } from "./JSONImporter";
 import type { PlayerCharacter } from "../types";
+// FIX: Updated import to the new SyncManager
+import { updateLocalTimestamp } from "./SyncManager";
 
 export const isSaveInProgress = writable(false);
 
@@ -48,7 +50,16 @@ export async function savePlayerToLocalStorage(
   pc: PlayerCharacter,
   saveSlot: number,
 ) {
-  asyncLocalStorage.setItem(getStorageKey(saveSlot), JSON.stringify(pc));
+  const key = getStorageKey(saveSlot);
+  const json = JSON.stringify(pc);
+
+  const existing = await asyncLocalStorage.getItem(key);
+  if (existing === json) {
+      return; 
+  }
+
+  asyncLocalStorage.setItem(key, json);
+  await updateLocalTimestamp(saveSlot);
 }
 
 function getStorageKey(saveSlot: number) {

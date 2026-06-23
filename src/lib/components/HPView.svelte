@@ -9,12 +9,13 @@
   }
   function decrMaxHp() {
     $pc.maxHitPoints = Math.max(1, $pc.maxHitPoints - 1);
-    if ($pc.hitPoints > $pc.maxHitPoints) {
-      $pc.hitPoints = $pc.maxHitPoints;
+    const totalMax = calculateTotalHitPointsForPlayer($pc);
+    if ($pc.hitPoints > totalMax) {
+      $pc.hitPoints = totalMax;
     }
   }
   function longRest() {
-    $pc.hitPoints = $pc.maxHitPoints;
+    $pc.hitPoints = calculateTotalHitPointsForPlayer($pc);
     $pc.spells = $pc.spells.map((s) => ({ name: s.name, failed: false }));
   }
 </script>

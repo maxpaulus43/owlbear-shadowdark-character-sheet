@@ -1,27 +1,30 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
+
   export let showModal: boolean = true;
-  export let vw: number = 85;
+  export let vw: number | undefined = undefined;
   export let vh: number = undefined;
+  export let dialogClass: string = "";
 
   let dialog: HTMLDialogElement;
+  const dispatch = createEventDispatcher();
 
   $: if (dialog) {
     if (showModal) {
-      dialog.showModal();
+      if (!dialog.open) dialog.showModal();
     } else {
-      dialog.close();
+      if (dialog.open) dialog.close();
     }
+  }
+
+  function handleClose() {
+    showModal = false;
+    dispatch("close");
   }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<dialog
-  class="max-w-3xl"
-  style={`min-width: 20rem; width: ${vw}vw;` + vh ? `height: ${vh}vh` : ""}
-  bind:this={dialog}
-  on:close={() => (showModal = false)}
-  on:click|self={() => dialog.close()}
->
+<dialog class="max-w-3xl {dialogClass}" style={`min-width: 20rem; ` + (vw ? `width: ${vw}vw; ` : "") + (vh ? `height: ${vh}vh` : "")} bind:this={dialog} on:close={handleClose} on:click|self={() => dialog.close()}>
   <div on:click|stopPropagation>
     <button
       class="absolute top-0 right-0 p-4 hover:bg-gray-200 rounded-md"

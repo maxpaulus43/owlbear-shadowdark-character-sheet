@@ -1,25 +1,50 @@
 <script lang="ts">
   import savePlayerToFile from "../services/FileSaver";
   import { clearLocalStorage } from "../services/LocalStorageSaver";
-  import {
-    defaultPC,
-    PlayerCharacterStore as pc,
-  } from "../model/PlayerCharacter";
+  import { defaultPC, PlayerCharacterStore as pc } from "../model/PlayerCharacter";
   import Modal from "./Modal.svelte";
   import { CurrentSaveSlot, NUM_SLOTS } from "../services/SaveSlotTracker";
   import OBR from "@owlbear-rodeo/sdk";
   import { Settings } from "../services/SettingsTracker";
   import { isGM, isTrackedPlayerGM } from "../services/OBRHelper";
+
+  // --- SYNC IMPORTS ---
+  // FIX: Import from SyncManager
+  import { isSyncEnabled, userEmail, showDeleteConfirmationModal, syncProviderName, logout, requestSetup } from "../services/SyncManager";
+  import { tick } from "svelte";
+  // --------------------
+
   export let files: FileList | undefined;
   let showModal = false;
+  let showSyncSettingsModal = false;
 
   $: isSheetReadOnly = $isGM && !$isTrackedPlayerGM;
+
+  async function handleSyncSettingsClick() {
+    console.log("handleSyncSettingsClick", $isSyncEnabled);
+    showModal = false;
+    await tick();
+    showSyncSettingsModal = true;
+    console.log("showSyncSettingsModal set to true");
+  }
+
+  function handleDisableSync() {
+    logout();
+    showSyncSettingsModal = false;
+  }
+
+  function handleDeleteSync() {
+    showDeleteConfirmationModal.set(true);
+    showSyncSettingsModal = false;
+  }
+
+  function handleSetupClick() {
+    showModal = false;
+    requestSetup();
+  }
 </script>
 
-<button
-  class="bg-black text-white rounded-md px-1 text-xs"
-  on:click={() => (showModal = true)}
->
+<button class="bg-black text-white rounded-md px-1 text-xs" on:click={() => (showModal = true)}>
   <i class="material-icons translate-y-[1px]">settings</i>
 </button>
 
@@ -43,19 +68,12 @@
       <label for="notificationDuration">
         <div class="flex flex-row gap-1 items-center">
           <div>Notification Duration:</div>
-          <input
-            class="w-16 text-right"
-            id="notificationDuration"
-            type="number"
-            inputmode="numeric"
-            bind:value={$Settings.popoverDuration}
-            min="0"
-          />
+          <input class="w-16 text-right" id="notificationDuration" type="number" inputmode="numeric" bind:value={$Settings.popoverDuration} min="0" />
           <div>seconds</div>
         </div>
       </label>
     {/if}
-    <label for="jsonImport" class={isSheetReadOnly ? 'btn-disabled' : 'btn'}>
+    <label for="jsonImport" class={isSheetReadOnly ? "btn-disabled" : "btn"}>
       <div class="text-center">Import JSON</div>
       <input
         id="jsonImport"
@@ -75,13 +93,19 @@
         savePlayerToFile($pc);
       }}>Export JSON</button
     >
-    <a
-      class="btn"
-      href="https://github.com/maxpaulus43/owlbear-shadowdark-character-sheet/issues/new"
-      target="_blank">Report Issue</a
-    >
+    <a class="btn" href="https://github.com/maxpaulus43/owlbear-shadowdark-character-sheet/issues/new" target="_blank">Report Issue</a>
+
     {#if !isSheetReadOnly}
-      <div>Advanced Options (Proceed with caution)</div>
+      <div class="mt-2 border-t border-gray-500 pt-2 font-bold">Advanced Options</div>
+
+      {#if $isSyncEnabled}
+        <button on:click={handleSyncSettingsClick} class:dropbox-brand={$syncProviderName === "Dropbox"} class:google-brand={$syncProviderName === "Google Drive"}>
+          {$syncProviderName} Sync
+        </button>
+      {:else}
+        <button on:click={handleSetupClick}> Set up Cloud Sync </button>
+      {/if}
+
       <button
         on:click={() => {
           $pc = defaultPC();
@@ -97,6 +121,23 @@
   </div>
 </Modal>
 
+{#if showSyncSettingsModal}
+  <Modal on:close={() => (showSyncSettingsModal = false)}>
+    <h1 slot="header">Sync Settings</h1>
+    <div class="flex flex-col gap-2 min-w-[250px] p-2" id="sync-options">
+      <p class="text-sm text-center mb-2">
+        Syncing with <b>{$syncProviderName}</b> as <br /><b>{$userEmail}</b>
+      </p>
+
+      <button on:click={handleDisableSync}> Disable Sync </button>
+
+      <button class="bg-red-800 hover:bg-red-700" on:click={handleDeleteSync}> Disable Sync & Delete Cloud Data </button>
+
+      <button class="bg-gray-500 hover:bg-gray-600 mt-2" on:click={() => (showSyncSettingsModal = false)}> Cancel </button>
+    </div>
+  </Modal>
+{/if}
+
 <style lang="postcss">
   button,
   .btn {
@@ -104,7 +145,7 @@
   }
 
   .btn-disabled {
-    @apply  bg-black text-white px-1 rounded-md text-center opacity-30 cursor-default hover:scale-100;
+    @apply bg-black text-white px-1 rounded-md text-center opacity-30 cursor-default hover:scale-100;
   }
 
   .green {
@@ -115,5 +156,25 @@
   #options .btn,
   #options .btn-disabled {
     @apply p-2;
+  }
+
+  /* Modal styling */
+  #sync-options button {
+    @apply transition active:opacity-50 cursor-pointer shadow-sm p-2;
+  }
+  #sync-options button.bg-red-800 {
+    background-color: #991b1b;
+  }
+  #sync-options button.bg-gray-500 {
+    background-color: #6b7280;
+  }
+
+  .dropbox-brand {
+    background-color: #0061fe !important; /* Dropbox Blue */
+    color: white;
+  }
+  .google-brand {
+    background-color: #4285f4 !important; /* Google Blue */
+    color: white;
   }
 </style>
