@@ -43,6 +43,7 @@
   let type: Bonus["type"];
   let bonusTo: BonusTo;
   let bonusAmount: number = 1;
+  let bonusIncreaseRatePerLevel: number = 0;
   let mdType: BonusMetaData["type"] | "";
   let diceType: DiceType = "d8";
   let selectedWeapon: string;
@@ -80,6 +81,9 @@
         break;
       case "modifyAmt":
         b = { name, desc, type, bonusTo, bonusAmount };
+        if (bonusIncreaseRatePerLevel) {
+          b.bonusIncreaseRatePerLevel = bonusIncreaseRatePerLevel;
+        }
         break;
       case "advantage":
       case "disadvantage": {
@@ -152,6 +156,14 @@
       type="number"
       inputmode="numeric"
       bind:value={bonusAmount}
+    />
+    <label for="bonusIncreaseRatePerLevel">Additional amount per level</label>
+    <input
+      id="bonusIncreaseRatePerLevel"
+      type="number"
+      inputmode="decimal"
+      step="0.5"
+      bind:value={bonusIncreaseRatePerLevel}
     />
   {:else if type === "diceType"}
     <label for="diceType">Dice Type</label>
