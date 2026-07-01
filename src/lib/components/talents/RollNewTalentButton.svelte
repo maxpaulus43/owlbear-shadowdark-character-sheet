@@ -19,8 +19,8 @@
 
   const ranges: { min: number; max: number }[] = [
     { min: 2, max: 2 },
-    { min: 3, max: 7 },
-    { min: 8, max: 9 },
+    { min: 3, max: 6 },
+    { min: 7, max: 9 },
     { min: 10, max: 11 },
   ];
 
@@ -88,6 +88,7 @@
         } else {
           options = highlightedTalent.choices;
         }
+        selectedOption = options[0];
         break;
     }
   }
