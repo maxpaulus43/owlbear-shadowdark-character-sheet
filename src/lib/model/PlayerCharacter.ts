@@ -64,18 +64,23 @@ export function defaultPC(): PlayerCharacter {
   };
 }
 
+export function calculateModifierForStatValue(statValue: number): number {
+  // Shadowdark modifiers are flat from 9-12, then increase on odd scores.
+  if (statValue >= 9 && statValue <= 12) return 0;
+
+  const modifier =
+    statValue > 12
+      ? Math.ceil((statValue - 12) / 2)
+      : Math.floor((statValue - 9) / 2);
+
+  return clamp(modifier, -4, 4);
+}
+
 export function calculateModifierForPlayerStat(
   pc: PlayerCharacter,
   stat: Stat,
 ): number {
-  let finalModifier = 0;
-  const baseModifier = clamp(
-    Math.floor((calculateStatValueForPlayerStat(pc, stat) - 10) / 2),
-    -4,
-    4,
-  );
-  finalModifier += baseModifier;
-  return finalModifier;
+  return calculateModifierForStatValue(calculateStatValueForPlayerStat(pc, stat));
 }
 
 export function setClassForPlayer(pc: PlayerCharacter, c: Class) {

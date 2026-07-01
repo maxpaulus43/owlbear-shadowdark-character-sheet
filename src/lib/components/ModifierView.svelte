@@ -1,10 +1,11 @@
 <script lang="ts">
   import {
     calculateModifierForPlayerStat,
+    calculateModifierForStatValue,
     PlayerCharacterStore as pc,
   } from "../model/PlayerCharacter";
   import type { Stat } from "../types";
-  import { clamp, addSign } from "../utils";
+  import { addSign } from "../utils";
   import Modal from "./Modal.svelte";
 
   export let forStat: Stat;
@@ -12,7 +13,7 @@
   // $pc.bonuses
   //   .filter((b) => b.bonusTo.includes(forStat))
   //   .map((b) => `${b.bonusName} to ${b.bonusTo}`);
-  $: baseMod = clamp(Math.floor(($pc.stats[forStat] - 10) / 2), -4, 4);
+  $: baseMod = calculateModifierForStatValue($pc.stats[forStat]);
   $: modifier = calculateModifierForPlayerStat($pc, forStat);
 
   let showMenu = false;
