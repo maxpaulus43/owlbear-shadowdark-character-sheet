@@ -24,6 +24,8 @@
 
   const dispatch = createEventDispatcher();
 
+  export let bonus: Bonus = undefined;
+
   $: allWeapons = WEAPONS.concat(
     $pc.customGear
       .filter((g) => g.type === "Weapon")
@@ -38,30 +40,40 @@
 
   $: allSpells = SPELLS.concat($pc.customSpells ?? []);
 
-  let name: string = "";
-  let desc: string = "";
-  let type: Bonus["type"];
-  let bonusTo: BonusTo;
-  let bonusAmount: number = 1;
-  let bonusIncreaseRatePerLevel: number = 0;
-  let mdType: BonusMetaData["type"] | "";
-  let diceType: DiceType = "d8";
-  let selectedWeapon: string;
-  let selectedArmor: string;
-  let selectedSpell: string;
-  let selectedStat: Stat | "";
-  let weaponType: WeaponType | "";
+  let name: string = bonus?.name ?? "";
+  let desc: string = bonus?.desc ?? "";
+  let type: Bonus["type"] = bonus?.type ?? "generic";
+  let bonusTo: BonusTo =
+    bonus && "bonusTo" in bonus ? (bonus.bonusTo as BonusTo) : undefined;
+  let bonusAmount: number =
+    bonus?.type === "modifyAmt" ? bonus.bonusAmount : 1;
+  let bonusIncreaseRatePerLevel: number =
+    bonus?.type === "modifyAmt" ? (bonus.bonusIncreaseRatePerLevel ?? 0) : 0;
+  let mdType: BonusMetaData["type"] | "" = bonus?.metadata?.type ?? "";
+  let diceType: DiceType = bonus?.type === "diceType" ? bonus.diceType : "d8";
+  let selectedWeapon: string =
+    bonus?.metadata?.type === "weapon" ? bonus.metadata.weapon : "";
+  let selectedArmor: string =
+    bonus?.metadata?.type === "armor" ? bonus.metadata.armor : "";
+  let selectedSpell: string =
+    bonus?.metadata?.type === "spell" ? bonus.metadata.spell : "";
+  let selectedStat: Stat | "" =
+    bonus?.metadata?.type === "stat" ? bonus.metadata.stat : "";
+  let weaponType: WeaponType | "" =
+    bonus?.metadata?.type === "weaponType" ? bonus.metadata.weaponType : "";
 
-  $: if (bonusTo) {
+  let previousBonusTo = bonusTo;
+  $: if (bonusTo && previousBonusTo !== bonusTo) {
     selectedWeapon = "";
     selectedArmor = "";
     selectedSpell = "";
     selectedStat = "";
     weaponType = "";
+    previousBonusTo = bonusTo;
   }
 
   let reqsMet = Boolean(name) && Boolean(desc);
-  let buttonText = "ADD";
+  let buttonText = bonus ? "UPDATE" : "ADD";
   $: {
     if (bonusTo === "stat" || bonusTo === "statRoll") {
       mdType = "stat";
@@ -70,7 +82,7 @@
       if (mdType === "stat") mdType = "";
       reqsMet = Boolean(name) && Boolean(desc);
     }
-    buttonText = reqsMet ? "ADD" : "Please add required fields";
+    buttonText = reqsMet ? (bonus ? "UPDATE" : "ADD") : "Please add required fields";
   }
 
   function addBonus() {
@@ -115,7 +127,17 @@
         break;
     }
     b.editable = true; // custom bonuses are editable
-    addBonusToPlayer($pc, b);
+    if (bonus?.bonusSource) b.bonusSource = bonus.bonusSource;
+    if (bonus) {
+      for (let k in bonus) {
+        if (bonus.hasOwnProperty(k)) {
+          delete bonus[k];
+        }
+      }
+      Object.assign(bonus, b);
+    } else {
+      addBonusToPlayer($pc, b);
+    }
     $pc = $pc;
     dispatch("finish");
   }

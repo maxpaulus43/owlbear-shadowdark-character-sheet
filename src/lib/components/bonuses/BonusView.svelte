@@ -7,11 +7,13 @@
   import type { Bonus } from "../../types";
   import { addSign } from "../../utils";
   import Modal from "../Modal.svelte";
+  import CustomBonusForm from "./CustomBonusForm.svelte";
 
   export let bonus: Bonus;
   export let showInfo = true;
   export let canDelete = true;
   let showModal = false;
+  let showEditModal = false;
   $: b = bonus;
 
   let displayableName = "";
@@ -79,6 +81,14 @@
       >
         <i class="material-icons">delete</i>
       </button>
+      <button
+        class="pt-1 px-1 rounded-md bg-black text-white"
+        on:click={() => {
+          showEditModal = true;
+        }}
+      >
+        <i class="material-icons">edit</i>
+      </button>
     </div>
   {/if}
 </div>
@@ -89,5 +99,17 @@
     <div>Description: {b.desc}</div>
     <div>Source: {b.bonusSource ?? "none"}</div>
     <div>Editable: {b.editable ?? "no"}</div>
+  </Modal>
+{/if}
+
+{#if showEditModal}
+  <Modal bind:showModal={showEditModal}>
+    <h2 slot="header">Edit Bonus</h2>
+    <CustomBonusForm
+      bonus={b}
+      on:finish={() => {
+        showEditModal = false;
+      }}
+    />
   </Modal>
 {/if}
