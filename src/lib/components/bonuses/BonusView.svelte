@@ -10,6 +10,7 @@
 
   export let bonus: Bonus;
   export let showInfo = true;
+  export let canDelete = true;
   let showModal = false;
   $: b = bonus;
 
@@ -70,7 +71,7 @@
       </button>
     {/if}
   </div>
-  {#if b.editable}
+  {#if canDelete && b.editable}
     <div class="flex gap-1">
       <button
         class="pt-1 px-1 rounded-md bg-black text-white"
