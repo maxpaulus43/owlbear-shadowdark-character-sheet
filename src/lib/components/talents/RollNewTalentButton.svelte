@@ -1,14 +1,19 @@
 <script lang="ts">
   import Modal from "../Modal.svelte";
   import { addBonusToPlayer, pc } from "../../model/PlayerCharacter";
+  import { ARMORS } from "../../compendium/armorCompendium";
+  import { SPELLS } from "../../compendium/spellCompendium";
   import { CLASS_TALENTS } from "../../compendium/talentCompendium";
+  import { WEAPONS } from "../../compendium/weaponCompendium";
   import { rollDice } from "../../utils";
   import { STATS } from "../../constants";
   import type {
+    ArmorInfo,
     Bonus,
-    ModifyBonus,
-    SpellBonusMetaData,
+    ChoiceSource,
+    SpellInfo,
     Stat,
+    WeaponInfo,
   } from "../../types";
 
   let showModal = false;
@@ -28,7 +33,7 @@
   let showDone = false;
   let highlight = -1;
   function rollTalent() {
-    const result = rollDice("d6") + rollDice("d6");
+    const result = 12 // rollDice("d6") + rollDice("d6");
 
     canRoll = false;
 
@@ -50,6 +55,83 @@
   let options: (Bonus | Bonus[])[] = [];
   let selectedOption: Bonus | Bonus[];
   let updateAction = () => {};
+
+  $: allWeapons = WEAPONS.concat(
+    $pc.customGear
+      .filter((g) => g.type === "Weapon")
+      .map((g) => g as WeaponInfo) ?? [],
+  );
+  $: allArmors = ARMORS.concat(
+    $pc.customGear
+      .filter((g) => g.type === "Armor")
+      .map((g) => g as ArmorInfo) ?? [],
+  );
+  $: allSpells = SPELLS.concat($pc.customSpells ?? []);
+
+  function bonusForChoiceSource(
+    bonus: Bonus,
+    source: ChoiceSource,
+    name: string,
+    templateName: string,
+  ): Bonus {
+    const metadata =
+      source === "weapons"
+        ? { type: "weapon" as const, weapon: name }
+        : source === "armors"
+          ? { type: "armor" as const, armor: name }
+          : { type: "spell" as const, spell: name };
+
+    return {
+      ...bonus,
+      name: bonus.name.replace(templateName, name),
+      desc: bonus.desc.replace(templateName, name),
+      metadata,
+    } as Bonus;
+  }
+
+  function optionForChoiceSource(
+    option: Bonus | Bonus[],
+    source: ChoiceSource,
+    name: string,
+    templateName: string,
+  ): Bonus | Bonus[] {
+    if (Array.isArray(option)) {
+      return option.map((b) => bonusForChoiceSource(b, source, name, templateName));
+    }
+    return bonusForChoiceSource(option, source, name, templateName);
+  }
+
+  function choicesForSource(
+    choices: (Bonus | Bonus[])[],
+    source?: ChoiceSource,
+  ): (Bonus | Bonus[])[] {
+    if (!source) return choices;
+
+    const compendiumItems =
+      source === "weapons" ? WEAPONS : source === "armors" ? ARMORS : SPELLS;
+    const allItems =
+      source === "weapons" ? allWeapons : source === "armors" ? allArmors : allSpells;
+
+    return allItems.map((item: WeaponInfo | ArmorInfo | SpellInfo, i) =>
+      i < compendiumItems.length
+        ? choices[i]
+        : optionForChoiceSource(
+            choices[0],
+            source,
+            item.name,
+            compendiumItems[0].name,
+          ),
+    );
+  }
+
+  function playerKnowsSpellChoice(option: Bonus | Bonus[]): boolean {
+    const bonus = Array.isArray(option) ? option[0] : option;
+    const metadata = bonus.metadata;
+    return (
+      metadata?.type !== "spell" ||
+      Boolean($pc.spells.find((s) => s.name === metadata.spell))
+    );
+  }
 
   function setOptionsForHighlight(highlight: number) {
     const highlightedTalent = CLASS_TALENTS[$pc.class][highlight];
@@ -73,21 +155,10 @@
         };
         break;
       case "chooseBonus":
-        const firstChoice = highlightedTalent.choices[0];
-        // hacky solution to filter out known spells
-        if (
-          !Array.isArray(firstChoice) &&
-          firstChoice.metadata &&
-          firstChoice.metadata.type === "spell"
-        ) {
-          options = (highlightedTalent.choices as ModifyBonus[]).filter((b) =>
-            $pc.spells.find(
-              (s) => s.name === (b.metadata as SpellBonusMetaData)?.spell,
-            ),
-          );
-        } else {
-          options = highlightedTalent.choices;
-        }
+        options = choicesForSource(
+          highlightedTalent.choices,
+          highlightedTalent.choiceSource,
+        ).filter(playerKnowsSpellChoice);
         selectedOption = options[0];
         break;
     }

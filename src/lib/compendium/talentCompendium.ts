@@ -14,6 +14,7 @@ export const CLASS_TALENTS: { [key in Class]: Talent[] } = {
     {
       name: "Gain Weapon Mastery with one weapon",
       type: "chooseBonus",
+      choiceSource: "weapons",
       choices: WEAPONS.map(
         (w) =>
           [
@@ -126,6 +127,7 @@ export const CLASS_TALENTS: { [key in Class]: Talent[] } = {
     {
       name: "Choose one kind of armor. You get +1 AC from that armor",
       type: "chooseBonus",
+      choiceSource: "armors",
       choices: ARMORS.map(
         (a) =>
           ({
@@ -148,6 +150,7 @@ export const CLASS_TALENTS: { [key in Class]: Talent[] } = {
     {
       name: "Gain advantage on casting one spell you know",
       type: "chooseBonus",
+      choiceSource: "spells",
       choices: SPELLS.map((s) => ({
         name: `Advantage to cast ${s.name}`,
         desc: `Advantage to cast ${s.name}`,
@@ -385,6 +388,7 @@ export const CLASS_TALENTS: { [key in Class]: Talent[] } = {
     {
       name: "Gain advantage on casting one spell you know",
       type: "chooseBonus",
+      choiceSource: "spells",
       choices: SPELLS.map((s) => ({
         name: `Advantage to cast ${s.name}`,
         desc: `Advantage to cast ${s.name}`,
@@ -406,6 +410,7 @@ export const CLASS_TALENTS: { [key in Class]: Talent[] } = {
   Ranger: [
     {
       type: "chooseBonus",
+      choiceSource: "weapons",
       choices: WEAPONS.map((w) => ({
         name: `d12 damage for ${w.name}`,
         desc: `d12 damage for ${w.name}`,

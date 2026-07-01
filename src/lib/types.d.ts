@@ -43,11 +43,13 @@ export type BonusTalent = Merge<
     bonuses: Bonus[];
   }
 >;
+export type ChoiceSource = "weapons" | "armors" | "spells";
 export type ChooseBonusTalent = Merge<
   GenericTalent,
   {
     type: "chooseBonus";
     choices: (Bonus | Bonus[])[];
+    choiceSource?: ChoiceSource;
   }
 >;
 export type Talent = GenericTalent | BonusTalent | ChooseBonusTalent;
