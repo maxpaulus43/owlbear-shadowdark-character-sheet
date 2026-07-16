@@ -65,15 +65,8 @@ export function defaultPC(): PlayerCharacter {
 }
 
 export function calculateModifierForStatValue(statValue: number): number {
-  // Shadowdark modifiers are flat from 9-12, then increase on odd scores.
-  if (statValue >= 9 && statValue <= 12) return 0;
-
-  const modifier =
-    statValue > 12
-      ? Math.ceil((statValue - 12) / 2)
-      : Math.floor((statValue - 9) / 2);
-
-  return clamp(modifier, -4, 4);
+  // Shadowdark modifier table: 1-3=-4, 4-5=-3, 6-7=-2, 8-9=-1, 10-11=0, 12-13=+1, ...
+  return clamp(Math.floor((statValue - 10) / 2), -4, 4);
 }
 
 export function calculateModifierForPlayerStat(
